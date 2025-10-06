@@ -17,12 +17,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
             min-height: 100vh;
             background: linear-gradient(135deg, #87CEEB 0%, #ccf2ff 100%);
             font-family: "Comic Sans MS", "Poppins", sans-serif;
-            padding: 16px;
+            padding: 20px;
             color: #333;
         }
-
-        .container { max-width: 1024px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 32px; }
 
         h1 {
             font-size: 2.8rem;
@@ -37,17 +34,28 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
             margin-bottom: 12px;
         }
 
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-
-        .card {
+        /* Single container with two columns */
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
             background: #ffffff;
             border-radius: 20px;
             padding: 24px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease;
             border: 3px solid #e6f7ff;
         }
-        .card:hover { transform: translateY(-5px); }
+
+        .section {
+            flex: 1;
+            min-width: 350px;
+        }
+
+        .divider {
+            width: 3px;
+            background: #87CEEB;
+            border-radius: 2px;
+        }
 
         .progress-bar {
             height: 14px;
@@ -82,16 +90,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
             background: #ffb703;
             color: #fff;
         }
-        .btn-primary:hover {
-            background: #ff9f1c;
-        }
+        .btn-primary:hover { background: #ff9f1c; }
         .btn-secondary {
             background: #caf0f8;
             color: #0077b6;
         }
-        .btn-secondary:hover {
-            background: #ade8f4;
-        }
+        .btn-secondary:hover { background: #ade8f4; }
 
         .feedback-container { margin-bottom: 24px; }
         .stats-container {
@@ -156,81 +160,105 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
         }
         .star { color: #ddd; font-size: 1.8rem; margin: 0 3px; }
         .star.filled { color: #ffb703; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .divider { display: none; }
+        }
     </style>
-
-
-
 </head>
+
 <body>
-<header> <h1>🎤 Pronunciation Learning System 🎉</h1></header>
-<div class="container">
-    <main>
-        <div class="grid mb-6">
-            <!-- Student Section -->
-            <div class="card">
-                <h2>Reading Practice</h2>
-                <div class="flex justify-between mb-4">
-                    <div>Level: <span id="levelDisplay">Beginner</span></div>
-                    <div>Progress: <span id="progressText">0</span>%</div>
-                </div>
-                <div class="progress-bar"><div class="progress-bar-inner" style="width: 0%"></div></div>
-                <label for="difficulty">Select Difficulty</label>
-                <select id="difficulty" class="w-full p-2 border border-gray-300 rounded-md mb-4">
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                </select>
+<main>
+    <div class="main-container">
+        <!-- Left: Reading Practice -->
+        <div class="section">
+            <h2>Reading Practice</h2>
+            <div class="flex justify-between mb-4">
+                <div>Level: <span id="levelDisplay">Beginner</span></div>
+                <div>Progress: <span id="progressText">0</span>%</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-bar-inner" style="width: 0%"></div>
+            </div>
 
-                <!-- Mic Button -->
-                <div class="mic-container">
-                    <div id="micBtn" class="mic-icon"><i class="fa-solid fa-microphone"></i></div>
-                </div>
-                <div id="status" class="status"></div>
-                <div id="waveform" class="waveform mb-4"></div>
+            <label for="difficulty">Select Difficulty</label>
+            <select id="difficulty" class="w-full p-2 border border-gray-300 rounded-md mb-4">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
 
-                <div class="flex justify-center space-x-4">
-                    <button id="nextBtn" class="btn-secondary" disabled>Next Word</button>
+            <div class="mic-container">
+                <div id="micBtn" class="mic-icon"><i class="fa-solid fa-microphone"></i></div>
+            </div>
+            <div id="status" class="status"></div>
+            <div id="waveform" class="waveform mb-4"></div>
+
+            <div class="flex justify-center space-x-4">
+                <button id="nextBtn" class="btn-secondary" disabled>Next Word</button>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Right: Reading Material -->
+        <div class="section">
+            <h2>Reading Material</h2>
+            <div class="bg-indigo-50 p-4 rounded-lg mb-4">
+                <div id="wordDisplay" class="text-3xl text-center font-bold text-indigo-800 py-4">
+                    Ready to begin
+                </div>
+                <div class="flex justify-center mt-2">
+                    <button id="playWordBtn" class="btn-primary">
+                        <i class="fa-solid fa-volume-high"></i> Listen
+                    </button>
+                </div>
+                <div id="phonemeDisplay" class="text-center text-gray-600"></div>
+            </div>
+
+            <div class="transcript" id="transcript">...</div>
+            <div class="rating-container">
+                <div class="rating" id="rating">0</div>
+                <div id="stars"></div>
+            </div>
+
+            <div class="feedback-container">
+                <h3>Feedback</h3>
+                <div id="feedbackMessage" class="p-3 rounded-md bg-gray-100 text-gray-800 min-h-10">
+                    Practice sentence will appear here when you start.
+                </div>
+                <!-- ✅ Added Listen Feedback button -->
+                <div class="flex justify-center mt-2">
+                    <button id="playFeedbackBtn" class="btn-primary">
+                        <i class="fa-solid fa-volume-high"></i> Listen Feedback
+                    </button>
                 </div>
             </div>
 
-            <!-- Instructor Section -->
-            <div class="card">
-                <h2>Reading Material</h2>
-                <div class="bg-indigo-50 p-4 rounded-lg mb-4">
-                    <div id="wordDisplay" class="text-3xl text-center font-bold text-indigo-800 py-4">Ready to begin</div>
-                    <div class="flex justify-center mt-2">
-                        <button id="playWordBtn" class="btn-primary">
-                            <i class="fa-solid fa-volume-high"></i> Listen
-                        </button>
+            <div class="stats-container">
+                <h3>Session Stats</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span>Words Attempted:</span>
+                        <span id="attemptedCount" class="block text-xl font-bold">0</span>
                     </div>
-                    <div id="phonemeDisplay" class="text-center text-gray-600"></div>
-                </div>
-
-                <!-- Transcript + Rating -->
-                <div class="transcript" id="transcript">...</div>
-                <div class="rating-container">
-                    <div class="rating" id="rating">0</div>
-                    <div id="stars"></div>
-                </div>
-
-                <div class="feedback-container">
-                    <h3>Feedback</h3>
-                    <div id="feedbackMessage" class="p-3 rounded-md bg-gray-100 text-gray-800 min-h-10">
-                        Practice sentence will appear here when you start.
-                    </div>
-                </div>
-
-                <div class="stats-container">
-                    <h3>Session Stats</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><span>Words Attempted:</span><span id="attemptedCount" class="block text-xl font-bold">0</span></div>
-                        <div><span>Accuracy:</span><span id="accuracyRate" class="block text-xl font-bold">0%</span></div>
+                    <div>
+                        <span>Accuracy:</span>
+                        <span id="accuracyRate" class="block text-xl font-bold">0%</span>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
-</div>
+    </div>
+</main>
+</body>
+</html>
+
+
 <script>
     const wordBank = {
         beginner: [
@@ -271,54 +299,76 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
         ]
     };
 
-    const wordDisplay=document.getElementById('wordDisplay');
-    const phonemeDisplay=document.getElementById('phonemeDisplay');
-    const feedbackMessage=document.getElementById('feedbackMessage');
-    const nextBtn=document.getElementById('nextBtn');
-    const difficultySelect=document.getElementById('difficulty');
-    const levelDisplay=document.getElementById('levelDisplay');
-    const progressText=document.getElementById('progressText');
-    const progressBar=document.querySelector('.progress-bar-inner');
-    const attemptedCount=document.getElementById('attemptedCount');
-    const accuracyRate=document.getElementById('accuracyRate');
-    const micBtn=document.getElementById('micBtn');
-    const statusEl=document.getElementById('status');
-    const transcriptEl=document.getElementById('transcript');
-    const ratingEl=document.getElementById('rating');
-    const starsEl=document.getElementById('stars');
-    const playWordBtn=document.getElementById('playWordBtn');
+    const wordDisplay = document.getElementById("wordDisplay");
+    const phonemeDisplay = document.getElementById("phonemeDisplay");
+    const feedbackMessage = document.getElementById("feedbackMessage");
+    const nextBtn = document.getElementById("nextBtn");
+    const difficultySelect = document.getElementById("difficulty");
+    const levelDisplay = document.getElementById("levelDisplay");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.querySelector(".progress-bar-inner");
+    const attemptedCount = document.getElementById("attemptedCount");
+    const accuracyRate = document.getElementById("accuracyRate");
+    const micBtn = document.getElementById("micBtn");
+    const statusEl = document.getElementById("status");
+    const transcriptEl = document.getElementById("transcript");
+    const ratingEl = document.getElementById("rating");
+    const starsEl = document.getElementById("stars");
+    const playWordBtn = document.getElementById("playWordBtn");
+    const playFeedbackBtn = document.getElementById("playFeedbackBtn"); // ✅ new
 
-    let currentWord=null;
-    let wordsAttempted=0, wordsCorrect=0;
+    let currentWord = null;
+    let wordsAttempted = 0,
+        wordsCorrect = 0;
     let recognition;
 
-    function init(){
-        difficultySelect.addEventListener('change',updateDifficulty);
-        nextBtn.addEventListener('click',loadNextWord);
-        playWordBtn.addEventListener('click',()=>{ if(currentWord){speakWord(currentWord.word);} });
+    function init() {
+        difficultySelect.addEventListener("change", updateDifficulty);
+        nextBtn.addEventListener("click", loadNextWord);
+        playWordBtn.addEventListener("click", () => {
+            if (currentWord) {
+                speakWord(currentWord.word);
+            }
+        });
+        playFeedbackBtn.addEventListener("click", () => {
+            speakFeedback(feedbackMessage.textContent);
+        });
 
-        if('webkitSpeechRecognition' in window){
-            recognition=new webkitSpeechRecognition();
-            recognition.continuous=false;
-            recognition.interimResults=false;
-            recognition.lang='en-US';
+        if ("webkitSpeechRecognition" in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = "en-US";
 
-            recognition.onresult=(event)=>{
-                const transcript=event.results[0][0].transcript;
-                transcriptEl.textContent=transcript;
-                checkPronunciation(transcript);
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.trim().toLowerCase();
+                const confidence = event.results[0][0].confidence || 0;
+                transcriptEl.textContent = `${transcript} (conf: ${Math.round(confidence * 100)}%)`;
+                checkPronunciation(transcript, confidence);
             };
-            recognition.onerror=(event)=>{
-                statusEl.textContent="Error: "+event.error;
+            recognition.onerror = (event) => {
+                statusEl.textContent = "Error: " + event.error;
                 micBtn.classList.remove("listening");
             };
-            recognition.onend=()=>{micBtn.classList.remove("listening");};
-        }else{
-            statusEl.textContent="Speech Recognition not supported in this browser.";
+            recognition.onend = () => {
+                micBtn.classList.remove("listening");
+            };
+        } else {
+            statusEl.textContent = "Speech Recognition not supported in this browser.";
         }
         loadNextWord();
     }
 
+    function speakFeedback(text) {
+        if ("speechSynthesis" in window) {
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = "en-US";
+            utter.rate = 0.95;
+            speechSynthesis.speak(utter);
+        } else {
+            alert("Speech synthesis not supported in your browser.");
+        }
+    }
     function updateDifficulty(){
         const diff=difficultySelect.value;
         levelDisplay.textContent=diff.charAt(0).toUpperCase()+diff.slice(1);
@@ -342,16 +392,22 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
         statusEl.textContent="Listening...";
     });
 
-    function checkPronunciation(spoken){
+    function checkPronunciation(spoken,confidence=1){
         wordsAttempted++;
         attemptedCount.textContent=wordsAttempted;
 
         let score=ratePronunciation(spoken,currentWord.word,currentWord.phonemes);
+
+        // prevent false perfect match
+        if(spoken!==currentWord.word && confidence>0.85 && score>=4){
+            score=2;
+        }
+
         ratingEl.textContent=score;
         renderStars(score);
 
         if(score>=4){
-            feedbackMessage.textContent=`Awesome! You said "${currentWord.word}" perfectly 👏 Example: ${currentWord.example}`;
+            feedbackMessage.textContent=`Example: ${currentWord.example}`;
             feedbackMessage.className='p-3 rounded-md bg-green-100 text-green-800';
             wordsCorrect++;
         }else if(score===3){
@@ -362,36 +418,34 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
             feedbackMessage.className='p-3 rounded-md bg-red-100 text-red-800';
         }
 
-        const accuracy = Math.round((wordsCorrect / wordsAttempted) * 100);
-        accuracyRate.textContent = accuracy + "%";
-        progressText.textContent = accuracy;
-        progressBar.style.width = accuracy + "%";
-
-        nextBtn.disabled = false;
+        const accuracy=Math.round((wordsCorrect/wordsAttempted)*100);
+        accuracyRate.textContent=accuracy+"%";
+        progressText.textContent=accuracy;
+        progressBar.style.width=accuracy+"%";
+        nextBtn.disabled=false;
     }
 
     // ---- IMPROVED PHONEME-AWARE SCORING ----
-    function ratePronunciation(spoken, target, targetPhonemes) {
-        spoken = spoken.toLowerCase().trim();
-        target = target.toLowerCase().trim();
-        spoken = spoken.replace(/\b(a|the|an)\b/g, "").trim();
+    function ratePronunciation(spoken,target,targetPhonemes){
+        spoken=spoken.toLowerCase().trim();
+        target=target.toLowerCase().trim();
+        spoken=spoken.replace(/\b(a|the|an)\b/g,"").trim();
 
-        if (spoken === target) return 5;
+        if(spoken===target) return 5;
 
-        // ---- Levenshtein ----
-        function levenshtein(a, b) {
-            const matrix = Array.from({ length: a.length + 1 }, () => []);
-            for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
-            for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
-            for (let i = 1; i <= a.length; i++) {
-                for (let j = 1; j <= b.length; j++) {
-                    if (a[i - 1] === b[j - 1]) {
-                        matrix[i][j] = matrix[i - 1][j - 1];
-                    } else {
-                        matrix[i][j] = Math.min(
-                            matrix[i - 1][j] + 1,
-                            matrix[i][j - 1] + 1,
-                            matrix[i - 1][j - 1] + 2 // stronger penalty
+        function levenshtein(a,b){
+            const matrix=Array.from({length:a.length+1},()=>[]);
+            for(let i=0;i<=a.length;i++) matrix[i][0]=i;
+            for(let j=0;j<=b.length;j++) matrix[0][j]=j;
+            for(let i=1;i<=a.length;i++){
+                for(let j=1;j<=b.length;j++){
+                    if(a[i-1]===b[j-1]){
+                        matrix[i][j]=matrix[i-1][j-1];
+                    }else{
+                        matrix[i][j]=Math.min(
+                            matrix[i-1][j]+1,
+                            matrix[i][j-1]+1,
+                            matrix[i-1][j-1]+2
                         );
                     }
                 }
@@ -399,71 +453,56 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
             return matrix[a.length][b.length];
         }
 
-        // ---- phoneme map ----
-        const phonemeMap = {
-            a: ["æ","ɑ","ə"],
-            e: ["ɛ","i","ɪ"],
-            i: ["ɪ","aɪ"],
-            o: ["ɔ","oʊ"],
-            u: ["ʌ","uː"],
-            c: ["k","s"],
-            k: ["k"], g: ["g","dʒ"],
-            p: ["p"], b: ["b"],
-            d: ["d"], t: ["t"],
-            s: ["s","ʃ"], z: ["z"],
-            r: ["ɹ"], l: ["l"],
-            m: ["m"], n: ["n"],
-            f: ["f"], v: ["v"],
-            h: ["h"], w: ["w"],
-            y: ["j"]
+        const phonemeMap={
+            a:["æ","ɑ","ə"], e:["ɛ","i","ɪ"], i:["ɪ","aɪ"],
+            o:["ɔ","oʊ"], u:["ʌ","uː"], c:["k","s"], k:["k"], g:["g","dʒ"],
+            p:["p"], b:["b"], d:["d"], t:["t"], s:["s","ʃ"], z:["z"], r:["ɹ"],
+            l:["l"], m:["m"], n:["n"], f:["f"], v:["v"], h:["h"], w:["w"], y:["j"]
         };
 
-        const guess = [];
-        for (let ch of spoken) {
-            if (phonemeMap[ch]) guess.push(phonemeMap[ch][0]);
-        }
+        const guess=[];
+        for(let ch of spoken){ if(phonemeMap[ch]) guess.push(phonemeMap[ch][0]); }
 
-        const distPh = levenshtein(guess.join(""), targetPhonemes.join(""));
-        const simPh = 1 - distPh / Math.max(guess.length, targetPhonemes.length);
+        const distPh=levenshtein(guess.join(""),targetPhonemes.join(""));
+        const simPh=1-distPh/Math.max(guess.length,targetPhonemes.length);
 
-        const distText = levenshtein(spoken, target);
-        const simText = 1 - distText / Math.max(spoken.length, target.length);
+        const distText=levenshtein(spoken,target);
+        const simText=1-distText/Math.max(spoken.length,target.length);
 
-        let penalty = 0;
-        if (guess.length !== targetPhonemes.length) penalty += 0.3;
-        if (guess[0] && targetPhonemes[0] && guess[0] !== targetPhonemes[0]) penalty += 0.25;
-        if (guess.at(-1) && targetPhonemes.at(-1) && guess.at(-1) !== targetPhonemes.at(-1)) penalty += 0.2;
+        let penalty=0;
+        if(guess.length!==targetPhonemes.length) penalty+=0.3;
+        if(guess[0]&&targetPhonemes[0]&&guess[0]!==targetPhonemes[0]) penalty+=0.25;
+        if(guess.at(-1)&&targetPhonemes.at(-1)&&guess.at(-1)!==targetPhonemes.at(-1)) penalty+=0.2;
 
-        let similarity = (simPh * 0.75) + (simText * 0.25);
-        similarity -= penalty;
-        similarity = Math.max(0, similarity);
+        let similarity=(simPh*0.75)+(simText*0.25);
+        similarity-=penalty;
+        similarity=Math.max(0,similarity);
 
-        if (similarity > 0.97) return 5;
-        if (similarity > 0.85) return 4;
-        if (similarity > 0.65) return 3;
-        if (similarity > 0.45) return 2;
-        if (similarity > 0.25) return 1;
+        if(similarity>0.97) return 5;
+        if(similarity>0.85) return 4;
+        if(similarity>0.65) return 3;
+        if(similarity>0.45) return 2;
+        if(similarity>0.25) return 1;
         return 0;
     }
 
-    function renderStars(score) {
-        starsEl.innerHTML = "";
-        for (let i = 1; i <= 5; i++) {
-            const star = document.createElement("i");
-            star.className = "fa-star fa " + (i <= score ? "star filled" : "star");
+    function renderStars(score){
+        starsEl.innerHTML="";
+        for(let i=1;i<=5;i++){
+            const star=document.createElement("i");
+            star.className="fa-star fa "+(i<=score?"star filled":"star");
             starsEl.appendChild(star);
         }
     }
 
     function speakWord(word){
         if('speechSynthesis' in window){
-            const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = 'en-US';
-            const voices = speechSynthesis.getVoices();
-            const usVoice = voices.find(v => v.lang === "en-US" && v.name.includes("Google"))
-                || voices.find(v => v.lang === "en-US");
-            if(usVoice) utterance.voice = usVoice;
-            utterance.rate = 0.9;
+            const utterance=new SpeechSynthesisUtterance(word);
+            utterance.lang='en-US';
+            const voices=speechSynthesis.getVoices();
+            const usVoice=voices.find(v=>v.lang==="en-US"&&v.name.includes("Google"))||voices.find(v=>v.lang==="en-US");
+            if(usVoice) utterance.voice=usVoice;
+            utterance.rate=0.9;
             speechSynthesis.speak(utterance);
         }else{
             alert("Your browser does not support speech synthesis.");
@@ -474,7 +513,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
         speechSynthesis.onvoiceschanged=()=>{};
     }
 
-    window.onload = init;
+    window.onload=init;
 </script>
 </body>
 </html>

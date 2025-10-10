@@ -1,15 +1,19 @@
 <?php
+// login.php
+
 global $conn;
 session_start();
+// Assumes this file is located at 'config/database.php' relative to this script
 require_once 'config/database.php';
 
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
-    $password = $_POST['password'];
+    $password = $_POST['password']; // PLAIN TEXT password from form
     $role     = $_POST['role'];
 
+    // 1. Select the correct table based on the role
     if ($role === "student") {
         $stmt = $conn->prepare("SELECT id, username, password FROM students WHERE username = ?");
     } elseif ($role === "teacher") {
@@ -24,11 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
 
-        if ($user && password_verify($password, $user['password'])) {
+        // 2. VULNERABLE LOGIN: Compare PLAIN TEXT Passwords
+        if ($user && $password === $user['password']) {
             $_SESSION['user_id']   = $user['id'];
             $_SESSION['username']  = $user['username'];
             $_SESSION['role']      = $role;
 
+            // Redirect to the appropriate dashboard
             if ($role === "student") {
                 header("Location: student/student_dashboard.php");
             } elseif ($role === "teacher") {
@@ -48,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Kids Sky Theme</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -126,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .books {
             position: absolute;
             top: 50%;
-            left: 23%;
+            left: 17%;
             transform: translate(-50%, -50%);
             width: 450px;
             height: auto;
@@ -136,14 +141,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .bag {
             position: absolute;
             top: 20%;
-            left: 25%;
+            left: 19%;
             width: 440px;
             height: auto;
         }
         .boy {
             position: absolute;
             top: 45%;
-            right: -5%  ;
+            right: -7%  ;
             transform: translateY(-50%); /* centers vertically */
             width: 450px;
             height: auto;
@@ -151,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .bubble {
             position: absolute;
             top: 30%;
-            right: 14%;
+            right: 13%;
             background: #fff;
             padding: 20px 35px;
             border-radius: 25px;
@@ -319,6 +324,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <input type="submit" value="Log In">
     </form>
+
+    <div class="link">
+        Don't have an account? <a href="signup.php">Sign up here</a>!
+    </div>
 </div>
 
 <script>

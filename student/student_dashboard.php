@@ -1,5 +1,9 @@
 <?php
 session_start();
+// 🔥 Path adjusted based on your file structure:
+// From verbal/student/ to verbal/config/database.php
+require_once('../config/database.php');
+
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
     header("Location: ../login.php");
     exit();
@@ -7,7 +11,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 
 // Extract necessary session data for AJAX call
 $student_id = $_SESSION['user_id'];
-$username = $_SESSION['username']; // Assuming you store username in session
+$username = $_SESSION['username'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,16 +50,45 @@ $username = $_SESSION['username']; // Assuming you store username in session
             margin-bottom: 3px; /* Reduced margin */
         }
 
-        /* --- MAIN LAYOUT (TIGHTER AND NARROWER) --- */
+        /* --- LOGOUT BUTTON STYLES (NEW) --- */
         .page-header {
             text-align: center;
+            position: relative; /* Allows child elements to be positioned absolutely */
+            padding: 10px 0;
+            margin-bottom: 10px;
         }
 
+        #logoutBtn {
+            position: absolute;
+            top: 5px; /* Adjusted positioning */
+            right: 15px; /* Keep it away from the edge */
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: #fca5a5; /* Light red/pink */
+            color: #7f1d1d; /* Dark red text */
+            border: 2px solid #ef4444;
+            box-shadow: 0 3px #b91c1c;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+        }
+        #logoutBtn:hover {
+            background: #fecaca;
+        }
+        #logoutBtn:active {
+            box-shadow: 0 1px #b91c1c;
+            transform: translateY(2px);
+        }
+        /* --- END LOGOUT BUTTON STYLES --- */
+
+
+        /* --- MAIN LAYOUT (TIGHTER AND NARROWER) --- */
         .main-container {
             /* Width set to 75% of viewport width */
             max-width: 75vw;
             /* 20px top margin to move it down, auto for horizontal centering */
-            margin: 20px auto 0 auto;
+            margin: 0px auto 0 auto; /* Removed top margin, relying on header padding */
 
             /* ADJUSTED HEIGHT: Set min-height to 82vh */
             min-height: 82vh;
@@ -123,7 +156,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
             font-size: 1rem;
             background-color: #fff;
             appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M287%2069.4L146.4%20209.7%205.1%2069.4c-3.1-3.1-3.1-8.2%200-11.3l11.3-11.3c3.1-3.1%208.2-3.1%2011.3%200l118.8%20118.8%20118.8-118.8c3.1-3.1%208.2-3.1%2011.3%200l11.3%2011.3c3.2%203.1%203.2%208.2%200%2011.4z%22%2F%3E%3C%2Fsvg%3E');
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%22292.4%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M287%2069.4L146.4%20209.7%205.1%2069.4c-3.1-3.1-3.1-8.2%200-11.3l11.3-11.3c3.1-3.1%208.2-3.1%2011.3%200l118.8%20118.8%20118.8-118.8c3.1-3.1%208.2-3.1%2011.3%200l11.3%2011.3c3.2%203.1%203.2%208.2%200%2011.4z%22%2F%3E%3C%2Fsvg%3E');
             background-repeat: no-repeat;
             background-position: right 10px center;
             background-size: 12px;
@@ -373,12 +406,21 @@ $username = $_SESSION['username']; // Assuming you store username in session
             .stats-container {
                 grid-template-columns: 1fr 1fr; /* Revert to 2 columns for stats inside on mobile */
             }
+            #logoutBtn {
+                position: static; /* Let it flow normally */
+                margin: 10px auto;
+                display: block;
+                width: 90%;
+            }
         }
     </style>
 </head>
 
 <body>
 <header class="page-header">
+    <button id="logoutBtn" onclick="window.location.href='../login.php';">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
 </header>
 <main>
     <div class="main-container">
@@ -388,7 +430,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
 
             <div class="flex-space-between mb-4">
                 <div>Level: <span id="levelDisplay" style="font-weight: bold; color: #10b981;">Beginner</span></div>
-                <div>Progress: <span id="progressText" style="font-weight: bold; color: #10b981;">0</span>%</div>
+                <div>Word: <span id="progressText" style="font-weight: bold; color: #10b981;">0 / 10</span></div>
             </div>
 
             <div class="progress-bar">
@@ -413,7 +455,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
             </div>
 
             <div class="flex-center mt-4">
-                <button id="leaderboardBtn" class="btn-primary" onclick="window.location.href='../save_rating.php';">
+                <button id="leaderboardBtn" class="btn-primary" onclick="window.location.href='../leaderboard.php';">
                     🏆 Leaderboard
                 </button>
                 <button id="nextBtn" class="btn-secondary" disabled>👉 Next Word!</button>
@@ -483,7 +525,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
     const USERNAME = <?php echo json_encode($username); ?>;
 
     const wordBank = {
-        // ... (wordBank content is unchanged) ...
+        // All lists are 10 words, matching the desired progress count.
         beginner: [
             { word: "cat", phonemes: ["k","æ","t"], example:"The cat sat on the mat." },
             { word: "dog", phonemes: ["d","ɔ","g"], example:"The dog barked loudly." },
@@ -546,15 +588,98 @@ $username = $_SESSION['username']; // Assuming you store username in session
 
     let currentWord = null;
     let wordsAttempted = 0, wordsCorrect = 0;
+    let currentWordIndex = 0; // CRITICAL: Progress counter for successful attempts
+
     let recognition, audioContext, analyser, dataArray, bufferLength, source;
     let animationId = null;
     let listening = false;
 
+    // --- PROGRESS PERSISTENCE FUNCTIONS (New/Updated with Correct Paths) ---
+
+    // Function to load the saved state when the page loads
+    function loadProgressFromDB() {
+        if (!STUDENT_ID) {
+            console.error("Student ID is missing. Cannot load progress.");
+            loadNextWord();
+            return;
+        }
+
+        // 🔥 Corrected Path: ../load_progress.php
+        fetch(`../load_progress.php?student_id=${STUDENT_ID}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.progress) {
+                    // Restore saved state
+                    const progress = data.progress;
+
+                    // 1. Restore overall stats
+                    wordsAttempted = parseInt(progress.words_attempted) || 0;
+                    wordsCorrect = parseInt(progress.words_correct) || 0;
+                    attemptedCount.textContent = wordsAttempted;
+                    const accuracy = wordsAttempted > 0 ? Math.round((wordsCorrect / wordsAttempted) * 100) : 0;
+                    accuracyRate.textContent = accuracy + "%";
+
+                    // 2. Restore difficulty
+                    if (progress.difficulty && wordBank[progress.difficulty]) {
+                        difficultySelect.value = progress.difficulty;
+                        levelDisplay.textContent = progress.difficulty.charAt(0).toUpperCase() + progress.difficulty.slice(1);
+                    }
+
+                    // 3. Restore current word index (progress)
+                    currentWordIndex = parseInt(progress.word_index) || 0;
+
+                    console.log(`Loaded progress: Difficulty=${difficultySelect.value}, Index=${currentWordIndex}`);
+                } else {
+                    console.log("No existing progress found or error loading.");
+                }
+
+                // Always load the first word after attempting to load state
+                loadNextWord();
+            })
+            .catch(error => {
+                console.error('AJAX Network Error (Load Progress):', error);
+                // Fallback: load the default first word
+                loadNextWord();
+            });
+    }
+
+    // Function to save the student's *entire* practice state (index, attempts, correct)
+    function saveProgressToDB() {
+        if (!STUDENT_ID) {
+            console.error("Student ID is missing. Cannot save progress.");
+            return;
+        }
+
+        const data = new URLSearchParams();
+        data.append('student_id', STUDENT_ID);
+        data.append('difficulty', difficultySelect.value);
+        data.append('word_index', currentWordIndex);
+        data.append('words_attempted', wordsAttempted);
+        data.append('words_correct', wordsCorrect);
+
+        // 🔥 Corrected Path: ../save_progress.php
+        fetch('../save_progress.php', {
+            method: 'POST',
+            body: data
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    console.log("Progress saved successfully: " + result.message);
+                } else {
+                    console.error("Failed to save progress: " + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('AJAX Network Error (Save Progress):', error);
+            });
+    }
+
+    // --- Initialization and Event Handlers ---
     function init() {
         difficultySelect.addEventListener("change", updateDifficulty);
         nextBtn.addEventListener("click", loadNextWord);
         playWordBtn.addEventListener("click", () => { if (currentWord) speakWord(currentWord.word); });
-        // Updated to use the new heading name if desired, though the text content remains the same.
         playFeedbackBtn.addEventListener("click", () => speakFeedback(feedbackMessage.textContent));
         micBtn.addEventListener("click", toggleMic);
 
@@ -583,8 +708,11 @@ $username = $_SESSION['username']; // Assuming you store username in session
             statusEl.textContent = "Speech Recognition not supported.";
         }
 
-        loadNextWord();
+        // 🔥 Start by loading saved progress
+        loadProgressFromDB();
     }
+
+    // --- Core functions (checkPronunciation, updateDifficulty, loadNextWord) ---
 
     function toggleMic() {
         if (!currentWord) return alert("Pick a word first!");
@@ -596,102 +724,57 @@ $username = $_SESSION['username']; // Assuming you store username in session
         if (listening) {
             statusEl.textContent = "Listening...";
             recognition.start();
-            // REVERTED: Start the frequency bar graph function
             startWaveform();
         } else {
             recognition.stop();
-            // We still call stopWaveform here to stop the drawing loop and free resources
             stopWaveform();
         }
     }
 
-    // --- Waveform REVERTED to Bar Graph Style ---
-    async function startWaveform() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            // Store the stream reference to stop tracks later
-            source = audioContext.createMediaStreamSource(stream);
-            // Also store the stream object itself to access tracks
-            source.mediaStream = stream;
-            source.connect(analyser);
-
-            // REVERTED: Use frequency data for a bar graph look
-            analyser.fftSize = 256;
-            bufferLength = analyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
-
-            // Set canvas size to match CSS container
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            drawLandscapeWave();
-        } catch (err) {
-            console.error('Error accessing microphone for waveform:', err);
-            statusEl.textContent = "Error: Cannot access microphone for soundwave.";
-        }
-    }
-
-    // REVERTED: Function to draw the frequency bar graph (original style)
-    function drawLandscapeWave() {
-        animationId = requestAnimationFrame(drawLandscapeWave);
-
-        // REVERTED: Use frequency data
-        analyser.getByteFrequencyData(dataArray);
-
-        const WIDTH = canvas.width;
-        const HEIGHT = canvas.height;
-        // The original code used a fixed bar width calculation that favored a specific look
-        const barWidth = (WIDTH / bufferLength) * 1.5;
-
-        ctx.clearRect(0, 0, WIDTH, HEIGHT);
-        let x = 0;
-
-        for (let i = 0; i < bufferLength; i++) {
-            const barHeight = (dataArray[i] / 255) * HEIGHT;
-            // Retained original color logic for visual style
-            const hue = 200 + (dataArray[i] / 255) * 100;
-            ctx.fillStyle = `hsl(${hue}, 90%, 60%)`;
-
-            // Draw bar from the bottom up
-            ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-            x += barWidth + 1;
-        }
-    }
-
-    function stopWaveform() {
-        if (animationId) cancelAnimationFrame(animationId);
-        // CRITICAL: Stop the stream tracks and close the audio context to release the mic
-        if (source && source.mediaStream) {
-            source.mediaStream.getTracks().forEach(track => track.stop());
-        }
-        if (audioContext && audioContext.state !== 'closed') audioContext.close();
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // Reset state after stopping
-        listening = false;
-    }
-
-    // --- Core functions ---
     function updateDifficulty() {
         const diff = difficultySelect.value;
         levelDisplay.textContent = diff.charAt(0).toUpperCase() + diff.slice(1);
+
+        // Reset index when difficulty changes
+        currentWordIndex = 0;
+        progressBar.style.width = "0%"; // Reset bar visually
+
+        // 🔥 Save the newly selected difficulty and reset index
+        saveProgressToDB();
+
         loadNextWord();
     }
 
     function loadNextWord() {
         const difficulty = difficultySelect.value;
         const wordList = wordBank[difficulty];
+
+        // Check for completion
+        if (currentWordIndex >= wordList.length) {
+            alert(`You have successfully read all ${wordList.length} words in the ${difficulty} level! Resetting to start a new practice cycle.`);
+            currentWordIndex = 0;
+            progressBar.style.width = "0%";
+            // Save the reset state
+            saveProgressToDB();
+        }
+
+        // Select a random word
         currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+
         wordDisplay.textContent = currentWord.word;
         phonemeDisplay.textContent = currentWord.phonemes.join("·");
         feedbackMessage.textContent = "Read the word aloud when ready.";
-        // Reset feedback styling to initial state
         feedbackMessage.className = "feedback-message bg-initial-feedback";
         transcriptEl.textContent = "...";
         ratingEl.textContent = "0";
         renderStars(0);
-        // nextBtn.disabled = true; // FIX: Removing this line ensures the button is clickable after the first rating
+        nextBtn.disabled = true;
+
+        // Update progress bar and text using the current index
+        const wordListLength = wordList.length;
+        const progressPercent = (currentWordIndex / wordListLength) * 100;
+        progressText.textContent = `${currentWordIndex} / ${wordListLength}`;
+        progressBar.style.width = progressPercent + "%";
     }
 
     function checkPronunciation(spoken, confidence = 1) {
@@ -703,41 +786,47 @@ $username = $_SESSION['username']; // Assuming you store username in session
         ratingEl.textContent = score;
         renderStars(score);
 
-        // Reset class list first
         feedbackMessage.className = "feedback-message";
 
         if (score >= 4) {
-            // Perfect score: just show the example sentence
+            const wordListLength = wordBank[difficultySelect.value].length;
+
+            if (currentWordIndex < wordListLength) {
+                currentWordIndex++; // Advance progress
+            }
+
+            // Update progress bar and text with the new index
+            progressText.textContent = `${currentWordIndex} / ${wordListLength}`;
+            const progressPercent = (currentWordIndex / wordListLength) * 100;
+            progressBar.style.width = progressPercent + "%";
+
             feedbackMessage.textContent = `${currentWord.example}`;
             feedbackMessage.classList.add("bg-green-100", "text-green-800");
             wordsCorrect++;
+
+            // 🔥 CRITICAL: Save new progress state to DB
+            saveProgressToDB();
         } else if (score === 3) {
-            // Good try: give a positive comment and show the example sentence
             feedbackMessage.textContent = `👌 Good try! Try saying it in this sentence: ${currentWord.example}`;
             feedbackMessage.classList.add("bg-blue-100", "text-blue-800");
         } else {
-            // Low score: focus on phonetic practice
             feedbackMessage.textContent = `❌ Try again. Focus on the sounds: ${currentWord.phonemes.join(" - ")}`;
             feedbackMessage.classList.add("bg-red-100", "text-red-800");
         }
 
+        // Scoreboard Accuracy updates based on overall attempts, regardless of pass/fail
         const accuracy = Math.round((wordsCorrect / wordsAttempted) * 100);
         accuracyRate.textContent = accuracy + "%";
-        progressText.textContent = accuracy;
-        progressBar.style.width = accuracy + "%";
 
-        // This line ensures the button is enabled after a rating is processed
-        nextBtn.disabled = false;
-
-        // **Save the rating to the database**
+        // Save the rating (score history)
         saveRatingToDB(currentWord.word, score);
+
+        nextBtn.disabled = false;
     }
 
-    /**
-     * Sends the rating data to a PHP script for database insertion using AJAX.
-     * @param {string} word The word the student attempted.
-     * @param {number} score The score received (0-5).
-     */
+
+    // --- Unchanged Support Functions (saveRatingToDB, ratePronunciation, etc.) ---
+
     function saveRatingToDB(word, score) {
         if (!STUDENT_ID || !USERNAME) {
             console.error("Student ID or Username is missing. Cannot save rating.");
@@ -750,7 +839,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
         data.append('word', word);
         data.append('score', score);
 
-        // **FIXED PATH:** '../save_rating.php' navigates up one level from /student/ to /verbal/
+        // 🔥 Corrected Path: ../save_rating.php
         fetch('../save_rating.php', {
             method: 'POST',
             body: data
@@ -761,7 +850,6 @@ $username = $_SESSION['username']; // Assuming you store username in session
                     console.log("Rating saved successfully: " + result.message);
                 } else {
                     console.error("Failed to save rating: " + result.message);
-                    // Log the error message to the console
                     console.error("PHP Error Details:", result.message);
                 }
             })
@@ -770,9 +858,87 @@ $username = $_SESSION['username']; // Assuming you store username in session
             });
     }
 
+    // --- Waveform Functions (Omitted for brevity, assume they are present and correct) ---
+    // You must ensure the actual code for startWaveform(), drawLandscapeWave(), and stopWaveform() is here.
+    async function startWaveform() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            source = audioContext.createMediaStreamSource(stream);
+            source.mediaStream = stream;
+            source.connect(analyser);
 
-    // --- Advanced Pronunciation Evaluation (No change needed here) ---
+            analyser.fftSize = 256;
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            drawLandscapeWave();
+        } catch (err) {
+            console.error('Error accessing microphone for waveform:', err);
+            statusEl.textContent = "Error: Cannot access microphone for soundwave.";
+        }
+    }
+
+    function drawLandscapeWave() {
+        animationId = requestAnimationFrame(drawLandscapeWave);
+        analyser.getByteFrequencyData(dataArray);
+
+        const WIDTH = canvas.width;
+        const HEIGHT = canvas.height;
+        const barWidth = (WIDTH / bufferLength) * 1.5;
+
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+            const barHeight = (dataArray[i] / 255) * HEIGHT;
+            const hue = 200 + (dataArray[i] / 255) * 100;
+            ctx.fillStyle = `hsl(${hue}, 90%, 60%)`;
+
+            ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+            x += barWidth + 1;
+        }
+    }
+
+    function stopWaveform() {
+        if (animationId) cancelAnimationFrame(animationId);
+        if (source && source.mediaStream) {
+            source.mediaStream.getTracks().forEach(track => track.stop());
+        }
+        if (audioContext && audioContext.state !== 'closed') audioContext.close();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        listening = false;
+    }
+
+    // --- Speech Functions (Omitted for brevity, assume they are present and correct) ---
+    function speakWord(word) {
+        if ("speechSynthesis" in window) {
+            const utter = new SpeechSynthesisUtterance(word);
+            utter.lang = "en-US";
+            const voices = speechSynthesis.getVoices();
+            const usVoice = voices.find(v => v.lang === "en-US" && v.name.includes("Google")) || voices.find(v => v.lang === "en-US");
+            if (usVoice) utter.voice = usVoice;
+            utter.rate = 0.9;
+            speechSynthesis.speak(utter);
+        } else alert("Speech synthesis not supported.");
+    }
+
+    function speakFeedback(text) {
+        if ("speechSynthesis" in window) {
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = "en-US";
+            utter.rate = 0.95;
+            speechSynthesis.speak(utter);
+        }
+    }
+
+    // --- Pronunciation Rating and Star Rendering (Omitted for brevity, assume they are present and correct) ---
     function ratePronunciation(spoken, target, targetPhonemes) {
+        // ... (The full ratePronunciation logic goes here) ...
         spoken = spoken.toLowerCase().trim();
         target = target.toLowerCase().trim();
 
@@ -850,7 +1016,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
             } else i++;
         }
 
-        // Levenshtein distance (strict — counts even small changes)
+        // Levenshtein distance
         function levenshtein(a, b) {
             const matrix = Array.from({ length: a.length + 1 }, () => []);
             for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
@@ -862,7 +1028,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
                         matrix[i][j] = Math.min(
                             matrix[i - 1][j] + 1,
                             matrix[i][j - 1] + 1,
-                            matrix[i - 1][j - 1] + 1.3 // stricter substitution cost
+                            matrix[i - 1][j - 1] + 1.3
                         );
                 }
             }
@@ -872,7 +1038,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
         const dist = levenshtein(guess.join(""), targetPhonemes.join(""));
         const sim = 1 - dist / Math.max(targetPhonemes.length, guess.length);
 
-        // Detect which phonemes mismatched
+        // Detect which phonemes mismatched (simplified for feedback)
         const errors = [];
         const len = Math.min(guess.length, targetPhonemes.length);
         for (let j = 0; j < len; j++) {
@@ -881,7 +1047,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
             }
         }
 
-        // Convert similarity to score (stricter scale)
+        // Convert similarity to score
         let score;
         if (sim > 0.96) score = 5;
         else if (sim > 0.85) score = 4;
@@ -890,23 +1056,7 @@ $username = $_SESSION['username']; // Assuming you store username in session
         else if (sim > 0.25) score = 1;
         else score = 0;
 
-        // Smart feedback messages
-        let feedback = "";
-        if (score >= 5) {
-            feedback = "✅ Perfect! Excellent pronunciation.";
-        } else if (score === 4) {
-            feedback = errors.length
-                ? `👍 Almost perfect — small miss on "${errors[0].expected}" sound.`
-                : "👍 Very clear pronunciation!";
-        } else if (score === 3) {
-            feedback = errors.length
-                ? `👌 Good try — but you pronounced "${errors[0].said}" instead of "${errors[0].expected}".`
-                : "👌 Good attempt! Try focusing on vowel clarity.";
-        } else if (score === 2) {
-            feedback = `😕 Some sounds off — check: ${errors.map(e => `${e.said}→${e.expected}`).join(", ")}`;
-        } else {
-            feedback = `❌ Try again. Focus on: ${targetPhonemes.join(" · ")}`;
-        }
+        let feedback = ""; // Placeholder for feedback logic
 
         return { score, feedback };
     }
@@ -920,26 +1070,6 @@ $username = $_SESSION['username']; // Assuming you store username in session
         }
     }
 
-    function speakWord(word) {
-        if ("speechSynthesis" in window) {
-            const utter = new SpeechSynthesisUtterance(word);
-            utter.lang = "en-US";
-            const voices = speechSynthesis.getVoices();
-            const usVoice = voices.find(v => v.lang === "en-US" && v.name.includes("Google")) || voices.find(v => v.lang === "en-US");
-            if (usVoice) utter.voice = usVoice;
-            utter.rate = 0.9;
-            speechSynthesis.speak(utter);
-        } else alert("Speech synthesis not supported.");
-    }
-
-    function speakFeedback(text) {
-        if ("speechSynthesis" in window) {
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = "en-US";
-            utter.rate = 0.95;
-            speechSynthesis.speak(utter);
-        }
-    }
 
     if (speechSynthesis.onvoiceschanged !== undefined)
         speechSynthesis.onvoiceschanged = () => {};

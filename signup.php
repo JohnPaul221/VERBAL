@@ -5,8 +5,11 @@ session_start();
 $message = '';
 $message_type = '';
 
-// ⚠️ IMPORTANT: Update this path if needed
-require_once "config/database.php"; // your DB config
+// ⚠️ IMPORTANT: The database.php file is assumed to successfully create a PDO object named $pdo
+require_once "config/database.php";
+
+// 🔥 Get the PDO connection object (from database.php)
+global $pdo;
 
 // --- CONSTANT FOR PASSWORD LENGTH VALIDATION ---
 const MIN_PASSWORD_LENGTH = 8;
@@ -28,40 +31,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "❌ Your password must be at least " . MIN_PASSWORD_LENGTH . " characters long.";
         $message_type = 'error';
     } else {
-        // --- VULNERABLE SIGNUP: Storing PLAIN TEXT password (INSECURE!) ---
-        // $hashedPassword = password_hash($password, PASSWORD_DEFAULT); // <-- SECURE WAY
-        $hashedPassword = $password; // <-- MODIFIED: Using PLAIN TEXT password
+        // ❌ SECURITY REMOVAL: The password hashing function has been removed.
+        // The password will now be stored as plain text. (INSECURE)
+        $hashedPassword = $password;
 
         try {
-            if ($role === "student") {
-                // SQL: fullname, username, grade, section, password (5 columns)
-                $stmt = $conn->prepare("INSERT INTO students (fullname, username, grade, section, password) VALUES (?, ?, ?, ?, ?)");
-                // BIND PARAM: 5 parameters
-                $stmt->bind_param("sssss", $fullname, $username, $grade, $section, $hashedPassword);
-            } else {
-                // SQL for Teacher
-                $stmt = $conn->prepare("INSERT INTO teachers (fullname, username, grade, section, password) VALUES (?, ?, ?, ?, ?)");
-                // BIND PARAM: 5 parameters
-                $stmt->bind_param("sssss", $fullname, $username, $grade, $section, $hashedPassword);
-            }
+            $table = ($role === "student") ? "students" : "teachers";
 
-            if ($stmt->execute()) {
-                $message = "✅ **$role** registered successfully! You can now log in with the password you created.";
+            // SQL: fullname, username, grade, section, password (5 columns)
+            $sql = "INSERT INTO {$table} (fullname, username, grade, section, password) VALUES (?, ?, ?, ?, ?)";
+
+            // 🔥 FIX: Use $pdo->prepare() instead of $conn->prepare()
+            $stmt = $pdo->prepare($sql);
+
+            // 🔥 FIX: PDO execute accepts an array of values, no bind_param needed
+            // The values match the positional placeholders (?) in the SQL query
+            $success = $stmt->execute([$fullname, $username, $grade, $section, $hashedPassword]);
+
+            if ($success) {
+                $message = "✅ **$role** registered successfully! You can now log in.";
                 $message_type = 'success';
-                // header("Refresh: 5; URL=login.php");
+                // Optional: Redirect after a successful signup
+                // header("Refresh: 3; URL=login.php");
             } else {
-                // Check for duplicate username
-                if ($conn->errno == 1062) {
-                    $message = "❌ Error: The username '{$username}' is already taken.";
-                } else {
-                    $message = "❌ Registration failed. Error: " . $stmt->error;
-                }
+                // This block is often redundant with PDO/try-catch, but kept for clarity
+                $message = "❌ Registration failed. A server error occurred.";
                 $message_type = 'error';
             }
 
-            $stmt->close();
-        } catch (mysqli_sql_exception $e) {
-            $message = "❌ Database Error. Check your connection or table schema. (Error: " . $e->getMessage() . ")";
+        } catch (PDOException $e) {
+            // Check for duplicate username (Error code 23000 is common for unique constraint violation)
+            if ($e->getCode() === '23000') {
+                $message = "❌ Error: The username '{$username}' is already taken.";
+            } else {
+                // Log detailed error and show generic message
+                error_log("Signup Database Error: " . $e->getMessage());
+                $message = "❌ Registration failed due to a database error. (Code: " . $e->getCode() . ")";
+            }
             $message_type = 'error';
         }
     }
@@ -85,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             --yellow-hover: #ff9f1c;
         }
 
-        /* --- Global & Background Styling --- */
+        /* --- Global & Background Styling (UNTOUCHED) --- */
         body {
             margin: 0;
             padding: 0;

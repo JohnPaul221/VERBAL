@@ -1,12 +1,15 @@
 <?php
 // 1. START THE SESSION FIRST
 // This MUST be the first line of executable code to avoid 'Undefined global variable $_SESSION' warnings.
-global $conn;
 session_start();
 
 // 2. INCLUDE THE DATABASE CONNECTION FILE
 // Corrected Path: The '../' moves up one directory level (to 'verbal/')
+// Assumes this file defines a PDO object named $pdo
 require_once '../config/database.php';
+
+// 🔥 Get the PDO connection object (from database.php)
+global $pdo;
 
 // 3. AUTHENTICATION AND REDIRECTION
 // Ensure only logged-in teachers can access this page
@@ -17,24 +20,26 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'teacher') {
 }
 
 // 4. DATABASE QUERY
-// MODIFIED: 'password' has been added to the SELECT statement.
-$sql = "SELECT fullname, username, grade, section, password FROM students ORDER BY grade, section, fullname";
-$result = $conn->query($sql);
-
 $students = [];
-// Check if the query was successful and returned rows
-if ($result && $result->num_rows > 0) {
-    // Fetch all rows into an array
-    while($row = $result->fetch_assoc()) {
-        $students[] = $row;
-    }
+try {
+    // ⚠️ CRITICAL FIX: Use $pdo (PDO) and prepared statements
+    $sql = "SELECT fullname, username, grade, section, password FROM students ORDER BY grade, section, fullname";
+
+    // Prepare and execute the query using $pdo
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+
+    // Fetch all results as an associative array
+    $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    // Log the error for debugging
+    error_log("Student Data Fetch Error: " . $e->getMessage());
+    // In a real application, you might set a user-friendly error message here
 }
 
-// 5. Close the database connection (Best practice)
-if (isset($conn)) {
-    $conn->close();
-}
-
+// 5. Database closure is automatic for PDO when the script finishes.
+// Removed the old MySQLi $conn->close(); line.
 ?>
 <!DOCTYPE html>
 <html lang="en">

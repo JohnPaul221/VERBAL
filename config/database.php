@@ -1,36 +1,29 @@
 <?php
 /**
- * Database Configuration
+ * Database Configuration using PDO (PHP Data Objects)
  */
 
-$servername = 'localhost';
-$username   = 'root';
-$password   = 'diddies4evah_31'; // Strong password - Good for security!
-$dbname     = 'verbal';
+$host = 'localhost';
+$dbname = 'verbal';
+$user = 'root';
+$pass = 'diddies4evah_31'; // Your strong password
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    // This will stop the script immediately if the connection fails
-    die('DB CONNECTION FAILED: ' . $conn->connect_error);
-}
-// ------------------------------------------------------------------
-// SUGGESTED ADDITIONS START HERE
-// ------------------------------------------------------------------
+$dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
+$options = [
+    // 🔥 FIX: Must use the PDO:: syntax for these constants
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
 
-// 1. Set Character Set: Ensures data integrity for all languages/emojis.
-// It prevents issues with special characters not displaying correctly.
-if ($conn) {
-    $conn->set_charset("utf8mb4");
-}
-
-// 2. Hide Connection Error in Production:
-// The current 'die()' exposes database details. For production, you'd hide this.
-// For example:
-/*
-if ($conn->connect_error) {
-    error_log('DB CONNECTION FAILED: ' . $conn->connect_error);
+try {
+    // The connection object $pdo is instantiated here
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    error_log('DB CONNECTION FAILED: ' . $e->getMessage());
     http_response_code(500);
-    die('An application error occurred. Please try again later.');
+    die('A critical database error occurred. Please try again later.');
 }
-*/
+
+// The variable $pdo is now available for use in login.php
 ?>

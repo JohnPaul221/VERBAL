@@ -1,10 +1,12 @@
 <?php
 // login.php
 
-global $conn;
 session_start();
 // Assumes this file is located at 'config/database.php' relative to this script
 require_once 'config/database.php';
+
+// The PDO connection object is available as $pdo from database.php
+global $pdo;
 
 $message = '';
 
@@ -13,36 +15,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password']; // PLAIN TEXT password from form
     $role     = $_POST['role'];
 
-    // 1. Select the correct table based on the role
+    $table = '';
+    // 1. Determine the correct table based on the role
     if ($role === "student") {
-        $stmt = $conn->prepare("SELECT id, username, password FROM students WHERE username = ?");
+        $table = "students";
     } elseif ($role === "teacher") {
-        $stmt = $conn->prepare("SELECT id, username, password FROM teachers WHERE username = ?");
+        $table = "teachers";
     } else {
         $message = "Invalid role selected.";
     }
 
-    if (isset($stmt)) {
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+    if (!empty($table)) {
+        try {
+            // 🔥 FIX: Use $pdo (PDO object) and prepared statements
+            $stmt = $pdo->prepare("SELECT id, username, password FROM $table WHERE username = :username");
+            $stmt->bindParam(':username', $username);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // 2. VULNERABLE LOGIN: Compare PLAIN TEXT Passwords
-        if ($user && $password === $user['password']) {
-            $_SESSION['user_id']   = $user['id'];
-            $_SESSION['username']  = $user['username'];
-            $_SESSION['role']      = $role;
+            // 2. CRITICAL FIX: Compare PLAIN TEXT Passwords directly.
+            // ⚠️ WARNING: This is INSECURE and only works because signup.php stores plain text.
+            if ($user && $password === $user['password']) {
+                $_SESSION['user_id']   = $user['id'];
+                $_SESSION['username']  = $user['username'];
+                $_SESSION['role']      = $role;
 
-            // Redirect to the appropriate dashboard
-            if ($role === "student") {
-                header("Location: student/student_dashboard.php");
-            } elseif ($role === "teacher") {
-                header("Location: teacher/teacher_dashboard.php");
+                // Redirect to the appropriate dashboard
+                if ($role === "student") {
+                    header("Location: student/student_dashboard.php");
+                } elseif ($role === "teacher") {
+                    header("Location: teacher/teacher_dashboard.php");
+                }
+                exit();
+            } else {
+                // Return the same message whether the user or password is wrong for security
+                $message = "Invalid username or password.";
             }
-            exit();
-        } else {
-            $message = "Invalid username or password.";
+        } catch (PDOException $e) {
+            // Handle query errors gracefully
+            error_log("Login Query Error: " . $e->getMessage());
+            $message = "An application error occurred. Please try again.";
         }
     }
 }
@@ -57,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* ... (Your CSS remains unchanged) ... */
         body {
             margin: 0;
             padding: 0;
@@ -335,15 +348,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const passwordInput = document.getElementById('password');
         passwordInput.type = passwordInput.type === "password" ? "text" : "password";
     }
+
+    /**
+     * Clears the username and password fields.
+     */
+    function clearLoginFields() {
+        // Clear Username input
+        document.querySelector('input[name="username"]').value = "";
+        // Clear Password input
+        document.getElementById('password').value = "";
+    }
+
     document.getElementById("studentBtn").addEventListener("click", function(){
         this.classList.add("active");
         document.getElementById("teacherBtn").classList.remove("active");
         document.getElementById("role").value = "student";
+        // Clear inputs on switch
+        clearLoginFields();
     });
+
     document.getElementById("teacherBtn").addEventListener("click", function(){
         this.classList.add("active");
         document.getElementById("studentBtn").classList.remove("active");
         document.getElementById("role").value = "teacher";
+        // Clear inputs on switch
+        clearLoginFields();
     });
 </script>
 </body>

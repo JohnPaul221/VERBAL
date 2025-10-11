@@ -3,19 +3,18 @@
 session_start();
 
 // Include the database connection setup
-// NOTE: This file now provides the connection object as $pdo, not $conn.
 require_once 'config/database.php';
 
-// Check if $pdo exists and is a PDO object (it should be, or the script would have died)
+// Check if the PDO object is available (safety check)
 if (!isset($pdo) || !($pdo instanceof PDO)) {
-    // This is a safety fallback, but should not be reached if config/database.php is working.
     die('Critical Error: Database connection object ($pdo) is missing.');
 }
 
 $leaderboardData = []; // Initialize empty array
+$db_query_error = null; // Initialize error variable
 
 try {
-    // 1. SQL Query to Calculate Total Points per Student
+    // SQL Query to Calculate Total Points per Student
     $sql = "
         SELECT
             username,
@@ -28,7 +27,6 @@ try {
             points DESC
     ";
 
-    // --- FIX APPLIED HERE: Using $pdo->query() and $pdo->fetchAll() ---
     // Execute the query using the PDO object
     $stmt = $pdo->query($sql);
 
@@ -38,11 +36,8 @@ try {
 } catch (\PDOException $e) {
     // Handle database query errors gracefully
     error_log('LEADERBOARD QUERY FAILED: ' . $e->getMessage());
-    // Provide a user-friendly error message
     $db_query_error = "An error occurred while retrieving the leaderboard data.";
 }
-
-// NOTE: With PDO, the connection does not need to be explicitly closed like with MySQLi.
 ?>
 
 <!DOCTYPE html>
@@ -52,7 +47,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V.E.R.B.A.L. Leaderboard</title>
     <style>
-        /* BASE SKY THEME STYLES */
+        /* BASE SKY THEME STYLES (Provided by user - kept for consistency) */
         body {
             margin: 0; padding: 0; height: 100vh; font-family: 'Comic Sans MS', cursive, sans-serif;
             background: linear-gradient(to bottom, #87ceeb, #ccf2ff); overflow: hidden;
@@ -195,7 +190,7 @@ try {
         <?php endif; ?>
 
         <?php
-        // 2. Loop through the fetched data and generate the table rows
+        // Loop through the fetched data and generate the table rows
         foreach ($leaderboardData as $index => $student):
             $rank = $index + 1;
             $medal = '';

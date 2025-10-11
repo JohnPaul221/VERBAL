@@ -2,7 +2,7 @@
 // Start session
 session_start();
 
-// Include the database connection setup
+// 🔥 Path adjustment assumption: leaderboard.php is in the root VERBAL/ directory.
 require_once 'config/database.php';
 
 // Check if the PDO object is available (safety check)
@@ -17,14 +17,18 @@ try {
     // SQL Query to Calculate Total Points per Student
     $sql = "
         SELECT
-            username,
-            SUM(score) AS points
+            s.username,
+            s.grade,
+            s.section,
+            COALESCE(SUM(sr.score), 0) AS points
         FROM
-            student_ratings
+            students s
+        LEFT JOIN
+            student_ratings sr ON s.username = sr.username
         GROUP BY
-            username
+            s.username, s.grade, s.section
         ORDER BY
-            points DESC
+            points DESC, s.username ASC
     ";
 
     // Execute the query using the PDO object
@@ -46,25 +50,22 @@ try {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V.E.R.B.A.L. Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* BASE SKY THEME STYLES (Provided by user - kept for consistency) */
+        /* BASE CHUNKY SKY THEME */
         body {
-            margin: 0; padding: 0; height: 100vh; font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(to bottom, #87ceeb, #ccf2ff); overflow: hidden;
+            margin: 0; padding: 0; height: 100vh;
+            font-family: 'Nunito', sans-serif; /* Changed Font */
+            background: linear-gradient(135deg, #a3b3fa 0%, #ccf2ff 100%); /* Blue/Purple Gradient */
+            overflow: hidden;
             position: relative; display: flex; justify-content: center; align-items: center;
         }
-        .cloud { position: absolute; background: #fff; border-radius: 50%; opacity: 0.9; }
-        .cloud:before, .cloud:after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
-        .cloud1 { width: 120px; height: 60px; top: 10%; animation: float 70s linear infinite; left: -200px; animation-delay: 0s; }
-        .cloud1:before { width: 60px; height: 60px; top: -30px; left: 10px; }
-        .cloud1:after { width: 80px; height: 80px; top: -40px; right: 15px; }
-        .cloud2 { width: 150px; height: 70px; top: 20%; animation: float 90s linear infinite; left: -200px; animation-delay: 45s; }
-        .cloud2:before { width: 70px; height: 70px; top: -35px; left: 20px; }
-        .cloud2:after { width: 90px; height: 90px; top: -45px; right: 25px; }
-        .cloud3 { width: 180px; height: 80px; bottom: 20%; left: -200px; animation: float 80s linear infinite; }
-        .cloud3:before { width: 90px; height: 90px; top: -45px; left: 30px; }
-        .cloud3:after { width: 110px; height: 110px; top: -55px; right: 20px; }
 
+        /* CLOUD ANIMATION (Kept existing styles) */
+        .cloud { position: absolute; background: #fff; border-radius: 50%; opacity: 0.9; }
+        .cloud1 { width: 120px; height: 60px; top: 10%; animation: float 70s linear infinite; left: -200px; animation-delay: 0s; }
+        .cloud2 { width: 150px; height: 70px; top: 20%; animation: float 90s linear infinite; left: -200px; animation-delay: 45s; }
+        .cloud3 { width: 180px; height: 80px; bottom: 20%; left: -200px; animation: float 80s linear infinite; }
         @keyframes float {
             from { transform: translateX(0); }
             to   { transform: translateX(120vw); }
@@ -79,11 +80,17 @@ try {
             to   { transform: translateY(-25px); }
         }
 
-        /* --- LEADERBOARD SPECIFIC STYLES --- */
+        /* --- LEADERBOARD CHUNKY STYLES --- */
         .leaderboard-container {
-            background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 90%; max-width: 650px;
-            text-align: center; z-index: 10; border: 5px solid #4fc3f7; animation: pop 0.8s ease;
+            background: #ffffff;
+            padding: 40px; /* Increased padding */
+            border-radius: 40px; /* CHUNKY RADIUS */
+            /* CHUNKY SHADOW */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 0 #8b99df;
+            width: 90%; max-width: 700px;
+            text-align: center; z-index: 10;
+            border: none; /* Removed hard border */
+            animation: pop 0.8s ease;
             position: relative;
         }
         @keyframes pop {
@@ -92,71 +99,119 @@ try {
         }
 
         h1 {
-            color: #01579b; font-size: 2.5em; margin-bottom: 20px;
-            text-shadow: 2px 2px 0 #ccf2ff;
+            color: #ff6f61; /* Vibrant color */
+            font-size: 3em;
+            margin-bottom: 25px;
+            text-shadow: 3px 3px 0 #ffdab9; /* Chunky shadow */
+            font-weight: 900;
         }
 
         #leaderboard {
-            width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: 20px;
+            width: 100%; border-collapse: separate; border-spacing: 0 12px; /* Increased spacing */
         }
 
         #leaderboard thead th {
-            background-color: #0288d1; color: #fff; padding: 15px 10px; font-size: 1.3em;
-            text-transform: uppercase; border-radius: 15px; box-shadow: 0 5px 0 #01579b;
+            background-color: #4a54ff; /* Deep Blue Header */
+            color: #fff;
+            padding: 18px 15px; /* Increased padding */
+            font-size: 1.2em;
+            text-transform: uppercase;
+            border-radius: 20px; /* CHUNKY RADIUS */
+            box-shadow: 0 6px 0 #0288d1; /* Stronger button-like shadow */
+            font-weight: 800;
         }
 
         #leaderboard td {
-            padding: 15px 10px; font-size: 1.1em; font-weight: bold; color: #333;
-            background-color: #e3f2fd; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 18px 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #444;
+            background-color: #e3f2fd;
+            border-radius: 18px; /* CHUNKY RADIUS */
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1); /* Soft lifted shadow */
+            transition: transform 0.2s;
+        }
+        #leaderboard tbody tr:hover td {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
         }
 
-        /* Alternating row colors for visual interest */
+        /* Alternating row colors (Subtle effect) */
         #leaderboard tbody tr:nth-child(odd) td { background-color: #ffffff; }
 
         /* Rank Column (First Cell) */
         #leaderboard tbody tr td:first-child {
-            width: 15%; text-align: center; font-size: 1.5em; background-color: #4fc3f7;
-            color: white; border-radius: 12px 0 0 12px;
+            width: 10%;
+            text-align: center;
+            font-size: 1.8em;
+            background: #60a5fa; /* Default rank color */
+            color: white;
+            border-radius: 18px 0 0 18px;
+            font-weight: 900;
         }
-        /* Name Column */
-        #leaderboard tbody tr td:nth-child(2) { text-align: left; padding-left: 25px; }
+        /* Name/Grade Column */
+        #leaderboard tbody tr td:nth-child(2) { text-align: left; padding-left: 30px; }
         /* Points Column */
-        #leaderboard tbody tr td:last-child { width: 20%; text-align: center; }
+        #leaderboard tbody tr td:last-child {
+            width: 15%;
+            text-align: center;
+            font-size: 1.5em;
+            color: #d84315; /* Score color */
+            background-color: #ffccbc; /* Light background for points */
+            border-radius: 0 18px 18px 0;
+        }
+        .grade-section {
+            font-size: 0.8em;
+            color: #777;
+            font-weight: 600;
+            display: block;
+        }
 
-        /* Top 3 Medals/Colors */
-        #leaderboard tbody tr:nth-child(1) td { background-color: #ffeb3b; color: #01579b; }
-        #leaderboard tbody tr:nth-child(1) td:first-child { background-color: #fdd835; }
-        #leaderboard tbody tr:nth-child(2) td { background-color: #b0bec5; }
-        #leaderboard tbody tr:nth-child(2) td:first-child { background-color: #90a4ae; }
-        #leaderboard tbody tr:nth-child(3) td { background-color: #ffab91; }
-        #leaderboard tbody tr:nth-child(3) td:first-child { background-color: #ff8a65; }
 
-        /* --- BACK BUTTON STYLES --- */
-        .back-button {
-            position: absolute; top: 15px; left: 15px;
-            padding: 10px 15px;
+        /* --- TOP 3 MEDALS/COLORS (Vibrant Rewards) --- */
+        /* GOLD - 1st Place */
+        #leaderboard tbody tr:nth-child(1) td { background: linear-gradient(135deg, #ffeb3b, #fdd835); color: #01579b; }
+        #leaderboard tbody tr:nth-child(1) td:first-child { background-color: #ffb300; color: #fff; }
+        #leaderboard tbody tr:nth-child(1) td:last-child { background: #ffe082; color: #d84315; }
+
+        /* SILVER - 2nd Place */
+        #leaderboard tbody tr:nth-child(2) td { background: linear-gradient(135deg, #e0e0e0, #bdbdbd); color: #333; }
+        #leaderboard tbody tr:nth-child(2) td:first-child { background-color: #9e9e9e; color: #fff; }
+        #leaderboard tbody tr:nth-child(2) td:last-child { background: #cfd8dc; color: #d84315; }
+
+        /* BRONZE - 3rd Place */
+        #leaderboard tbody tr:nth-child(3) td { background: linear-gradient(135deg, #ffcc80, #ffb74d); color: #333; }
+        #leaderboard tbody tr:nth-child(3) td:first-child { background-color: #ff9800; color: #fff; }
+        #leaderboard tbody tr:nth-child(3) td:last-child { background: #ffccbc; color: #d84315; }
+
+        /* --- BACK/LOGIN BUTTON STYLES (MATCHING CHUNKY DESIGN) --- */
+        .action-button {
+            position: absolute;
+            padding: 12px 20px;
             background-color: #0288d1;
             color: #fff;
             text-decoration: none;
-            border-radius: 15px;
+            border-radius: 20px; /* CHUNKY RADIUS */
             font-weight: bold;
-            font-size: 1em;
+            font-size: 1.1em;
             box-shadow: 0 4px 0 #01579b;
             transition: all 0.1s ease;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             z-index: 11;
         }
-        .back-button:hover {
-            background-color: #03a9f4;
-            box-shadow: 0 2px 0 #01579b;
-            transform: translateY(2px);
+        .action-button:hover { background-color: #03a9f4; }
+        .action-button:active { transform: translateY(4px); box-shadow: none; }
+
+        .back-button { top: 25px; left: 25px; } /* Positioning for Back button */
+        .teacher-login-button {
+            top: 25px; right: 25px;
+            background-color: #4CAF50; /* Green color for teacher link */
+            box-shadow: 0 4px 0 #388E3C;
         }
-        .back-button:active {
-            transform: translateY(4px);
-            box-shadow: none;
-        }
+        .teacher-login-button:hover { background-color: #66BB6A; }
+
     </style>
 </head>
 <body>
@@ -168,8 +223,12 @@ try {
 <div class="balloon">🎈</div>
 
 <div class="leaderboard-container">
-    <a href="student/student_dashboard.php" class="back-button">
-        ⬅️ Dashboard
+    <a href="student/student_dashboard.php" class="action-button back-button">
+        ⬅️ Student Dashboard
+    </a>
+
+    <a href="teacher/teacher_dashboard.php" class="action-button teacher-login-button">
+        🧑‍🏫 Teacher Login
     </a>
 
     <h1>V.E.R.B.A.L. Leaderboard</h1>
@@ -178,7 +237,7 @@ try {
         <thead>
         <tr>
             <th>Rank</th>
-            <th>Name</th>
+            <th>Player Name</th>
             <th>Points</th>
         </tr>
         </thead>
@@ -206,7 +265,10 @@ try {
             ?>
             <tr>
                 <td><?= $medal . $rank ?></td>
-                <td><?= htmlspecialchars($student['username']) ?></td>
+                <td>
+                    <?= htmlspecialchars($student['username']) ?>
+                    <span class="grade-section">(G<?= htmlspecialchars($student['grade']) ?> S<?= htmlspecialchars($student['section']) ?>)</span>
+                </td>
                 <td><?= htmlspecialchars($student['points']) ?></td>
             </tr>
         <?php endforeach;

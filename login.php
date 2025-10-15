@@ -1,22 +1,20 @@
 <?php
-// login.php
-
 session_start();
-// Assumes this file is located at 'config/database.php' relative to this script
 require_once 'config/database.php';
 
-// The PDO connection object is available as $pdo from database.php
-global $pdo;
+// Safety check for PDO connection
+if (!isset($pdo) || !($pdo instanceof PDO)) {
+    die("Database connection failed. Check config/database.php.");
+}
 
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
-    $password = $_POST['password']; // PLAIN TEXT password from form
+    $password = $_POST['password'];
     $role     = $_POST['role'];
 
     $table = '';
-    // 1. Determine the correct table based on the role
     if ($role === "student") {
         $table = "students";
     } elseif ($role === "teacher") {
@@ -27,20 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($table)) {
         try {
-            // 🔥 FIX: Use $pdo (PDO object) and prepared statements
+            // Retrieve id, username, and the PLAINTEXT password
             $stmt = $pdo->prepare("SELECT id, username, password FROM $table WHERE username = :username");
             $stmt->bindParam(':username', $username);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // 2. CRITICAL FIX: Compare PLAIN TEXT Passwords directly.
-            // ⚠️ WARNING: This is INSECURE and only works because signup.php stores plain text.
+            // **FIXED: Use PLAINTEXT comparison**
             if ($user && $password === $user['password']) {
+                // Regenerate session ID upon successful login (Security Best Practice)
+                session_regenerate_id(true);
+
                 $_SESSION['user_id']   = $user['id'];
                 $_SESSION['username']  = $user['username'];
                 $_SESSION['role']      = $role;
 
-                // Redirect to the appropriate dashboard
                 if ($role === "student") {
                     header("Location: student/student_dashboard.php");
                 } elseif ($role === "teacher") {
@@ -48,13 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 exit();
             } else {
-                // Return the same message whether the user or password is wrong for security
+                // Generic error message for security
                 $message = "Invalid username or password.";
             }
         } catch (PDOException $e) {
-            // Handle query errors gracefully
             error_log("Login Query Error: " . $e->getMessage());
-            $message = "An application error occurred. Please try again.";
+            // Hide specific database error details from the user
+            $message = "Login failed due to an application error.";
         }
     }
 }
@@ -69,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ... (Your CSS remains unchanged) ... */
         body {
             margin: 0;
             padding: 0;
@@ -79,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             overflow: hidden;
             position: relative;
         }
-        /* Clouds */
+
         .cloud {
             position: absolute;
             background: #fff;
@@ -120,7 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             to   { transform: translateX(120vw); }
         }
 
-        /* Fun extras */
         .balloon, .animal {
             position: absolute;
             animation: floatY 10s ease-in-out infinite alternate;
@@ -134,13 +131,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .b1 { top: 15%; left: 20%; }
         .b2 { bottom: 20%; right: 25%; }
 
-        /* Animals */
         .animal { font-size: 100px; }
-        .a2 { top: 30%; right: 30%; font-size: 110px; } /* Lion */
-        .a3 { top: 15%; right: 41%; font-size: 90px; }  /* Fox */
-        .a4 { bottom: 15%; left: 20%; font-size: 100px; } /* Monkey */
+        .a2 { top: 30%; right: 30%; font-size: 110px; }
+        .a3 { top: 15%; right: 41%; font-size: 90px; }
+        .a4 { bottom: 15%; left: 20%; font-size: 100px; }
 
-        /* Books image */
         .books {
             position: absolute;
             top: 50%;
@@ -150,7 +145,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: auto;
         }
 
-        /* Bag image */
         .bag {
             position: absolute;
             top: 20%;
@@ -162,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             position: absolute;
             top: 45%;
             right: -7%  ;
-            transform: translateY(-50%); /* centers vertically */
+            transform: translateY(-50%);
             width: 450px;
             height: auto;
         }
@@ -191,7 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             filter: drop-shadow(2px 0px 2px rgba(0,0,0,0.1));
         }
 
-        /* Login box */
         .container {
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
@@ -346,24 +339,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
     function togglePassword() {
         const passwordInput = document.getElementById('password');
-        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        const eyeIcon = document.querySelector('.toggle-eye i');
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = "password";
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
     }
 
-    /**
-     * Clears the username and password fields.
-     */
     function clearLoginFields() {
-        // Clear Username input
         document.querySelector('input[name="username"]').value = "";
-        // Clear Password input
         document.getElementById('password').value = "";
+        // Reset eye icon to 'show password' if you switch modes
+        document.querySelector('.toggle-eye i').classList.remove('fa-eye-slash');
+        document.querySelector('.toggle-eye i').classList.add('fa-eye');
+        document.getElementById('password').type = 'password';
     }
 
     document.getElementById("studentBtn").addEventListener("click", function(){
         this.classList.add("active");
         document.getElementById("teacherBtn").classList.remove("active");
         document.getElementById("role").value = "student";
-        // Clear inputs on switch
         clearLoginFields();
     });
 
@@ -371,7 +371,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         this.classList.add("active");
         document.getElementById("studentBtn").classList.remove("active");
         document.getElementById("role").value = "teacher";
-        // Clear inputs on switch
         clearLoginFields();
     });
 </script>

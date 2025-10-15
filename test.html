@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Management Dashboard</title>
+
+    <style>
+        /* --- CSS STYLES --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        h1 {
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+
+        #controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        #sectionNameInput, #controls button {
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        #sectionNameInput {
+            border: 1px solid #ced4da;
+            width: 250px;
+        }
+
+        #controls button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border: none;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #controls button:hover {
+            background-color: #218838;
+        }
+
+        .placeholder-text {
+            font-style: italic;
+            color: #6c757d;
+            padding: 20px;
+        }
+
+        /* --- Section/Folder Styling --- */
+        #dashboardArea {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        .section-folder {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            width: 320px;
+            min-height: 250px;
+            padding: 15px;
+            transition: transform 0.2s;
+        }
+
+        .section-folder:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .folder-header {
+            background-color: #ffc107;
+            color: #343a40;
+            padding: 10px 15px;
+            margin: -15px -15px 15px -15px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-weight: bold;
+            font-size: 1.3em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-folder-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 1.5em;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .delete-folder-btn:hover {
+            color: #a8000b;
+        }
+
+        .student-list {
+            list-style: none;
+            padding: 0;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .student-item {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+        }
+
+        .student-item button {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            line-height: 1;
+        }
+
+        .add-student-controls {
+            padding-top: 15px;
+            border-top: 1px dashed #ced4da;
+            display: flex;
+            gap: 5px;
+        }
+
+        .add-student-controls input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        .add-student-controls button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .add-student-controls button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<h1>Grade 1 Sections Dashboard 🧑‍🏫</h1>
+
+<div id="controls">
+    <input type="text" id="sectionNameInput" placeholder="Enter Section Name (e.g., 1-A)">
+    <button onclick="createSection()">Create Section Folder</button>
+</div>
+
+<hr>
+
+<div id="dashboardArea">
+    <p class="placeholder-text">Click "Create Section Folder" to begin adding your sections and students.</p>
+</div>
+
+<script>
+    /* --- JAVASCRIPT LOGIC --- */
+
+    // Function to handle the addition of a new student item to the list
+    function addStudentToSection(sectionId) {
+        const studentInput = document.getElementById(`${sectionId}-input`);
+        const studentName = studentInput.value.trim();
+        const studentList = document.getElementById(`${sectionId}-list`);
+
+        if (studentName === '') {
+            alert('Please enter a student name.');
+            return;
+        }
+
+        // Create the student list item
+        const studentItem = document.createElement('li');
+        studentItem.className = 'student-item';
+
+        // Add the student's name
+        const studentNameSpan = document.createElement('span');
+        studentNameSpan.textContent = studentName;
+
+        // Add a button to delete the student
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '×'; // Times symbol for delete
+        deleteButton.onclick = function() {
+            studentItem.remove(); // Remove the entire list item
+        };
+
+        // Append name and button to the list item
+        studentItem.appendChild(studentNameSpan);
+        studentItem.appendChild(deleteButton);
+
+        // Append the list item to the section's student list
+        studentList.appendChild(studentItem);
+
+        // Clear the input field for the next student
+        studentInput.value = '';
+        studentInput.focus();
+    }
+
+    // Function to delete the entire section folder
+    function deleteSection(folderId) {
+        if (confirm("Are you sure you want to delete this section folder and all its students?")) {
+            const folder = document.getElementById(folderId);
+            if (folder) {
+                folder.remove();
+
+                // Re-add placeholder if no folders are left
+                const dashboardArea = document.getElementById('dashboardArea');
+                if (dashboardArea.children.length === 0) {
+                    const placeholder = document.createElement('p');
+                    placeholder.className = 'placeholder-text';
+                    placeholder.textContent = 'Click "Create Section Folder" to begin adding your sections and students.';
+                    dashboardArea.appendChild(placeholder);
+                }
+            }
+        }
+    }
+
+    // Main function to create a new section folder
+    function createSection() {
+        const sectionNameInput = document.getElementById('sectionNameInput');
+        const sectionName = sectionNameInput.value.trim();
+        const dashboardArea = document.getElementById('dashboardArea');
+
+        if (sectionName === '') {
+            alert('Please enter a section name (e.g., 1-A).');
+            return;
+        }
+
+        // Use a timestamp for a unique folder ID
+        const folderId = `section-${Date.now()}`;
+
+        // Remove placeholder text if it exists
+        const placeholder = dashboardArea.querySelector('.placeholder-text');
+        if (placeholder) {
+            placeholder.remove();
+        }
+
+        // 1. Create the main folder structure (Div, Header, List Container)
+        const folder = document.createElement('div');
+        folder.className = 'section-folder';
+        folder.id = folderId;
+
+        // 2. Create the Folder Header
+        const header = document.createElement('div');
+        header.className = 'folder-header';
+
+        const headerTitle = document.createElement('span');
+        headerTitle.textContent = `Section: ${sectionName}`;
+
+        // Delete button for the folder
+        const deleteFolderButton = document.createElement('button');
+        deleteFolderButton.className = 'delete-folder-btn';
+        deleteFolderButton.textContent = '⊗';
+        deleteFolderButton.onclick = () => deleteSection(folderId);
+
+        header.appendChild(headerTitle);
+        header.appendChild(deleteFolderButton);
+
+        // 3. Create the Student List (UL)
+        const studentList = document.createElement('ul');
+        studentList.className = 'student-list';
+        studentList.id = `${folderId}-list`;
+
+        // 4. Create Student Addition Controls
+        const addControls = document.createElement('div');
+        addControls.className = 'add-student-controls';
+
+        const studentInput = document.createElement('input');
+        studentInput.type = 'text';
+        studentInput.placeholder = 'Student Name';
+        studentInput.id = `${folderId}-input`;
+
+        const addButton = document.createElement('button');
+        addButton.textContent = 'Add';
+        // Use an anonymous function to pass the unique folderId to the handler
+        addButton.onclick = () => addStudentToSection(folderId);
+
+        // Allow adding a student by pressing the Enter key
+        studentInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                addStudentToSection(folderId);
+            }
+        });
+
+        // Assemble the add controls
+        addControls.appendChild(studentInput);
+        addControls.appendChild(addButton);
+
+        // 5. Assemble the entire folder
+        folder.appendChild(header);
+        folder.appendChild(studentList);
+        folder.appendChild(addControls);
+
+        // Add the new folder to the dashboard area
+        dashboardArea.appendChild(folder);
+
+        // Clear the main input and focus on the new section's input for quick adding
+        sectionNameInput.value = '';
+        studentInput.focus();
+    }
+</script>
+</body>
+</html>

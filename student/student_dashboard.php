@@ -1,72 +1,90 @@
 <?php
 session_start();
-// 🔥 Path adjusted based on your file structure:
-// From verbal/student/ to verbal/config/database.php
+// NOTE: Make sure your '../config/database.php' and other required files exist.
 require_once('../config/database.php');
 
+// Security check
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
+    // Redirect to login page if not logged in as a student
     header("Location: ../login.php");
     exit();
 }
 
-// Extract necessary session data for AJAX call
 $student_id = $_SESSION['user_id'];
 $username = $_SESSION['username'];
+
+// **********************************************
+// >>> PHP LOGIC FOR WELCOME VOICE CONTROL <<<
+// The voice will now play on EVERY successful login load.
+// **********************************************
+
+// Set to true so the voice is always attempted on this page load.
+$play_welcome_voice = true;
+
+// **********************************************
+// >>> END PHP LOGIC <<<
+// **********************************************
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Awesome Word Reader! 🗣️</title>
+    <title>VERBAL PRACTICE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- GENERAL CHILD-FRIENDLY STYLES (SLIGHTLY REDUCED) --- */
+        /* CSS is omitted for brevity, but remains the same as your original code */
         body {
             min-height: 100vh;
-            /* MODIFIED BACKGROUND FOR SKY BLUE */
-            background: linear-gradient(135deg, #87CEEB 0%, #E0F2F7 100%); /* Sky Blue to Very Light Blue */
+            background: linear-gradient(135deg, #87CEEB 0%, #E0F2F7 100%);
             font-family: "Comic Sans MS", "Poppins", sans-serif;
-            /* Reduced padding */
             padding: 10px;
-            color: #1e3a8a; /* Deep blue text */
-            /* 🔥 FIX: Prevent vertical scrolling 🔥 */
+            color: #1e3a8a;
             overflow-y: hidden;
         }
         h2 {
-            color: #1e40af; /* Darker Blue Heading */
-            /* Reduced size */
+            color: #1e40af;
             font-size: 1.8rem;
-            margin-bottom: 8px; /* Reduced margin */
-            border-bottom: 3px solid #63b3ed; /* Adjusted underline color for blue scheme */
+            margin-bottom: 8px;
+            border-bottom: 3px solid #63b3ed;
             padding-bottom: 3px;
         }
-
         h3 {
             color: #1e40af;
-            /* Reduced size */
-            font-size: 1.3rem; /* Further reduced */
-            margin-top: 5px; /* Reduced margin */
-            margin-bottom: 3px; /* Reduced margin */
+            font-size: 1.3rem;
+            margin-top: 5px;
+            margin-bottom: 3px;
         }
-
-        /* --- LOGOUT BUTTON STYLES (NEW) --- */
         .page-header {
             text-align: center;
-            position: relative; /* Allows child elements to be positioned absolutely */
+            position: relative;
             padding: 10px 0;
-            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-
+        #usernameDisplay {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #1e40af;
+            background: #e0f2fe;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 2px solid #60a5fa;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         #logoutBtn {
             position: absolute;
-            top: 5px; /* Adjusted positioning */
-            right: 15px; /* Keep it away from the edge */
+            top: 5px;
+            right: 15px;
             padding: 6px 12px;
             font-size: 0.9rem;
             font-weight: 600;
-            background: #fca5a5; /* Light red/pink */
-            color: #7f1d1d; /* Dark red text */
+            background: #fca5a5;
+            color: #7f1d1d;
             border: 2px solid #ef4444;
             box-shadow: 0 3px #b91c1c;
             border-radius: 8px;
@@ -80,21 +98,13 @@ $username = $_SESSION['username'];
             box-shadow: 0 1px #b91c1c;
             transform: translateY(2px);
         }
-        /* --- END LOGOUT BUTTON STYLES --- */
-
-
-        /* --- MAIN LAYOUT (TIGHTER AND NARROWER) --- */
         .main-container {
-            /* Width set to 75% of viewport width */
+            /* === ADJUSTED: Increased max-width for the whole container (kept at 75vw) === */
             max-width: 75vw;
-            /* 20px top margin to move it down, auto for horizontal centering */
-            margin: 0px auto 0 auto; /* Removed top margin, relying on header padding */
-
-            /* ADJUSTED HEIGHT: Set min-height to 82vh */
+            margin: 0px auto 0 auto;
             min-height: 82vh;
-
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 15px;
             background: #ffffff;
             border-radius: 15px;
@@ -102,40 +112,49 @@ $username = $_SESSION['username'];
             box-shadow: 0 5px 15px rgba(0,0,0,0.15);
             border: 3px solid #60a5fa;
         }
-
         .section {
-            flex: 1;
-            /* Min width set for proportional scaling */
-            min-width: 45%;
-            padding: 10px; /* Base section padding */
+            padding: 10px;
             border-radius: 10px;
             background-color: #f7fbff;
-
-            /* ADJUSTED MAX-HEIGHT: Calculate height based on new 82vh container height minus padding */
-            max-height: calc(82vh - 30px); /* 82vh minus main-container top/bottom padding (15px * 2) */
-
+            max-height: calc(82vh - 30px);
             overflow-y: auto;
         }
-
-        /* TIGHTENING THE WORD READING SECTION */
-        .section:nth-child(3) {
-            padding: 8px;
+        /* --- START ADJUSTED FLEX LAYOUT FOR 75VW (MODIFIED AGAIN) --- */
+        .section:nth-child(1) {
+            /* Controls/Mic Section: INCREASED SIZE to 30% */
+            flex: 0 0 30%;
+            min-width: 280px;
+            max-width: 400px;
         }
-
+        .section:nth-child(2) {
+            /* Word/Feedback Section: Flexibly takes the largest space */
+            flex: 1 1 40%;
+            min-width: 350px;
+        }
+        .history-section {
+            /* History Section: Explicitly set to take 20% (slightly smaller) */
+            flex: 0 0 20%;
+            min-width: 140px;
+            max-width: 220px;
+            /* Original styling kept below */
+            padding: 12px 8px;
+            border-radius: 10px;
+            background-color: #f7fbff;
+            max-height: calc(82vh - 30px);
+            overflow-y: auto;
+            border: 2px solid #63b3ed;
+        }
+        /* --- END ADJUSTED FLEX LAYOUT FOR 75VW (MODIFIED AGAIN) --- */
         .divider {
             width: 3px;
             background: #60a5fa;
             border-radius: 3px;
         }
-
-        /* --- ELEMENTS --- */
-
-        /* Progress Bar (Smaller) */
         .progress-bar {
             height: 15px;
             background: #e0f7ff;
             border-radius: 9999px;
-            margin-bottom: 10px; /* Reduced margin */
+            margin-bottom: 10px;
             overflow: hidden;
             border: 1px solid #3b82f6;
         }
@@ -145,12 +164,10 @@ $username = $_SESSION['username'];
             border-radius: 9999px;
             transition: width 0.5s ease-in-out;
         }
-
-        /* Dropdown/Select */
         #difficulty {
             width: 100%;
-            padding: 8px; /* Reduced padding */
-            margin-bottom: 8px; /* Reduced margin */
+            padding: 8px;
+            margin-bottom: 8px;
             border: 2px solid #60a5fa;
             border-radius: 10px;
             font-size: 1rem;
@@ -161,43 +178,32 @@ $username = $_SESSION['username'];
             background-position: right 10px center;
             background-size: 12px;
         }
-
-        /* --- WORD DISPLAY (MADE SMALLER) --- */
         .reading-material {
-            /* Adjusted color from yellow to a light blue/green for better contrast */
             background: #b2ebf2;
             padding: 8px;
             border-radius: 10px;
             margin-bottom: 6px;
-            /* Adjusted border color */
             border: 2px dashed #00bcd4;
         }
-
         #wordDisplay {
             font-size: 2.2rem;
             text-align: center;
             font-weight: 900;
-            /* Adjusted color */
             color: #00838f;
             padding: 3px 0;
             text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.9);
         }
-
         #phonemeDisplay {
             font-size: 1.0rem;
             color: #6b7280;
             text-align: center;
             margin-top: 3px;
         }
-
-        /* Target the button specifically inside the reading material for smaller size */
         .reading-material button {
             padding: 6px 12px;
             font-size: 0.9rem;
             border-radius: 20px;
         }
-
-        /* --- BUTTONS (SMALLER GENERAL) --- */
         button {
             padding: 8px 16px;
             border-radius: 20px;
@@ -209,32 +215,26 @@ $username = $_SESSION['username'];
             box-shadow: 0 3px #4b5563;
             margin: 3px;
         }
-        /* Override for mic/next/leaderboard buttons */
         #nextBtn, #playFeedbackBtn, #leaderboardBtn {
             padding: 8px 16px;
             font-size: 1rem;
         }
-
         button:active {
             box-shadow: 0 1px #4b5563;
             transform: translateY(2px);
         }
-
         .btn-primary {
             background: #ef4444;
             color: #fff;
             box-shadow: 0 3px #b91c1c;
         }
         .btn-primary:hover { background: #f87171; }
-
         .btn-secondary {
             background: #3b82f6;
             color: #fff;
             box-shadow: 0 3px #1d4ed8;
         }
         .btn-secondary:hover { background: #60a5fa; }
-
-        /* --- MIC & WAVEFORM (SMALLER) --- */
         .mic-container { width: 90px; height: 90px; margin: 10px auto; }
         .mic-icon {
             width: 100%; height: 100%;
@@ -246,7 +246,6 @@ $username = $_SESSION['username'];
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            /* Adjusted border color for blue scheme */
             border: 4px solid #63b3ed;
         }
         .mic-icon.listening {
@@ -258,7 +257,6 @@ $username = $_SESSION['username'];
             70% { transform: scale(1.1); box-shadow: 0 0 0 25px rgba(239, 68, 68, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
-
         .status {
             font-size: 1.1rem;
             margin-bottom: 8px;
@@ -266,7 +264,6 @@ $username = $_SESSION['username'];
             text-align: center;
             font-weight: bold;
         }
-
         .waveform {
             height: 80px;
             border-radius: 10px;
@@ -275,14 +272,11 @@ $username = $_SESSION['username'];
             margin-bottom: 8px;
             position: relative;
         }
-
         #waveformCanvas {
             width: 100%;
             height: 100%;
             display: block;
         }
-
-        /* --- RESULTS & FEEDBACK (SMALLER) --- */
         .transcript {
             font-size: 1.2rem;
             font-weight: bold;
@@ -294,7 +288,6 @@ $username = $_SESSION['username'];
             background-color: #ecfdf5;
             border: 2px solid #34d399;
         }
-
         .rating-container {
             display: flex;
             justify-content: center;
@@ -305,12 +298,21 @@ $username = $_SESSION['username'];
         .rating {
             font-size: 2rem;
             font-weight: 900;
-            /* Adjusted color from orange to yellow/gold */
             color: #FFC300;
         }
-        .star { color: #fcc43d; font-size: 1.8rem; margin: 0 3px; }
-
-        /* Specific feedback styles */
+        .star {
+            font-size: 1.8rem;
+            margin: 0 3px;
+            transition: color 0.3s ease;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .filled-star {
+            color: #FFC300;
+        }
+        .empty-star {
+            color: #ccc;
+            text-shadow: none;
+        }
         .feedback-message {
             padding: 10px;
             border-radius: 8px;
@@ -323,29 +325,22 @@ $username = $_SESSION['username'];
         .bg-blue-100 { background: #dbeafe; } .text-blue-800 { color: #1e40af; }
         .bg-red-100 { background: #fee2e2; } .text-red-800 { color: #991b1b; }
         .bg-initial-feedback { background: #f3f4f6; color: #6b7280; border: 2px dashed #d1d5db; }
-
-        /* --- SIDE-BY-SIDE LAYOUT --- */
         .feedback-scoreboard-container {
             display: flex;
             gap: 10px;
             margin-top: 10px;
             flex-wrap: wrap;
         }
-
         .feedback-container, .scoreboard-container {
-            flex: 1;
-            /* Min width slightly reduced for tighter fit */
-            min-width: 40%;
+            flex: 1 1 45%;
+            min-width: 45%;
             display: flex;
             flex-direction: column;
         }
-
         .feedback-container h3, .scoreboard-container h3 {
             margin-top: 5px;
             margin-bottom: 3px;
         }
-
-        /* Stats (Smaller) */
         .stats-container {
             background: #e0f2fe;
             padding: 10px;
@@ -363,54 +358,129 @@ $username = $_SESSION['username'];
         .stat-item .value {
             font-size: 1.8rem;
             font-weight: 900;
-            /* Adjusted color from orange to gold */
             color: #FFC300;
         }
-
-        /* Utility classes (using simple CSS) - Adjusted margins */
         .flex-center { display: flex; justify-content: center; align-items: center; }
         .flex-space-between { display: flex; justify-content: space-between; align-items: center; }
+        .mt-2 { margin-top: 4px; }
         .mt-4 { margin-top: 8px; }
         .mb-4 { margin-bottom: 8px; }
         .text-center { text-align: center; }
 
+        .history-section h2 {
+            font-size: 1.5rem;
+            color: #10b981;
+            border-bottom: 2px solid #10b981;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+        }
 
-        /* Responsive */
-        @media (max-width: 900px) {
-            /* Ensure it scales back up when the screen is very small */
+        /* === HISTORY ANIMATION & STYLING START === */
+        @keyframes starPop {
+            0% { transform: scale(0.5) translateY(10px); opacity: 0; }
+            50% { transform: scale(1.2) translateY(-5px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        #wordHistory {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: flex-start;
+            gap: 5px;
+            padding: 0;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            margin: 0;
+            padding: 3px 0;
+            border-bottom: 1px dashed #e0f2fe;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-star {
+            animation: starPop 0.5s ease-out;
+            display: inline-block;
+            margin-right: 2px;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .attempt-label {
+            font-weight: bold;
+            color: #00838f;
+            margin-right: 5px;
+            min-width: 75px;
+        }
+
+        /* === HISTORY ANIMATION & STYLING END === */
+
+        .history-message {
+            font-size: 0.9rem;
+            color: #10b981;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        @media (max-width: 1200px) {
+            body {
+                overflow-y: auto; /* Enable vertical scrolling on smaller screens */
+            }
             .main-container {
-                max-width: 100%;
+                max-width: 98vw;
+                flex-wrap: wrap;
                 flex-direction: column;
                 padding: 10px;
-                /* Restore height flexibility on small screens */
                 min-height: calc(100vh - 20px);
             }
-            .section {
-                /* Restore max-height flexibility on small screens */
+            .section, .history-section {
+                flex: 1 1 100%;
                 max-height: none;
                 overflow-y: visible;
+                min-width: 100%; /* Important for stack mode */
             }
-            .divider { display: none; }
-            /* Adjusted mobile font sizes to match new small desktop sizes */
-            h1 { font-size: 2.5rem; }
-            .rating { font-size: 2rem; }
-            #wordDisplay { font-size: 3rem; }
+            /* Remove fixed widths in stacked layout */
+            .section:nth-child(1), .section:nth-child(2) {
+                min-width: 100%;
+                max-width: 100%;
+                flex: 1 1 100%;
+            }
 
-            /* Full width for side-by-side containers on small screens */
+            .divider { display: none; }
+            .history-section { order: 4; }
+            .section:nth-child(1) { order: 1; }
+            .section:nth-child(2) { order: 2; }
+
+            .feedback-scoreboard-container { flex-direction: column; } /* Stacks score/feedback */
             .feedback-container, .scoreboard-container {
+                flex: 1 1 100%; /* Take full width when stacked */
                 min-width: 100%;
             }
-            .feedback-scoreboard-container {
-                flex-direction: column; /* Stack vertically on small screens */
-            }
-            .stats-container {
-                grid-template-columns: 1fr 1fr; /* Revert to 2 columns for stats inside on mobile */
-            }
+
+            .stats-container { grid-template-columns: 1fr 1fr; }
             #logoutBtn {
-                position: static; /* Let it flow normally */
+                position: static;
                 margin: 10px auto;
                 display: block;
                 width: 90%;
+            }
+            #usernameDisplay {
+                position: static;
+                margin: 10px auto;
+                display: block;
+                width: 90%;
+                text-align: center;
+            }
+            .page-header {
+                flex-direction: column;
             }
         }
     </style>
@@ -418,6 +488,7 @@ $username = $_SESSION['username'];
 
 <body>
 <header class="page-header">
+    <?php echo '<span id="usernameDisplay">Hello, ' . htmlspecialchars($username) . '!</span>'; ?>
     <button id="logoutBtn" onclick="window.location.href='../login.php';">
         <i class="fa-solid fa-right-from-bracket"></i> Logout
     </button>
@@ -430,7 +501,7 @@ $username = $_SESSION['username'];
 
             <div class="flex-space-between mb-4">
                 <div>Level: <span id="levelDisplay" style="font-weight: bold; color: #10b981;">Beginner</span></div>
-                <div>Word: <span id="progressText" style="font-weight: bold; color: #10b981;">0 / 10</span></div>
+                <div>Word: <span id="progressText" style="font-weight: bold; color: #10b981;">0 / 5</span></div>
             </div>
 
             <div class="progress-bar">
@@ -489,7 +560,8 @@ $username = $_SESSION['username'];
 
             <div class="feedback-scoreboard-container">
                 <div class="feedback-container">
-                    <h3>Example Sentence! 📝</h3> <div id="feedbackMessage" class="feedback-message bg-initial-feedback">
+                    <h3>Example Sentence! 📝</h3>
+                    <div id="feedbackMessage" class="feedback-message bg-initial-feedback">
                         Practice sentence will appear here when you start.
                     </div>
                     <div class="flex-center mt-4">
@@ -515,17 +587,30 @@ $username = $_SESSION['username'];
                 </div>
             </div>
         </div>
+
+        <div class="divider"></div>
+
+        <div class="history-section">
+            <h2>Attempts History</h2>
+            <div id="wordHistory">No attempts yet.</div>
+            <div id="historyMessage" class="history-message"></div>
+        </div>
+
     </div>
 </main>
 </body>
 </html>
 <script>
-    // PHP variables made available to JavaScript
     const STUDENT_ID = <?php echo json_encode($student_id); ?>;
     const USERNAME = <?php echo json_encode($username); ?>;
+    // ****************************************************
+    // >>> JAVASCRIPT CONSTANT CONTROLLED BY PHP SESSION FLAG <<<
+    // This is now set to true to play the voice on every load.
+    // ****************************************************
+    const PLAY_WELCOME_VOICE = <?php echo json_encode($play_welcome_voice); ?>;
+    // ****************************************************
 
     const wordBank = {
-        // All lists are 10 words, matching the desired progress count.
         beginner: [
             { word: "cat", phonemes: ["k","æ","t"], example:"The cat sat on the mat." },
             { word: "dog", phonemes: ["d","ɔ","g"], example:"The dog barked loudly." },
@@ -536,7 +621,27 @@ $username = $_SESSION['username'];
             { word: "hat", phonemes: ["h","æ","t"], example:"He wears a hat." },
             { word: "tree", phonemes: ["t","ɹ","iː"], example:"The tree is tall." },
             { word: "cup", phonemes: ["k","ʌ","p"], example:"The cup is full." },
-            { word: "ball", phonemes: ["b","ɔ","l"], example:"The ball rolled away." }
+            { word: "ball", phonemes: ["b","ɔ","l"], example:"The ball rolled away." },
+            { word: "bus", phonemes: ["b","ʌ","s"], example:"We took the bus to the city." },
+            { word: "car", phonemes: ["k","ɑː","ɹ"], example:"His car is red." },
+            { word: "bed", phonemes: ["b","ɛ","d"], example:"I am tired, I need to go to bed." },
+            { word: "box", phonemes: ["b","ɑ","k","s"], example:"Put the toys in the box." },
+            { word: "pig", phonemes: ["p","ɪ","g"], example:"The pig is in the mud." },
+            { word: "leg", phonemes: ["l","ɛ","g"], example:"She hurt her leg." },
+            { word: "run", phonemes: ["ɹ","ʌ","n"], example:"Can you run fast?" },
+            { word: "fly", phonemes: ["f","l","aɪ"], example:"A bird can fly." },
+            { word: "toy", phonemes: ["t","ɔɪ"], example:"He plays with a toy." },
+            { word: "shoe", phonemes: ["ʃ","uː"], example:"Tie your shoe." },
+            { word: "milk", phonemes: ["m","ɪ","l","k"], example:"I drink milk every day." },
+            { word: "eat", phonemes: ["iː","t"], example:"Let's eat dinner." },
+            { word: "cry", phonemes: ["k","ɹ","aɪ"], example:"The baby started to cry." },
+            { word: "wet", phonemes: ["w","ɛ","t"], example:"The towel is wet." },
+            { word: "new", phonemes: ["n","uː"], example:"I got a new jacket." },
+            { word: "big", phonemes: ["b","ɪ","g"], example:"That is a big house." },
+            { word: "low", phonemes: ["l","oʊ"], example:"The shelf is very low." },
+            { word: "door", phonemes: ["d","ɔː","ɹ"], example:"Close the door." },
+            { word: "cake", phonemes: ["k","eɪ","k"], example:"I like chocolate cake." },
+            { word: "ring", phonemes: ["ɹ","ɪ","ŋ"], example:"She wears a gold ring." }
         ],
         intermediate: [
             { word: "orange", phonemes: ["ɔ","ɹ","ɪ","n","dʒ"], example:"I ate an orange for breakfast." },
@@ -548,7 +653,27 @@ $username = $_SESSION['username'];
             { word: "family", phonemes: ["f","æ","m","l","i"], example:"My family is big." },
             { word: "doctor", phonemes: ["d","ɑ","k","t","ɚ"], example:"The doctor is kind." },
             { word: "animal", phonemes: ["æ","n","ɪ","m","əl"], example:"The zoo has many animals." },
-            { word: "happy", phonemes: ["h","æ","p","i"], example:"She feels happy today." }
+            { word: "happy", phonemes: ["h","æ","p","i"], example:"She feels happy today." },
+            { word: "computer", phonemes: ["k","əm","ˈp","juː","t","ɚ"], example:"I need a new computer for work." },
+            { word: "mountain", phonemes: ["m","aʊ","n","t","ɪ","n"], example:"We climbed the tall mountain." },
+            { word: "travel", phonemes: ["t","ɹ","æ","v","əl"], example:"I love to travel to new countries." },
+            { word: "beautiful", phonemes: ["b","juː","t","ɪ","f","əl"], example:"That is a beautiful painting." },
+            { word: "yesterday", phonemes: ["j","ɛ","s","t","ɚ","d","eɪ"], example:"I saw her yesterday morning." },
+            { word: "weather", phonemes: ["w","ɛ","ð","ɚ"], example:"The weather is sunny today." },
+            { word: "morning", phonemes: ["m","ɔː","ɹ","n","ɪŋ"], example:"I wake up early in the morning." },
+            { word: "kitchen", phonemes: ["k","ɪ","tʃ","ən"], example:"We cook meals in the kitchen." },
+            { word: "library", phonemes: ["l","aɪ","b","ɹ","ɛ","ɹ","i"], example:"I borrowed a book from the library." },
+            { word: "problem", phonemes: ["p","ɹ","ɑ","b","l","əm"], example:"We need to solve this problem." },
+            { word: "together", phonemes: ["t","ə","g","ɛ","ð","ɚ"], example:"Let's work on this together." },
+            { word: "listen", phonemes: ["l","ɪ","s","ən"], example:"Please listen to the teacher." },
+            { word: "building", phonemes: ["b","ɪ","l","d","ɪŋ"], example:"That is the tallest building in the city." },
+            { word: "street", phonemes: ["s","t","ɹ","iː","t"], example:"The store is across the street." },
+            { word: "country", phonemes: ["k","ʌ","n","t","ɹ","i"], example:"Which country are you from?" },
+            { word: "special", phonemes: ["s","p","ɛ","ʃ","əl"], example:"Today is a special occasion." },
+            { word: "holiday", phonemes: ["h","ɑ","l","ɪ","d","eɪ"], example:"We are going on holiday next week." },
+            { word: "camera", phonemes: ["k","æ","m","ɹ","ə"], example:"Take a picture with your camera." },
+            { word: "office", phonemes: ["ɑ","f","ɪ","s"], example:"He works in an office downtown." },
+            { word: "hungry", phonemes: ["h","ʌ","ŋ","g","ɹ","i"], example:"I am very hungry now." }
         ],
         advanced: [
             { word: "extraordinary", phonemes: ["ɪ","k","s","t","ɹ","ɔ","ɹ","d","ɪ","n","ɛ","ɹ","i"], example:"Her talent was extraordinary." },
@@ -560,7 +685,27 @@ $username = $_SESSION['username'];
             { word: "achievement", phonemes: ["ə","tʃ","iː","v","mə","n","t"], example:"This is his greatest achievement." },
             { word: "opportunity", phonemes: ["ɑ","p","ɚ","t","uː","n","ɪ","t","i"], example:"She got a job opportunity." },
             { word: "determination", phonemes: ["d","ɪ","t","ɜː","m","ɪ","n","eɪ","ʃ","ən"], example:"His determination is strong." },
-            { word: "consequence", phonemes: ["k","ɑ","n","s","ɪ","k","w","ɛ","n","s"], example:"Every action has a consequence." }
+            { word: "consequence", phonemes: ["k","ɑ","n","s","ɪ","k","w","ɛ","n","s"], example:"Every action has a consequence." },
+            { word: "meticulous", phonemes: ["m","ɪ","ˈt","ɪ","k","j","uː","l","əs"], example:"The scientist was meticulous in his work." },
+            { word: "ubiquitous", phonemes: ["j","uː","ˈb","ɪ","k","w","ɪ","t","əs"], example:"Smartphones are now ubiquitous." },
+            { word: "paradigm", phonemes: ["p","ɛ","ɹ","ə","d","aɪ","m"], example:"A new economic paradigm is needed." },
+            { word: "benevolent", phonemes: ["b","ə","ˈn","ɛ","v","əl","ə","n","t"], example:"The benevolent king helped the poor." },
+            { word: "exacerbate", phonemes: ["ɪ","g","ˈz","æ","s","ɚ","b","eɪ","t"], example:"The lack of rain will exacerbate the water shortage." },
+            { word: "inconspicuous", phonemes: ["ɪ","n","k","ən","ˈs","p","ɪ","k","j","uː","əs"], example:"The spy tried to remain inconspicuous." },
+            { word: "verisimilitude", phonemes: ["v","ɛ","ɹ","ɪ","s","ɪ","ˈm","ɪ","l","ɪ","t","juː","d"], example:"The artist achieved great verisimilitude in the portrait." },
+            { word: "ephemeral", phonemes: ["ɪ","ˈf","ɛ","m","ə","ɹ","əl"], example:"Fame is often ephemeral." },
+            { word: "preposterous", phonemes: ["p","ɹ","ɪ","ˈp","ɑ","s","t","ɚ","əs"], example:"That is a preposterous suggestion!" },
+            { word: "indispensable", phonemes: ["ɪ","n","d","ɪ","ˈs","p","ɛ","n","s","ə","b","əl"], example:"A good dictionary is an indispensable tool." },
+            { word: "disseminate", phonemes: ["d","ɪ","ˈs","ɛ","m","ɪ","n","eɪ","t"], example:"They need to disseminate the information quickly." },
+            { word: "recalcitrant", phonemes: ["ɹ","ɪ","ˈk","æ","l","s","ɪ","t","ɹ","ə","n","t"], example:"The recalcitrant student refused to follow instructions." },
+            { word: "juxtaposition", phonemes: ["dʒ","ʌ","k","s","t","ə","p","ə","ˈz","ɪ","ʃ","ən"], example:"The juxtaposition of old and new architecture was striking." },
+            { word: "soliloquy", phonemes: ["s","ə","ˈl","ɪ","l","ə","k","w","i"], example:"Hamlet's famous soliloquy reveals his inner turmoil." },
+            { word: "unilateral", phonemes: ["j","uː","n","ɪ","ˈl","æ","t","ɚ","əl"], example:"The company made a unilateral decision to cut benefits." },
+            { word: "surreptitiously", phonemes: ["s","ʌ","ɹ","ə","p","ˈt","ɪ","ʃ","əs","l","i"], example:"He surreptitiously slipped the note into her hand." },
+            { word: "deleterious", phonemes: ["d","ɛ","l","ɪ","ˈt","ɪ","ɹ","i","əs"], example:"Smoking has a deleterious effect on health." },
+            { word: "capitulate", phonemes: ["k","ə","ˈp","ɪ","tʃ","ə","l","eɪ","t"], example:"The enemy refused to capitulate." },
+            { word: "conundrum", phonemes: ["k","ə","ˈn","ʌ","n","d","ɹ","əm"], example:"The question of free will remains a philosophical conundrum." },
+            { word: "epistemology", phonemes: ["ɪ","ˌp","ɪ","s","t","ə","ˈm","ɑ","l","ə","dʒ","i"], example:"Epistemology is the study of knowledge." }
         ]
     };
 
@@ -581,83 +726,233 @@ $username = $_SESSION['username'];
     const starsEl = document.getElementById("stars");
     const playWordBtn = document.getElementById("playWordBtn");
     const playFeedbackBtn = document.getElementById("playFeedbackBtn");
+    // NEW ELEMENTS
+    const wordHistoryEl = document.getElementById("wordHistory");
+    const historyMessageEl = document.getElementById("historyMessage");
 
     // waveform canvas
     const canvas = document.getElementById("waveformCanvas");
     const ctx = canvas.getContext("2d");
 
+    // NEW STATE MANAGEMENT: Stores progress for all levels
+    let allProgress = {
+        beginner: { word_index: 0, words_attempted: 0, words_correct: 0 },
+        intermediate: { word_index: 0, words_attempted: 0, words_correct: 0 },
+        advanced: { word_index: 0, words_attempted: 0, words_correct: 0 }
+    };
+    let currentDifficulty = 'beginner'; // Tracks the active difficulty
     let currentWord = null;
-    let wordsAttempted = 0, wordsCorrect = 0;
-    let currentWordIndex = 0; // CRITICAL: Progress counter for successful attempts
+    const DISPLAY_CYCLE_LENGTH = 5;
+
+    // NEW: Array to track scores for the current word
+    let wordAttemptsHistory = [];
 
     let recognition, audioContext, analyser, dataArray, bufferLength, source;
     let animationId = null;
     let listening = false;
 
-    // --- PROGRESS PERSISTENCE FUNCTIONS (New/Updated with Correct Paths) ---
+    // ---------------------------------------------------------------------------------
+    // >>> UPDATED SPEECH SYNTHESIS & WELCOME MESSAGE LOGIC (Always Plays) <<<
+    // ---------------------------------------------------------------------------------
+    let voicesLoaded = false;
+    let usEnglishVoice = null;
 
-    // Function to load the saved state when the page loads
-    function loadProgressFromDB() {
-        if (!STUDENT_ID) {
-            console.error("Student ID is missing. Cannot load progress.");
-            loadNextWord();
+    function getUsEnglishVoice() {
+        if (usEnglishVoice) return usEnglishVoice;
+
+        const voices = speechSynthesis.getVoices();
+        usEnglishVoice = voices.find(v => v.lang === "en-US" && v.name.includes("Google")) ||
+            voices.find(v => v.lang === "en-US");
+
+        return usEnglishVoice;
+    }
+
+    function speakWelcome() {
+        // Since PLAY_WELCOME_VOICE is now always true, the message will play
+        // as long as speech synthesis is ready.
+        if (!("speechSynthesis" in window)) {
+            console.warn("Speech Synthesis not supported.");
             return;
         }
 
-        // 🔥 Corrected Path: ../load_progress.php
-        fetch(`../load_progress.php?student_id=${STUDENT_ID}`)
+        const welcomeMessage = `Hello, ${USERNAME}! Welcome to Verbal Practice. Select a level and click 'Next Word' to begin.`;
+        const utter = new SpeechSynthesisUtterance(welcomeMessage);
+        utter.lang = "en-US";
+        utter.rate = 1.0;
+
+        const usVoice = getUsEnglishVoice();
+        if (usVoice) utter.voice = usVoice;
+
+        speechSynthesis.speak(utter);
+    }
+
+    if ("speechSynthesis" in window) {
+        // A. The most reliable method: Wait for the voices to signal they are loaded
+        speechSynthesis.onvoiceschanged = () => {
+            if (!voicesLoaded) { // Prevent double execution if voices are loaded fast
+                getUsEnglishVoice();
+                voicesLoaded = true;
+                console.log("SpeechSynthesis voices loaded and ready (from onvoiceschanged).");
+                if (PLAY_WELCOME_VOICE) speakWelcome(); // Check the flag before playing
+            }
+        };
+
+        // B. Fallback for browsers where voices load immediately: Check on load
+        if (speechSynthesis.getVoices().length > 0) {
+            if (!voicesLoaded) {
+                getUsEnglishVoice();
+                voicesLoaded = true;
+                console.log("SpeechSynthesis voices loaded and ready (from initial check).");
+                if (PLAY_WELCOME_VOICE) speakWelcome(); // Check the flag before playing
+            }
+        }
+    }
+    // ---------------------------------------------------------------------------------
+    // >>> END UPDATED SPEECH SYNTHESIS & WELCOME MESSAGE LOGIC <<<
+    // ---------------------------------------------------------------------------------
+
+
+    // =================================================================================
+    // >>> MODIFIED: Function to render the word attempts history (with attempt label & 5 stars)
+    // =================================================================================
+    function renderWordHistory() {
+        if (!currentWord) return;
+
+        if (wordAttemptsHistory.length === 0) {
+            wordHistoryEl.innerHTML = `No attempts yet for <b>${currentWord.word.toUpperCase()}</b>.`;
+            historyMessageEl.textContent = "";
+            return;
+        }
+
+        wordHistoryEl.innerHTML = "";
+
+        // Creates a copy and reverses it so the newest attempt appears first.
+        const reversedHistory = [...wordAttemptsHistory].reverse();
+        const totalAttempts = wordAttemptsHistory.length;
+
+        reversedHistory.forEach((score, index) => {
+            const item = document.createElement("span");
+            item.className = `history-item`;
+
+            // Calculate the attempt number
+            const attemptNumber = totalAttempts - index;
+
+            // 1. Add the attempt number label
+            const attemptLabel = document.createElement("span");
+            attemptLabel.className = "attempt-label";
+            attemptLabel.textContent = `Attempt ${attemptNumber}:`;
+            item.appendChild(attemptLabel);
+
+            // 2. Generate the star icons (5 total)
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement("i");
+                star.className = "fa-star fa-solid star";
+
+                // Determine if the star should be filled or empty
+                if (i <= score) {
+                    star.classList.add("filled-star");
+                } else {
+                    star.classList.add("empty-star");
+                }
+
+                // Apply a slight delay for the animation
+                star.style.animationDelay = `${(i - 1) * 0.1}s`;
+
+                item.appendChild(star);
+            }
+
+            wordHistoryEl.appendChild(item);
+        });
+
+        // Logic for the 5-star success message
+        if (wordAttemptsHistory.includes(5)) {
+            historyMessageEl.textContent = `✅ Great! You achieved 5 stars for "${currentWord.word.toUpperCase()}"!`;
+            historyMessageEl.style.color = "#10b981";
+        } else {
+            historyMessageEl.textContent = `Keep going! Aim for a 5-star score.`;
+            historyMessageEl.style.color = "#1e40af";
+        }
+    }
+    // =================================================================================
+    // >>> END MODIFIED renderWordHistory
+    // =================================================================================
+
+    // MODIFIED: Function to update UI from the current progress state
+    function updateUIFromProgress() {
+        const progress = allProgress[currentDifficulty];
+        const wordListLength = wordBank[currentDifficulty].length;
+
+        attemptedCount.textContent = progress.words_attempted;
+        const accuracy = progress.words_attempted > 0 ? Math.round((progress.words_correct / progress.words_attempted) * 100) : 0;
+        accuracyRate.textContent = accuracy + "%";
+
+        levelDisplay.textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1);
+
+        // --- PROGRESS BAR LOGIC MODIFICATION ---
+        const currentProgress = progress.words_correct % DISPLAY_CYCLE_LENGTH;
+        const displayCount = currentProgress === 0 && progress.words_correct > 0 ? DISPLAY_CYCLE_LENGTH : currentProgress;
+
+        const progressPercent = (displayCount / DISPLAY_CYCLE_LENGTH) * 100;
+
+        progressText.textContent = `${displayCount} / ${DISPLAY_CYCLE_LENGTH}`;
+        progressBar.style.width = progressPercent + "%";
+    }
+
+    // MODIFIED: loadProgressFromDB - loads ALL progress (calls ../load_all_progress.php)
+    function loadProgressFromDB() {
+        if (!STUDENT_ID) {
+            console.error("Student ID is missing. Cannot load progress.");
+            updateUIFromProgress();
+            loadNextWord();
+            return;
+        }
+        fetch(`../load_all_progress.php?student_id=${STUDENT_ID}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.progress) {
-                    // Restore saved state
-                    const progress = data.progress;
+                    data.progress.forEach(p => {
+                        if (allProgress[p.difficulty]) {
+                            allProgress[p.difficulty].word_index = parseInt(p.word_index) || 0;
+                            allProgress[p.difficulty].words_attempted = parseInt(p.words_attempted) || 0;
+                            allProgress[p.difficulty].words_correct = parseInt(p.words_correct) || 0;
+                        }
+                    });
 
-                    // 1. Restore overall stats
-                    wordsAttempted = parseInt(progress.words_attempted) || 0;
-                    wordsCorrect = parseInt(progress.words_correct) || 0;
-                    attemptedCount.textContent = wordsAttempted;
-                    const accuracy = wordsAttempted > 0 ? Math.round((wordsCorrect / wordsAttempted) * 100) : 0;
-                    accuracyRate.textContent = accuracy + "%";
-
-                    // 2. Restore difficulty
-                    if (progress.difficulty && wordBank[progress.difficulty]) {
-                        difficultySelect.value = progress.difficulty;
-                        levelDisplay.textContent = progress.difficulty.charAt(0).toUpperCase() + progress.difficulty.slice(1);
+                    const lastDifficulty = data.last_difficulty || 'beginner';
+                    if (wordBank[lastDifficulty]) {
+                        difficultySelect.value = lastDifficulty;
+                        currentDifficulty = lastDifficulty;
                     }
-
-                    // 3. Restore current word index (progress)
-                    currentWordIndex = parseInt(progress.word_index) || 0;
-
-                    console.log(`Loaded progress: Difficulty=${difficultySelect.value}, Index=${currentWordIndex}`);
                 } else {
                     console.log("No existing progress found or error loading.");
                 }
 
-                // Always load the first word after attempting to load state
+                updateUIFromProgress();
                 loadNextWord();
             })
             .catch(error => {
                 console.error('AJAX Network Error (Load Progress):', error);
-                // Fallback: load the default first word
+                updateUIFromProgress();
                 loadNextWord();
             });
     }
 
-    // Function to save the student's *entire* practice state (index, attempts, correct)
+    // MODIFIED: saveProgressToDB - saves current active difficulty (calls ../save_progress.php)
     function saveProgressToDB() {
         if (!STUDENT_ID) {
             console.error("Student ID is missing. Cannot save progress.");
             return;
         }
 
+        const progress = allProgress[currentDifficulty];
+
         const data = new URLSearchParams();
         data.append('student_id', STUDENT_ID);
-        data.append('difficulty', difficultySelect.value);
-        data.append('word_index', currentWordIndex);
-        data.append('words_attempted', wordsAttempted);
-        data.append('words_correct', wordsCorrect);
+        data.append('difficulty', currentDifficulty);
+        data.append('word_index', progress.word_index);
+        data.append('words_attempted', progress.words_attempted);
+        data.append('words_correct', progress.words_correct);
 
-        // 🔥 Corrected Path: ../save_progress.php
         fetch('../save_progress.php', {
             method: 'POST',
             body: data
@@ -675,91 +970,151 @@ $username = $_SESSION['username'];
             });
     }
 
-    // --- Initialization and Event Handlers ---
+    // MODIFIED: updateDifficulty - now saves before switching and doesn't reset stats
+    function updateDifficulty() {
+        saveProgressToDB();
+
+        const newDiff = difficultySelect.value;
+        currentDifficulty = newDiff;
+
+        updateUIFromProgress();
+
+        loadNextWord();
+    }
+
     function init() {
         difficultySelect.addEventListener("change", updateDifficulty);
         nextBtn.addEventListener("click", loadNextWord);
         playWordBtn.addEventListener("click", () => { if (currentWord) speakWord(currentWord.word); });
-        playFeedbackBtn.addEventListener("click", () => speakFeedback(feedbackMessage.textContent));
+        playFeedbackBtn.addEventListener("click", () => {
+            const textToSpeak = feedbackMessage.textContent.startsWith("👌 Good try! Try saying it in this sentence: ")
+                ? currentWord.example
+                : feedbackMessage.textContent.startsWith("❌ Try again. Focus on the sounds: ")
+                    ? "Please listen to the word."
+                    : feedbackMessage.textContent;
+
+            speakFeedback(textToSpeak);
+        });
         micBtn.addEventListener("click", toggleMic);
 
         if ("webkitSpeechRecognition" in window) {
             recognition = new webkitSpeechRecognition();
             recognition.continuous = false;
-            recognition.interimResults = false;
+            recognition.interimResults = true;
             recognition.lang = "en-US";
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript.trim().toLowerCase();
-                const confidence = event.results[0][0].confidence || 0;
-                transcriptEl.textContent = `${transcript} (conf: ${Math.round(confidence * 100)}%)`;
-                checkPronunciation(transcript, confidence);
+                let interimTranscript = '';
+                let finalTranscript = '';
+                let confidence = 0;
+                let hasTargetWord = false;
+
+                const targetWordLower = currentWord.word.toLowerCase();
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    const transcript = event.results[i][0].transcript.trim().toLowerCase();
+
+                    if (event.results[i].isFinal) {
+                        finalTranscript += (finalTranscript.length > 0 ? ' ' : '') + transcript;
+                        confidence = event.results[i][0].confidence || confidence;
+
+                        if (finalTranscript.includes(targetWordLower)) {
+                            hasTargetWord = true;
+                        }
+
+                    } else {
+                        interimTranscript += (interimTranscript.length > 0 ? ' ' : '') + transcript;
+                    }
+                }
+
+                transcriptEl.textContent = `${finalTranscript || interimTranscript} ...`;
+
+                if (hasTargetWord || event.results[event.results.length - 1].isFinal) {
+                    if (finalTranscript) {
+                        checkPronunciation(finalTranscript, confidence);
+                    } else {
+                        statusEl.textContent = "Did not catch a full word. Try again.";
+                        nextBtn.disabled = false;
+                    }
+                    if (listening) {
+                        recognition.stop();
+                        listening = false;
+                        micBtn.classList.remove("listening");
+                        stopWaveform();
+                    }
+                    return;
+                }
             };
+
             recognition.onerror = (event) => {
                 statusEl.textContent = "Error: " + event.error;
                 micBtn.classList.remove("listening");
+                listening = false;
                 stopWaveform();
+                nextBtn.disabled = false;
             };
             recognition.onend = () => {
+                if (statusEl.textContent === "Processing...") {
+                    statusEl.textContent = "Click the big circle to start!";
+                }
                 micBtn.classList.remove("listening");
-                stopWaveform();
+                listening = false;
             };
         } else {
-            statusEl.textContent = "Speech Recognition not supported.";
+            statusEl.textContent = "Speech Recognition not supported in this browser.";
         }
 
-        // 🔥 Start by loading saved progress
         loadProgressFromDB();
     }
 
-    // --- Core functions (checkPronunciation, updateDifficulty, loadNextWord) ---
 
     function toggleMic() {
-        if (!currentWord) return alert("Pick a word first!");
+        if (!currentWord || wordDisplay.textContent === "Ready to begin") return alert("Please click 'Next Word!' to start practicing.");
         if (!recognition) return;
+
+        if ("speechSynthesis" in window) speechSynthesis.cancel();
+
+        // Check if the word has already been successfully passed (score 5)
+        if (wordAttemptsHistory.includes(5)) {
+            alert("You have already achieved 5 stars for this word. Please click 'Next Word!' to continue.");
+            return;
+        }
 
         listening = !listening;
         micBtn.classList.toggle("listening", listening);
 
         if (listening) {
             statusEl.textContent = "Listening...";
+            transcriptEl.textContent = "Listening...";
+            nextBtn.disabled = true;
+
             recognition.start();
             startWaveform();
         } else {
+            statusEl.textContent = "Processing...";
             recognition.stop();
-            stopWaveform();
         }
     }
 
-    function updateDifficulty() {
-        const diff = difficultySelect.value;
-        levelDisplay.textContent = diff.charAt(0).toUpperCase() + diff.slice(1);
-
-        // Reset index when difficulty changes
-        currentWordIndex = 0;
-        progressBar.style.width = "0%"; // Reset bar visually
-
-        // 🔥 Save the newly selected difficulty and reset index
-        saveProgressToDB();
-
-        loadNextWord();
-    }
 
     function loadNextWord() {
-        const difficulty = difficultySelect.value;
-        const wordList = wordBank[difficulty];
+        const wordList = wordBank[currentDifficulty];
+        let progress = allProgress[currentDifficulty];
+        const displayListLength = DISPLAY_CYCLE_LENGTH;
 
-        // Check for completion
-        if (currentWordIndex >= wordList.length) {
-            alert(`You have successfully read all ${wordList.length} words in the ${difficulty} level! Resetting to start a new practice cycle.`);
-            currentWordIndex = 0;
-            progressBar.style.width = "0%";
-            // Save the reset state
+        // Reset word_index (which is used to track completion of unique words in the list)
+        if (progress.word_index >= wordList.length) {
+            alert(`You have successfully attempted all ${wordList.length} words in the ${currentDifficulty} level! Resetting unique word tracking to start a new cycle.`);
+            progress.word_index = 0;
             saveProgressToDB();
         }
 
-        // Select a random word
+        // Set the new current word (randomly selected)
         currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+
+        // NEW: Reset history for the new word
+        wordAttemptsHistory = [];
+        renderWordHistory();
 
         wordDisplay.textContent = currentWord.word;
         phonemeDisplay.textContent = currentWord.phonemes.join("·");
@@ -770,62 +1125,135 @@ $username = $_SESSION['username'];
         renderStars(0);
         nextBtn.disabled = true;
 
-        // Update progress bar and text using the current index
-        const wordListLength = wordList.length;
-        const progressPercent = (currentWordIndex / wordListLength) * 100;
-        progressText.textContent = `${currentWordIndex} / ${wordListLength}`;
-        progressBar.style.width = progressPercent + "%";
+        updateUIFromProgress();
     }
 
+    function speakRating(score, callback) {
+        if (!("speechSynthesis" in window)) {
+            if (callback) callback();
+            return;
+        }
+
+        speechSynthesis.cancel();
+
+        let message;
+        if (score === 5) {
+            message = "Excellent! You got 5 stars!";
+        } else if (score >= 4) {
+            message = `Great job! You achieved ${score} stars.`;
+        } else if (score >= 2) {
+            message = `You got ${score} stars. Try again for a higher score.`;
+        } else {
+            message = `Your score is ${score} stars. Keep practicing!`;
+        }
+
+        const utter = new SpeechSynthesisUtterance(message);
+        utter.lang = "en-US";
+        utter.rate = 1.0;
+
+        if (voicesLoaded) {
+            const usVoice = getUsEnglishVoice();
+            if (usVoice) utter.voice = usVoice;
+        }
+
+        if (callback) {
+            utter.onend = callback;
+            utter.onerror = callback;
+        }
+
+        speechSynthesis.speak(utter);
+    }
+
+    function speakCompletionMessage() {
+        if (!("speechSynthesis" in window)) {
+            return;
+        }
+
+        const message = `Congratulations, you completed ${DISPLAY_CYCLE_LENGTH} words! Click next word to start a new cycle.`;
+
+        const utter = new SpeechSynthesisUtterance(message);
+        utter.lang = "en-US";
+        utter.rate = 1.0;
+
+        if (voicesLoaded) {
+            const usVoice = getUsEnglishVoice();
+            if (usVoice) utter.voice = usVoice;
+        }
+
+        speechSynthesis.speak(utter);
+    }
+
+    // *****************************************************************
+    // ** checkPronunciation logic **
+    // *****************************************************************
     function checkPronunciation(spoken, confidence = 1) {
-        wordsAttempted++;
-        attemptedCount.textContent = wordsAttempted;
+        let progress = allProgress[currentDifficulty];
 
         const { score, feedback } = ratePronunciation(spoken, currentWord.word, currentWord.phonemes);
+
+        let isNewPass = false;
+
+        // Add score to history only if it's not a repeat 5-star score
+        if (!wordAttemptsHistory.includes(5) || score < 5) {
+            wordAttemptsHistory.push(score);
+            renderWordHistory();
+        }
+
+        if (score >= 4) {
+            // Only count as 'correct' if it's the *first* time they hit 4 or 5 stars for this word
+            if (!wordAttemptsHistory.slice(0, -1).some(s => s >= 4)) {
+                isNewPass = true;
+                progress.words_correct++;
+                progress.words_attempted++;
+                const wordListLength = wordBank[currentDifficulty].length;
+                if (progress.word_index < wordListLength) {
+                    progress.word_index++;
+                }
+            } else if (wordAttemptsHistory.filter(s => s === score).length === 1) {
+                // Still count the attempt if they got a good score but not 5 on the first go
+                progress.words_attempted++;
+            }
+        } else {
+            if (wordAttemptsHistory.filter(s => s === score).length === 1) {
+                progress.words_attempted++;
+            }
+        }
+
+        saveProgressToDB();
 
         ratingEl.textContent = score;
         renderStars(score);
 
         feedbackMessage.className = "feedback-message";
+        const isCycleComplete = (progress.words_correct % DISPLAY_CYCLE_LENGTH) === 0 && progress.words_correct > 0 && isNewPass;
 
         if (score >= 4) {
-            const wordListLength = wordBank[difficultySelect.value].length;
-
-            if (currentWordIndex < wordListLength) {
-                currentWordIndex++; // Advance progress
+            if (isCycleComplete) {
+                speakRating(score, speakCompletionMessage);
+            } else {
+                speakRating(score);
             }
-
-            // Update progress bar and text with the new index
-            progressText.textContent = `${currentWordIndex} / ${wordListLength}`;
-            const progressPercent = (currentWordIndex / wordListLength) * 100;
-            progressBar.style.width = progressPercent + "%";
 
             feedbackMessage.textContent = `${currentWord.example}`;
             feedbackMessage.classList.add("bg-green-100", "text-green-800");
-            wordsCorrect++;
 
-            // 🔥 CRITICAL: Save new progress state to DB
-            saveProgressToDB();
         } else if (score === 3) {
+            speakRating(score);
             feedbackMessage.textContent = `👌 Good try! Try saying it in this sentence: ${currentWord.example}`;
             feedbackMessage.classList.add("bg-blue-100", "text-blue-800");
         } else {
+            speakRating(score);
             feedbackMessage.textContent = `❌ Try again. Focus on the sounds: ${currentWord.phonemes.join(" - ")}`;
             feedbackMessage.classList.add("bg-red-100", "text-red-800");
         }
 
-        // Scoreboard Accuracy updates based on overall attempts, regardless of pass/fail
-        const accuracy = Math.round((wordsCorrect / wordsAttempted) * 100);
-        accuracyRate.textContent = accuracy + "%";
+        updateUIFromProgress();
 
-        // Save the rating (score history)
+        // Save the rating to the database
         saveRatingToDB(currentWord.word, score);
 
         nextBtn.disabled = false;
     }
-
-
-    // --- Unchanged Support Functions (saveRatingToDB, ratePronunciation, etc.) ---
 
     function saveRatingToDB(word, score) {
         if (!STUDENT_ID || !USERNAME) {
@@ -838,13 +1266,16 @@ $username = $_SESSION['username'];
         data.append('username', USERNAME);
         data.append('word', word);
         data.append('score', score);
-
-        // 🔥 Corrected Path: ../save_rating.php
         fetch('../save_rating.php', {
             method: 'POST',
             body: data
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(result => {
                 if (result.success) {
                     console.log("Rating saved successfully: " + result.message);
@@ -854,12 +1285,10 @@ $username = $_SESSION['username'];
                 }
             })
             .catch(error => {
-                console.error('AJAX Network Error:', error);
+                console.error('AJAX Network Error or PHP Execution Error:', error);
             });
     }
 
-    // --- Waveform Functions (Omitted for brevity, assume they are present and correct) ---
-    // You must ensure the actual code for startWaveform(), drawLandscapeWave(), and stopWaveform() is here.
     async function startWaveform() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -884,6 +1313,10 @@ $username = $_SESSION['username'];
     }
 
     function drawLandscapeWave() {
+        if (!listening) {
+            stopWaveform();
+            return;
+        }
         animationId = requestAnimationFrame(drawLandscapeWave);
         analyser.getByteFrequencyData(dataArray);
 
@@ -909,96 +1342,83 @@ $username = $_SESSION['username'];
         if (source && source.mediaStream) {
             source.mediaStream.getTracks().forEach(track => track.stop());
         }
-        if (audioContext && audioContext.state !== 'closed') audioContext.close();
+        if (audioContext && audioContext.state !== 'closed') {
+            audioContext.close().catch(e => console.error("Error closing AudioContext:", e));
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        listening = false;
     }
 
-    // --- Speech Functions (Omitted for brevity, assume they are present and correct) ---
     function speakWord(word) {
-        if ("speechSynthesis" in window) {
-            const utter = new SpeechSynthesisUtterance(word);
-            utter.lang = "en-US";
-            const voices = speechSynthesis.getVoices();
-            const usVoice = voices.find(v => v.lang === "en-US" && v.name.includes("Google")) || voices.find(v => v.lang === "en-US");
+        if (!("speechSynthesis" in window)) {
+            alert("Speech synthesis not supported.");
+            return;
+        }
+
+        speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(word);
+        utter.lang = "en-US";
+        utter.rate = 0.9;
+
+        if (voicesLoaded) {
+            const usVoice = getUsEnglishVoice();
             if (usVoice) utter.voice = usVoice;
-            utter.rate = 0.9;
-            speechSynthesis.speak(utter);
-        } else alert("Speech synthesis not supported.");
+        }
+
+        speechSynthesis.speak(utter);
     }
 
     function speakFeedback(text) {
-        if ("speechSynthesis" in window) {
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = "en-US";
-            utter.rate = 0.95;
-            speechSynthesis.speak(utter);
+        if (!("speechSynthesis" in window)) {
+            alert("Speech synthesis not supported.");
+            return;
+        }
+
+        speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "en-US";
+        utter.rate = 0.95;
+
+        if (voicesLoaded) {
+            const usVoice = getUsEnglishVoice();
+            if (usVoice) utter.voice = usVoice;
+        }
+
+        speechSynthesis.speak(utter);
+    }
+
+    function renderStars(score) {
+        starsEl.innerHTML = "";
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement("i");
+            star.className = "fa-star fa-solid star";
+
+            if (i <= score) {
+                star.classList.add("filled-star");
+            } else {
+                star.classList.add("empty-star");
+            }
+
+            starsEl.appendChild(star);
         }
     }
 
-    // --- Pronunciation Rating and Star Rendering (Omitted for brevity, assume they are present and correct) ---
     function ratePronunciation(spoken, target, targetPhonemes) {
-        // ... (The full ratePronunciation logic goes here) ...
         spoken = spoken.toLowerCase().trim();
         target = target.toLowerCase().trim();
 
         const phonemeMap = {
-            // Vowels
-            a: ["æ", "ɑ", "ə", "eɪ", "ʌ"],
-            e: ["ɛ", "i", "ɪ", "eɪ", "ə"],
-            i: ["ɪ", "aɪ", "iː", "ɜː"],
-            o: ["ɒ", "oʊ", "ɔ", "ɑ"],
-            u: ["ʌ", "uː", "juː", "ʊ"],
-            y: ["j", "aɪ", "ɪ"],
-
-            // Consonants
-            b: ["b"],
-            c: ["k", "s"],
-            d: ["d"],
-            f: ["f"],
-            g: ["g", "dʒ"],
-            h: ["h"],
-            j: ["dʒ"],
-            k: ["k"],
-            l: ["l"],
-            m: ["m"],
-            n: ["n"],
-            p: ["p"],
-            q: ["k", "kw"],
-            r: ["ɹ", "r"],
-            s: ["s", "ʃ", "z"],
-            t: ["t", "θ"],
-            v: ["v"],
-            w: ["w"],
-            x: ["ks", "gz"],
-            z: ["z", "ʒ"],
-
-            // Common digraphs
-            ch: ["tʃ"],
-            sh: ["ʃ"],
-            th: ["θ", "ð"],
-            ph: ["f"],
-            ng: ["ŋ"],
-            wh: ["w"],
-
-            // Suffixes
-            tion: ["ʃən"],
-            sion: ["ʒən"],
-            ture: ["tʃɚ"],
-            sure: ["ʃɚ"],
-            age: ["ɪdʒ"],
-
-            // Common vowel groups
-            ai: ["eɪ"],
-            ea: ["iː", "ɛ"],
-            ee: ["iː"],
-            oo: ["uː", "ʊ"],
-            ou: ["aʊ", "oʊ"],
-            ow: ["aʊ", "oʊ"],
-            au: ["ɔː"],
-            oi: ["ɔɪ"],
-            er: ["ɜː", "ɚ"],
-            ar: ["ɑɹ"],
+            a: ["æ", "ɑ", "ə", "eɪ", "ʌ"], e: ["ɛ", "i", "ɪ", "eɪ", "ə"],
+            i: ["ɪ", "aɪ", "iː", "ɜː"], o: ["ɒ", "oʊ", "ɔ", "ɑ"],
+            u: ["ʌ", "uː", "juː", "ʊ"], y: ["j", "aɪ", "ɪ"],
+            b: ["b"], c: ["k", "s"], d: ["d"], f: ["f"], g: ["g", "dʒ"],
+            h: ["h"], j: ["dʒ"], k: ["k"], l: ["l"], m: ["m"], n: ["n"],
+            p: ["p"], q: ["k", "kw"], r: ["ɹ", "r"], s: ["s", "ʃ", "z"],
+            t: ["t", "θ"], v: ["v"], w: ["w"], x: ["ks", "gz"], z: ["z", "ʒ"],
+            ch: ["tʃ"], sh: ["ʃ"], th: ["θ", "ð"], ph: ["f"], ng: ["ŋ"], wh: ["w"],
+            tion: ["ʃən"], sion: ["ʒən"], ture: ["tʃɚ"], sure: ["ʃɚ"], age: ["ɪdʒ"],
+            ai: ["eɪ"], ea: ["iː", "ɛ"], ee: ["iː"], oo: ["uː", "ʊ"], ou: ["aʊ", "oʊ"],
+            ow: ["aʊ", "oʊ"], au: ["ɔː"], oi: ["ɔɪ"], er: ["ɜː", "ɚ"], ar: ["ɑɹ"],
             or: ["ɔɹ", "ɝ"],
         };
 
@@ -1015,8 +1435,6 @@ $username = $_SESSION['username'];
                 i++;
             } else i++;
         }
-
-        // Levenshtein distance
         function levenshtein(a, b) {
             const matrix = Array.from({ length: a.length + 1 }, () => []);
             for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
@@ -1038,16 +1456,6 @@ $username = $_SESSION['username'];
         const dist = levenshtein(guess.join(""), targetPhonemes.join(""));
         const sim = 1 - dist / Math.max(targetPhonemes.length, guess.length);
 
-        // Detect which phonemes mismatched (simplified for feedback)
-        const errors = [];
-        const len = Math.min(guess.length, targetPhonemes.length);
-        for (let j = 0; j < len; j++) {
-            if (guess[j] !== targetPhonemes[j]) {
-                errors.push({ expected: targetPhonemes[j], said: guess[j] || "—" });
-            }
-        }
-
-        // Convert similarity to score
         let score;
         if (sim > 0.96) score = 5;
         else if (sim > 0.85) score = 4;
@@ -1056,23 +1464,11 @@ $username = $_SESSION['username'];
         else if (sim > 0.25) score = 1;
         else score = 0;
 
-        let feedback = ""; // Placeholder for feedback logic
+        let feedback = "";
 
         return { score, feedback };
     }
 
-    function renderStars(score) {
-        starsEl.innerHTML = "";
-        for (let i = 1; i <= 5; i++) {
-            const star = document.createElement("i");
-            star.className = "fa-star fa " + (i <= score ? "star filled" : "star");
-            starsEl.appendChild(star);
-        }
-    }
-
-
-    if (speechSynthesis.onvoiceschanged !== undefined)
-        speechSynthesis.onvoiceschanged = () => {};
 
     window.onload = init;
 

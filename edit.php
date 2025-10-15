@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config/database.php'; // Path correct: VERBAL/ -> VERBAL/config/database.php
+require_once 'config/database.php';
 global $pdo;
 
 // 1. AUTHENTICATION & REDIRECTION
@@ -85,46 +85,87 @@ $current_data = $student;
     <title>Edit Student</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* General Setup */
         body {
             font-family: 'Nunito', sans-serif;
             background: linear-gradient(135deg, #a3b3fa 0%, #ccf2ff 100%);
             display: flex; justify-content: center; align-items: center; min-height: 100vh;
         }
+
+        /* Landscape Container Styling */
         .edit-form-container {
             background: #ffffff; padding: 40px; border-radius: 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 5px 0 #8b99df;
-            width: 90%; max-width: 500px; text-align: center;
+            width: 90%;
+            max-width: 850px; /* Increased maximum width for landscape feel */
+            text-align: center;
         }
+
         h2 {
             color: #ff6f61; font-size: 2.5em; margin-bottom: 20px;
             text-shadow: 2px 2px 0 #ffdab9; font-weight: 900;
         }
+
+        /* Grid Layout for Landscape Fields */
+        .form-field-group {
+            display: grid;
+            /* Default: Single column for mobile */
+            grid-template-columns: 1fr;
+            gap: 15px 30px; /* Vertical and horizontal gap */
+            margin-bottom: 20px;
+        }
+
+        /* Two columns for landscape view on wider screens */
+        @media (min-width: 600px) {
+            .form-field-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Input Field Styling */
+        .form-field {
+            /* Ensures label and input stay together */
+            display: flex;
+            flex-direction: column;
+        }
+
         label {
-            display: block; text-align: left; margin-top: 10px; margin-bottom: 5px;
+            display: block; text-align: left; margin-top: 0; margin-bottom: 5px;
             color: #4a54ff; font-weight: 700;
         }
+
+        /* Resetting input margin to be managed by the grid gap */
         input[type="text"], input[type="number"], input[type="password"] {
-            width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ccc;
-            border-radius: 15px; box-sizing: border-box; font-size: 1em;
+            width: 100%; padding: 12px; margin-bottom: 0; /* Changed from 15px */
+            border: 2px solid #ccc; border-radius: 15px; box-sizing: border-box; font-size: 1em;
         }
+
+        /* Full width password field when outside the grid (uses default margin-bottom) */
+        .full-width-field input[type="text"], .full-width-field input[type="password"] {
+            margin-bottom: 15px;
+        }
+
+        /* Button Group Styling */
         .btn-group {
-            display: flex; justify-content: space-between; margin-top: 20px;
+            display: flex; justify-content: space-between; margin-top: 30px;
+            gap: 20px;
         }
         .save-btn, .cancel-btn {
             padding: 12px 20px; border-radius: 20px; text-decoration: none;
             font-weight: bold; font-size: 1.1em; border: none; cursor: pointer;
             box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            flex-grow: 1; /* Ensure buttons take equal space */
         }
         .save-btn {
             background: linear-gradient(145deg, #4CAF50, #388E3C);
             color: white;
-            box-shadow: 0 4px 0 #1B5E20; flex-grow: 1; margin-right: 10px;
+            box-shadow: 0 4px 0 #1B5E20;
         }
         .save-btn:active { box-shadow: 0 1px 0 #1B5E20; transform: translateY(3px); }
         .cancel-btn {
             background: linear-gradient(145deg, #f44336, #d32f2f);
             color: white;
-            box-shadow: 0 4px 0 #B71C1C; flex-grow: 1; margin-left: 10px;
+            box-shadow: 0 4px 0 #B71C1C;
         }
         .cancel-btn:active { box-shadow: 0 1px 0 #B71C1C; transform: translateY(3px); }
         .error { color: #f44336; margin-bottom: 15px; font-weight: 700; }
@@ -141,20 +182,34 @@ $current_data = $student;
 
     <form method="POST" action="edit.php?id=<?= htmlspecialchars($student_id); ?>">
 
-        <label for="fullname">Full Name</label>
-        <input type="text" id="fullname" name="fullname" value="<?= htmlspecialchars($current_data['fullname']); ?>" required>
+        <!-- GRID GROUP: Arranged in 2 columns on desktop/tablet -->
+        <div class="form-field-group">
+            <div class="form-field">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" name="fullname" value="<?= htmlspecialchars($current_data['fullname']); ?>" required>
+            </div>
 
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" value="<?= htmlspecialchars($current_data['username']); ?>" required>
+            <div class="form-field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" value="<?= htmlspecialchars($current_data['username']); ?>" required>
+            </div>
 
-        <label for="grade">Grade</label>
-        <input type="number" id="grade" name="grade" value="<?= htmlspecialchars($current_data['grade']); ?>" required min="1" max="12">
+            <div class="form-field">
+                <label for="grade">Grade</label>
+                <input type="number" id="grade" name="grade" value="<?= htmlspecialchars($current_data['grade']); ?>" required min="1" max="12">
+            </div>
 
-        <label for="section">Section</label>
-        <input type="text" id="section" name="section" value="<?= htmlspecialchars($current_data['section']); ?>" required>
+            <div class="form-field">
+                <label for="section">Section</label>
+                <input type="text" id="section" name="section" value="<?= htmlspecialchars($current_data['section']); ?>" required>
+            </div>
+        </div>
 
-        <label for="password">Password</label>
-        <input type="text" id="password" name="password" value="<?= htmlspecialchars($current_data['password']); ?>" required>
+        <!-- PASSWORD FIELD: Full width, below the grid -->
+        <div class="form-field full-width-field">
+            <label for="password">Password</label>
+            <input type="text" id="password" name="password" value="<?= htmlspecialchars($current_data['password']); ?>" required>
+        </div>
 
         <div class="btn-group">
             <button type="submit" class="save-btn">✅ Save Changes</button>

@@ -1,8 +1,6 @@
 <?php
-// load_progress.php
 global $pdo;
 header('Content-Type: application/json');
-// Path to database connection is relative to the current file (in the root)
 require_once('config/database.php');
 
 if (!isset($_GET['student_id'])) {

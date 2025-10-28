@@ -8,7 +8,7 @@
 $host = 'localhost';
 $dbname = 'verbal';
 $user = 'root';
-$pass = 'diddies4evah_31'; // Your password
+$pass = 'diddies4evah_31';
 
 $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 $options = [
@@ -22,7 +22,6 @@ try {
 } catch (\PDOException $e) {
     error_log('DB CONNECTION FAILED: ' . $e->getMessage());
     http_response_code(500);
-    // Send a JSON error response for AJAX requests
     if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Critical database connection error.']);

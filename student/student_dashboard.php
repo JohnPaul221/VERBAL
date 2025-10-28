@@ -1,11 +1,8 @@
 <?php
 session_start();
-// NOTE: Make sure your '../config/database.php' and other required files exist.
 require_once('../config/database.php');
 
-// Security check
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
-    // Redirect to login page if not logged in as a student
     header("Location: ../login.php");
     exit();
 }
@@ -13,17 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 $student_id = $_SESSION['user_id'];
 $username = $_SESSION['username'];
 
-// **********************************************
-// >>> PHP LOGIC FOR WELCOME VOICE CONTROL <<<
-// The voice will now play on EVERY successful login load.
-// **********************************************
-
-// Set to true so the voice is always attempted on this page load.
 $play_welcome_voice = true;
-
-// **********************************************
-// >>> END PHP LOGIC <<<
-// **********************************************
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,7 +20,6 @@ $play_welcome_voice = true;
     <title>VERBAL PRACTICE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS is omitted for brevity, but remains the same as your original code */
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #87CEEB 0%, #E0F2F7 100%);
@@ -99,7 +85,6 @@ $play_welcome_voice = true;
             transform: translateY(2px);
         }
         .main-container {
-            /* === ADJUSTED: Increased max-width for the whole container (kept at 75vw) === */
             max-width: 75vw;
             margin: 0px auto 0 auto;
             min-height: 82vh;
@@ -119,24 +104,19 @@ $play_welcome_voice = true;
             max-height: calc(82vh - 30px);
             overflow-y: auto;
         }
-        /* --- START ADJUSTED FLEX LAYOUT FOR 75VW (MODIFIED AGAIN) --- */
         .section:nth-child(1) {
-            /* Controls/Mic Section: INCREASED SIZE to 30% */
             flex: 0 0 30%;
             min-width: 280px;
             max-width: 400px;
         }
         .section:nth-child(2) {
-            /* Word/Feedback Section: Flexibly takes the largest space */
             flex: 1 1 40%;
             min-width: 350px;
         }
         .history-section {
-            /* History Section: Explicitly set to take 20% (slightly smaller) */
             flex: 0 0 20%;
             min-width: 140px;
             max-width: 220px;
-            /* Original styling kept below */
             padding: 12px 8px;
             border-radius: 10px;
             background-color: #f7fbff;
@@ -144,7 +124,6 @@ $play_welcome_voice = true;
             overflow-y: auto;
             border: 2px solid #63b3ed;
         }
-        /* --- END ADJUSTED FLEX LAYOUT FOR 75VW (MODIFIED AGAIN) --- */
         .divider {
             width: 3px;
             background: #60a5fa;
@@ -301,7 +280,7 @@ $play_welcome_voice = true;
             color: #FFC300;
         }
         .star {
-            font-size: 1.8rem;
+            font-size: 1.2rem;
             margin: 0 3px;
             transition: color 0.3s ease;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
@@ -375,7 +354,6 @@ $play_welcome_voice = true;
             padding-bottom: 5px;
         }
 
-        /* === HISTORY ANIMATION & STYLING START === */
         @keyframes starPop {
             0% { transform: scale(0.5) translateY(10px); opacity: 0; }
             50% { transform: scale(1.2) translateY(-5px); opacity: 1; }
@@ -422,8 +400,6 @@ $play_welcome_voice = true;
             min-width: 75px;
         }
 
-        /* === HISTORY ANIMATION & STYLING END === */
-
         .history-message {
             font-size: 0.9rem;
             color: #10b981;
@@ -432,7 +408,7 @@ $play_welcome_voice = true;
         }
         @media (max-width: 1200px) {
             body {
-                overflow-y: auto; /* Enable vertical scrolling on smaller screens */
+                overflow-y: auto;
             }
             .main-container {
                 max-width: 98vw;
@@ -445,9 +421,8 @@ $play_welcome_voice = true;
                 flex: 1 1 100%;
                 max-height: none;
                 overflow-y: visible;
-                min-width: 100%; /* Important for stack mode */
+                min-width: 100%;
             }
-            /* Remove fixed widths in stacked layout */
             .section:nth-child(1), .section:nth-child(2) {
                 min-width: 100%;
                 max-width: 100%;
@@ -459,9 +434,9 @@ $play_welcome_voice = true;
             .section:nth-child(1) { order: 1; }
             .section:nth-child(2) { order: 2; }
 
-            .feedback-scoreboard-container { flex-direction: column; } /* Stacks score/feedback */
+            .feedback-scoreboard-container { flex-direction: column; }
             .feedback-container, .scoreboard-container {
-                flex: 1 1 100%; /* Take full width when stacked */
+                flex: 1 1 100%;
                 min-width: 100%;
             }
 
@@ -603,12 +578,7 @@ $play_welcome_voice = true;
 <script>
     const STUDENT_ID = <?php echo json_encode($student_id); ?>;
     const USERNAME = <?php echo json_encode($username); ?>;
-    // ****************************************************
-    // >>> JAVASCRIPT CONSTANT CONTROLLED BY PHP SESSION FLAG <<<
-    // This is now set to true to play the voice on every load.
-    // ****************************************************
     const PLAY_WELCOME_VOICE = <?php echo json_encode($play_welcome_voice); ?>;
-    // ****************************************************
 
     const wordBank = {
         beginner: [
@@ -726,34 +696,27 @@ $play_welcome_voice = true;
     const starsEl = document.getElementById("stars");
     const playWordBtn = document.getElementById("playWordBtn");
     const playFeedbackBtn = document.getElementById("playFeedbackBtn");
-    // NEW ELEMENTS
     const wordHistoryEl = document.getElementById("wordHistory");
     const historyMessageEl = document.getElementById("historyMessage");
 
-    // waveform canvas
     const canvas = document.getElementById("waveformCanvas");
     const ctx = canvas.getContext("2d");
 
-    // NEW STATE MANAGEMENT: Stores progress for all levels
     let allProgress = {
         beginner: { word_index: 0, words_attempted: 0, words_correct: 0 },
         intermediate: { word_index: 0, words_attempted: 0, words_correct: 0 },
         advanced: { word_index: 0, words_attempted: 0, words_correct: 0 }
     };
-    let currentDifficulty = 'beginner'; // Tracks the active difficulty
+    let currentDifficulty = 'beginner';
     let currentWord = null;
-    const DISPLAY_CYCLE_LENGTH = 5;
+    const DISPLAY_CYCLE_LENGTH = 10;
 
-    // NEW: Array to track scores for the current word
     let wordAttemptsHistory = [];
 
     let recognition, audioContext, analyser, dataArray, bufferLength, source;
     let animationId = null;
     let listening = false;
 
-    // ---------------------------------------------------------------------------------
-    // >>> UPDATED SPEECH SYNTHESIS & WELCOME MESSAGE LOGIC (Always Plays) <<<
-    // ---------------------------------------------------------------------------------
     let voicesLoaded = false;
     let usEnglishVoice = null;
 
@@ -768,8 +731,6 @@ $play_welcome_voice = true;
     }
 
     function speakWelcome() {
-        // Since PLAY_WELCOME_VOICE is now always true, the message will play
-        // as long as speech synthesis is ready.
         if (!("speechSynthesis" in window)) {
             console.warn("Speech Synthesis not supported.");
             return;
@@ -787,34 +748,25 @@ $play_welcome_voice = true;
     }
 
     if ("speechSynthesis" in window) {
-        // A. The most reliable method: Wait for the voices to signal they are loaded
         speechSynthesis.onvoiceschanged = () => {
-            if (!voicesLoaded) { // Prevent double execution if voices are loaded fast
+            if (!voicesLoaded) {
                 getUsEnglishVoice();
                 voicesLoaded = true;
                 console.log("SpeechSynthesis voices loaded and ready (from onvoiceschanged).");
-                if (PLAY_WELCOME_VOICE) speakWelcome(); // Check the flag before playing
+                if (PLAY_WELCOME_VOICE) speakWelcome();
             }
         };
 
-        // B. Fallback for browsers where voices load immediately: Check on load
         if (speechSynthesis.getVoices().length > 0) {
             if (!voicesLoaded) {
                 getUsEnglishVoice();
                 voicesLoaded = true;
                 console.log("SpeechSynthesis voices loaded and ready (from initial check).");
-                if (PLAY_WELCOME_VOICE) speakWelcome(); // Check the flag before playing
+                if (PLAY_WELCOME_VOICE) speakWelcome();
             }
         }
     }
-    // ---------------------------------------------------------------------------------
-    // >>> END UPDATED SPEECH SYNTHESIS & WELCOME MESSAGE LOGIC <<<
-    // ---------------------------------------------------------------------------------
 
-
-    // =================================================================================
-    // >>> MODIFIED: Function to render the word attempts history (with attempt label & 5 stars)
-    // =================================================================================
     function renderWordHistory() {
         if (!currentWord) return;
 
@@ -826,7 +778,6 @@ $play_welcome_voice = true;
 
         wordHistoryEl.innerHTML = "";
 
-        // Creates a copy and reverses it so the newest attempt appears first.
         const reversedHistory = [...wordAttemptsHistory].reverse();
         const totalAttempts = wordAttemptsHistory.length;
 
@@ -834,28 +785,23 @@ $play_welcome_voice = true;
             const item = document.createElement("span");
             item.className = `history-item`;
 
-            // Calculate the attempt number
             const attemptNumber = totalAttempts - index;
 
-            // 1. Add the attempt number label
             const attemptLabel = document.createElement("span");
             attemptLabel.className = "attempt-label";
             attemptLabel.textContent = `Attempt ${attemptNumber}:`;
             item.appendChild(attemptLabel);
 
-            // 2. Generate the star icons (5 total)
             for (let i = 1; i <= 5; i++) {
                 const star = document.createElement("i");
                 star.className = "fa-star fa-solid star";
 
-                // Determine if the star should be filled or empty
                 if (i <= score) {
                     star.classList.add("filled-star");
                 } else {
                     star.classList.add("empty-star");
                 }
 
-                // Apply a slight delay for the animation
                 star.style.animationDelay = `${(i - 1) * 0.1}s`;
 
                 item.appendChild(star);
@@ -864,7 +810,6 @@ $play_welcome_voice = true;
             wordHistoryEl.appendChild(item);
         });
 
-        // Logic for the 5-star success message
         if (wordAttemptsHistory.includes(5)) {
             historyMessageEl.textContent = `✅ Great! You achieved 5 stars for "${currentWord.word.toUpperCase()}"!`;
             historyMessageEl.style.color = "#10b981";
@@ -873,11 +818,7 @@ $play_welcome_voice = true;
             historyMessageEl.style.color = "#1e40af";
         }
     }
-    // =================================================================================
-    // >>> END MODIFIED renderWordHistory
-    // =================================================================================
 
-    // MODIFIED: Function to update UI from the current progress state
     function updateUIFromProgress() {
         const progress = allProgress[currentDifficulty];
         const wordListLength = wordBank[currentDifficulty].length;
@@ -888,7 +829,6 @@ $play_welcome_voice = true;
 
         levelDisplay.textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1);
 
-        // --- PROGRESS BAR LOGIC MODIFICATION ---
         const currentProgress = progress.words_correct % DISPLAY_CYCLE_LENGTH;
         const displayCount = currentProgress === 0 && progress.words_correct > 0 ? DISPLAY_CYCLE_LENGTH : currentProgress;
 
@@ -898,7 +838,6 @@ $play_welcome_voice = true;
         progressBar.style.width = progressPercent + "%";
     }
 
-    // MODIFIED: loadProgressFromDB - loads ALL progress (calls ../load_all_progress.php)
     function loadProgressFromDB() {
         if (!STUDENT_ID) {
             console.error("Student ID is missing. Cannot load progress.");
@@ -937,7 +876,6 @@ $play_welcome_voice = true;
             });
     }
 
-    // MODIFIED: saveProgressToDB - saves current active difficulty (calls ../save_progress.php)
     function saveProgressToDB() {
         if (!STUDENT_ID) {
             console.error("Student ID is missing. Cannot save progress.");
@@ -970,7 +908,6 @@ $play_welcome_voice = true;
             });
     }
 
-    // MODIFIED: updateDifficulty - now saves before switching and doesn't reset stats
     function updateDifficulty() {
         saveProgressToDB();
 
@@ -1074,7 +1011,6 @@ $play_welcome_voice = true;
 
         if ("speechSynthesis" in window) speechSynthesis.cancel();
 
-        // Check if the word has already been successfully passed (score 5)
         if (wordAttemptsHistory.includes(5)) {
             alert("You have already achieved 5 stars for this word. Please click 'Next Word!' to continue.");
             return;
@@ -1102,17 +1038,14 @@ $play_welcome_voice = true;
         let progress = allProgress[currentDifficulty];
         const displayListLength = DISPLAY_CYCLE_LENGTH;
 
-        // Reset word_index (which is used to track completion of unique words in the list)
         if (progress.word_index >= wordList.length) {
             alert(`You have successfully attempted all ${wordList.length} words in the ${currentDifficulty} level! Resetting unique word tracking to start a new cycle.`);
             progress.word_index = 0;
             saveProgressToDB();
         }
 
-        // Set the new current word (randomly selected)
         currentWord = wordList[Math.floor(Math.random() * wordList.length)];
 
-        // NEW: Reset history for the new word
         wordAttemptsHistory = [];
         renderWordHistory();
 
@@ -1183,9 +1116,6 @@ $play_welcome_voice = true;
         speechSynthesis.speak(utter);
     }
 
-    // *****************************************************************
-    // ** checkPronunciation logic **
-    // *****************************************************************
     function checkPronunciation(spoken, confidence = 1) {
         let progress = allProgress[currentDifficulty];
 
@@ -1193,14 +1123,12 @@ $play_welcome_voice = true;
 
         let isNewPass = false;
 
-        // Add score to history only if it's not a repeat 5-star score
         if (!wordAttemptsHistory.includes(5) || score < 5) {
             wordAttemptsHistory.push(score);
             renderWordHistory();
         }
 
         if (score >= 4) {
-            // Only count as 'correct' if it's the *first* time they hit 4 or 5 stars for this word
             if (!wordAttemptsHistory.slice(0, -1).some(s => s >= 4)) {
                 isNewPass = true;
                 progress.words_correct++;
@@ -1210,7 +1138,6 @@ $play_welcome_voice = true;
                     progress.word_index++;
                 }
             } else if (wordAttemptsHistory.filter(s => s === score).length === 1) {
-                // Still count the attempt if they got a good score but not 5 on the first go
                 progress.words_attempted++;
             }
         } else {
@@ -1249,7 +1176,6 @@ $play_welcome_voice = true;
 
         updateUIFromProgress();
 
-        // Save the rating to the database
         saveRatingToDB(currentWord.word, score);
 
         nextBtn.disabled = false;
@@ -1472,4 +1398,4 @@ $play_welcome_voice = true;
 
     window.onload = init;
 
-</script>
+</script> 

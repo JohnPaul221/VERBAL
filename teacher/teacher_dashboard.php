@@ -222,18 +222,6 @@ try {
             margin-right: -10px;
             min-height: 0;
         }
-        .cloud {
-            position: absolute;
-            background: #fff;
-            border-radius: 50%;
-            opacity: 0.9;
-            z-index: 1;
-        }
-        .cloud1 { width: 120px; height: 60px; top: 10%; animation: float 70s linear infinite; left: -200px; animation-delay: 0s; }
-        .cloud2 { width: 150px; height: 70px; top: 20%; animation: float 90s linear infinite; left: -200px; animation-delay: 45s; }
-        .cloud3 { width: 180px; height: 80px; bottom: 20%; left: -200px; animation: float 80s linear infinite; }
-        @keyframes float { from { transform: translateX(0); } to { transform: translateX(120vw); } }
-
         h1 {
             color: #ff6f61;
             font-size: 2.2em;
@@ -487,11 +475,6 @@ try {
     </script>
 </head>
 <body>
-
-<div class="cloud cloud1"></div>
-<div class="cloud cloud2"></div>
-<div class="cloud cloud3"></div>
-
 <div class="page-header-wrapper">
     <a href="../signup.php" class="add-student-link">
         + Add New Student

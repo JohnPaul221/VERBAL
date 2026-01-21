@@ -3,330 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class Management Dashboard</title>
+    <title>PHONICS ADVENTURE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- CSS STYLES --- */
+        :root {
+            --primary-red: #ff5f5f;
+            --primary-blue: #1890ff;
+            --primary-green: #2ed573;
+            --sunny-yellow: #ffa502;
+            --soft-bg: #eef2f7;
+            --card-border: #dcdde1;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
-            background-color: #f0f2f5;
-            color: #333;
-        }
-
-        h1 {
-            color: #007bff;
-            border-bottom: 3px solid #007bff;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-        }
-
-        #controls {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        #sectionNameInput, #controls button {
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        #sectionNameInput {
-            border: 1px solid #ced4da;
-            width: 250px;
-        }
-
-        #controls button {
-            background-color: #28a745;
-            color: white;
-            cursor: pointer;
-            border: none;
-            margin-left: 10px;
-            transition: background-color 0.3s;
-        }
-
-        #controls button:hover {
-            background-color: #218838;
-        }
-
-        .placeholder-text {
-            font-style: italic;
-            color: #6c757d;
+            min-height: 100vh;
+            background: radial-gradient(circle, #ffffff 0%, #e0f2fe 100%);
+            font-family: 'Lexend', sans-serif;
+            margin: 0;
             padding: 20px;
-        }
-
-        /* --- Section/Folder Styling --- */
-        #dashboardArea {
+            color: #2f3542;
             display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
+            flex-direction: column;
         }
 
-        .section-folder {
-            background-color: #fff;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            width: 320px;
-            min-height: 250px;
-            padding: 15px;
-            transition: transform 0.2s;
-        }
-
-        .section-folder:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        }
-
-        .folder-header {
-            background-color: #ffc107;
-            color: #343a40;
-            padding: 10px 15px;
-            margin: -15px -15px 15px -15px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            font-weight: bold;
-            font-size: 1.3em;
+        /* --- Header Styling --- */
+        .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 20px 20px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
 
-        .delete-folder-btn {
-            background: none;
-            border: none;
-            color: #dc3545;
-            font-size: 1.5em;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0;
-            transition: color 0.2s;
+        #usernameDisplay {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--primary-blue);
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 0 #ced6e0;
+            border: 2px solid var(--primary-blue);
         }
 
-        .delete-folder-btn:hover {
-            color: #a8000b;
-        }
-
-        .student-list {
-            list-style: none;
-            padding: 0;
-            max-height: 150px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-
-        .student-item {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 10px;
-            margin-bottom: 6px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.95em;
-        }
-
-        .student-item button {
-            background: none;
-            border: none;
-            color: red;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1.1em;
-            line-height: 1;
-        }
-
-        .add-student-controls {
-            padding-top: 15px;
-            border-top: 1px dashed #ced4da;
-            display: flex;
-            gap: 5px;
-        }
-
-        .add-student-controls input {
-            flex-grow: 1;
-            padding: 8px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-        }
-
-        .add-student-controls button {
-            padding: 8px 12px;
-            background-color: #007bff;
+        #logoutBtn {
+            background: var(--primary-red);
             color: white;
             border: none;
-            border-radius: 4px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 0 #c0392b;
             cursor: pointer;
-            transition: background-color 0.2s;
         }
 
-        .add-student-controls button:hover {
-            background-color: #0056b3;
+        #logoutBtn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #c0392b;
+        }
+
+        /* --- Main Layout --- */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr 280px;
+            gap: 25px;
+            width: 100%;
+        }
+
+        .section {
+            background: white;
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.05);
+            border: 3px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- UI Elements --- */
+        h2 {
+            font-weight: 900;
+            font-size: 1.4rem;
+            margin-top: 0;
+            color: #57606f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-container {
+            background: #f1f2f6;
+            height: 24px;
+            border-radius: 50px;
+            overflow: hidden;
+            border: 2px solid #ced6e0;
+            margin: 15px 0;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, #2ed573, #7bed9f);
+            width: 0%;
+            border-radius: 50px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-blue);
+            font-family: 'Lexend';
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        /* --- Mic & Record --- */
+        .mic-wrapper {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .mic-icon {
+            width: 110px;
+            height: 110px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 3rem;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c0392b;
+            border: 5px solid white;
+        }
+
+        .mic-icon.listening {
+            animation: pulse 1s infinite;
+            background: #ff4757;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 95, 95, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 95, 95, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 95, 95, 0); }
+        }
+
+        /* --- Reading Focus Area --- */
+        .reading-card {
+            background: #f0f9ff;
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            border: 4px dashed var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        #wordDisplay {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: #2f3542;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .btn-play {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 800;
+            box-shadow: 0 5px 0 #0984e3;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        /* --- Feedback --- */
+        .transcript-label {
+            font-weight: 800;
+            color: #747d8c;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .transcript {
+            background: #f1f2f6;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: 700;
+            color: var(--primary-green);
+            font-size: 1.2rem;
+            border-left: 5px solid var(--primary-green);
+        }
+
+        /* --- Stats/Trophies --- */
+        .stat-card {
+            background: #fff9db;
+            padding: 15px;
+            border-radius: 20px;
+            border: 2px solid var(--sunny-yellow);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #f39c12;
+            display: block;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .page-header { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
+
 <body>
-<h1>Grade 1 Sections Dashboard 🧑‍🏫</h1>
+<header class="page-header">
+    <?php
+    // Example: echo '<span id="usernameDisplay">👋 Hi, ' . htmlspecialchars($username) . '!</span>';
+    ?>
+    <span id="usernameDisplay">👋 Hi, Explorer!</span>
+    <button id="logoutBtn"><i class="fa-solid fa-sign-out-alt"></i> Quit Game</button>
+</header>
 
-<div id="controls">
-    <input type="text" id="sectionNameInput" placeholder="Enter Section Name (e.g., 1-A)">
-    <button onclick="createSection()">Create Section Folder</button>
-</div>
+<main class="main-container">
 
-<hr>
+    <div class="section">
+        <h2><i class="fa-solid fa-rocket" style="color:var(--primary-red)"></i> Mission</h2>
 
-<div id="dashboardArea">
-    <p class="placeholder-text">Click "Create Section Folder" to begin adding your sections and students.</p>
-</div>
+        <div class="progress-container">
+            <div class="progress-bar-inner" style="width: 20%"></div>
+        </div>
+        <p style="font-weight: 800; text-align:center;">Word 1 of 5</p>
 
-<script>
-    /* --- JAVASCRIPT LOGIC --- */
+        <label style="font-weight: 800; margin-bottom: 10px; display: block;">Pick Difficulty:</label>
+        <select id="difficulty">
+            <option value="beginner">🌟 Super Easy</option>
+            <option value="intermediate">👍 Growing Reader</option>
+            <option value="advanced">🧠 Master Reader</option>
+        </select>
 
-    // Function to handle the addition of a new student item to the list
-    function addStudentToSection(sectionId) {
-        const studentInput = document.getElementById(`${sectionId}-input`);
-        const studentName = studentInput.value.trim();
-        const studentList = document.getElementById(`${sectionId}-list`);
+        <div class="mic-wrapper">
+            <div id="micBtn" class="mic-icon">
+                <i class="fa-solid fa-microphone"></i>
+            </div>
+            <p id="status" style="font-weight: 800; margin-top: 15px; color: #747d8c;">TAP TO TALK</p>
+        </div>
 
-        if (studentName === '') {
-            alert('Please enter a student name.');
-            return;
-        }
+        <button id="nextBtn" class="btn-play" style="background: var(--primary-green); box-shadow: 0 5px 0 #218c74; width: 100%;">
+            Next Word <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
 
-        // Create the student list item
-        const studentItem = document.createElement('li');
-        studentItem.className = 'student-item';
+    <div class="section" style="border-color: var(--primary-blue);">
+        <h2><i class="fa-solid fa-book-open" style="color:var(--primary-blue)"></i> Reading Zone</h2>
 
-        // Add the student's name
-        const studentNameSpan = document.createElement('span');
-        studentNameSpan.textContent = studentName;
+        <div class="reading-card">
+            <p id="wordDisplay">APPLE</p>
+            <button class="btn-play"><i class="fa-solid fa-volume-high"></i> Hear it!</button>
+        </div>
 
-        // Add a button to delete the student
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = '×'; // Times symbol for delete
-        deleteButton.onclick = function() {
-            studentItem.remove(); // Remove the entire list item
-        };
+        <div style="margin-top: 20px;">
+            <p class="transcript-label">You said:</p>
+            <div class="transcript" id="transcript">Click the mic and read the word!</div>
+        </div>
 
-        // Append name and button to the list item
-        studentItem.appendChild(studentNameSpan);
-        studentItem.appendChild(deleteButton);
+        <div style="text-align: center; margin-top: 20px;">
+            <div id="stars" style="font-size: 2.5rem;">
+                <i class="fa-solid fa-star" style="color:var(--sunny-yellow)"></i>
+                <i class="fa-solid fa-star" style="color:var(--sunny-yellow)"></i>
+                <i class="fa-solid fa-star" style="color: #dcdde1;"></i>
+            </div>
+            <p style="font-weight: 900; font-size: 1.5rem; margin: 0;">Great Job!</p>
+        </div>
+    </div>
 
-        // Append the list item to the section's student list
-        studentList.appendChild(studentItem);
+    <div class="section" style="background: #f8f9fa;">
+        <h2><i class="fa-solid fa-trophy" style="color:var(--sunny-yellow)"></i> Badges</h2>
 
-        // Clear the input field for the next student
-        studentInput.value = '';
-        studentInput.focus();
-    }
+        <div class="stat-card">
+            <span class="stat-value">85%</span>
+            <span style="font-weight: 800; font-size: 0.8rem; color: #e67e22;">ACCURACY</span>
+        </div>
 
-    // Function to delete the entire section folder
-    function deleteSection(folderId) {
-        if (confirm("Are you sure you want to delete this section folder and all its students?")) {
-            const folder = document.getElementById(folderId);
-            if (folder) {
-                folder.remove();
+        <div id="wordHistory" style="margin-top: 20px;">
+            <div style="background:white; padding:10px; border-radius:15px; margin-bottom:10px; border-left: 5px solid var(--primary-green); font-weight:700;">
+                ✅ Cat <span style="float:right">⭐⭐⭐</span>
+            </div>
+            <div style="background:white; padding:10px; border-radius:15px; margin-bottom:10px; border-left: 5px solid var(--sunny-yellow); font-weight:700;">
+                ✅ Dog <span style="float:right">⭐⭐</span>
+            </div>
+        </div>
+    </div>
 
-                // Re-add placeholder if no folders are left
-                const dashboardArea = document.getElementById('dashboardArea');
-                if (dashboardArea.children.length === 0) {
-                    const placeholder = document.createElement('p');
-                    placeholder.className = 'placeholder-text';
-                    placeholder.textContent = 'Click "Create Section Folder" to begin adding your sections and students.';
-                    dashboardArea.appendChild(placeholder);
-                }
-            }
-        }
-    }
-
-    // Main function to create a new section folder
-    function createSection() {
-        const sectionNameInput = document.getElementById('sectionNameInput');
-        const sectionName = sectionNameInput.value.trim();
-        const dashboardArea = document.getElementById('dashboardArea');
-
-        if (sectionName === '') {
-            alert('Please enter a section name (e.g., 1-A).');
-            return;
-        }
-
-        // Use a timestamp for a unique folder ID
-        const folderId = `section-${Date.now()}`;
-
-        // Remove placeholder text if it exists
-        const placeholder = dashboardArea.querySelector('.placeholder-text');
-        if (placeholder) {
-            placeholder.remove();
-        }
-
-        // 1. Create the main folder structure (Div, Header, List Container)
-        const folder = document.createElement('div');
-        folder.className = 'section-folder';
-        folder.id = folderId;
-
-        // 2. Create the Folder Header
-        const header = document.createElement('div');
-        header.className = 'folder-header';
-
-        const headerTitle = document.createElement('span');
-        headerTitle.textContent = `Section: ${sectionName}`;
-
-        // Delete button for the folder
-        const deleteFolderButton = document.createElement('button');
-        deleteFolderButton.className = 'delete-folder-btn';
-        deleteFolderButton.textContent = '⊗';
-        deleteFolderButton.onclick = () => deleteSection(folderId);
-
-        header.appendChild(headerTitle);
-        header.appendChild(deleteFolderButton);
-
-        // 3. Create the Student List (UL)
-        const studentList = document.createElement('ul');
-        studentList.className = 'student-list';
-        studentList.id = `${folderId}-list`;
-
-        // 4. Create Student Addition Controls
-        const addControls = document.createElement('div');
-        addControls.className = 'add-student-controls';
-
-        const studentInput = document.createElement('input');
-        studentInput.type = 'text';
-        studentInput.placeholder = 'Student Name';
-        studentInput.id = `${folderId}-input`;
-
-        const addButton = document.createElement('button');
-        addButton.textContent = 'Add';
-        // Use an anonymous function to pass the unique folderId to the handler
-        addButton.onclick = () => addStudentToSection(folderId);
-
-        // Allow adding a student by pressing the Enter key
-        studentInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                addStudentToSection(folderId);
-            }
-        });
-
-        // Assemble the add controls
-        addControls.appendChild(studentInput);
-        addControls.appendChild(addButton);
-
-        // 5. Assemble the entire folder
-        folder.appendChild(header);
-        folder.appendChild(studentList);
-        folder.appendChild(addControls);
-
-        // Add the new folder to the dashboard area
-        dashboardArea.appendChild(folder);
-
-        // Clear the main input and focus on the new section's input for quick adding
-        sectionNameInput.value = '';
-        studentInput.focus();
-    }
-</script>
+</main>
 </body>
 </html>

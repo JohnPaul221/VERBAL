@@ -85,17 +85,18 @@ $play_welcome_voice = true;
             transform: translateY(2px);
         }
         .main-container {
-            max-width: 75vw;
-            margin: 0px auto 0 auto;
-            min-height: 82vh;
+            max-width: 95vw; /* Changed from 75vw to 95vw */
+            margin: 0px auto;
+            min-height: 85vh;
             display: flex;
             flex-wrap: nowrap;
-            gap: 15px;
+            gap: 20px;
             background: #ffffff;
             border-radius: 15px;
-            padding: 15px;
+            padding: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.15);
             border: 3px solid #60a5fa;
+
         }
         .section {
             padding: 10px;
@@ -105,22 +106,18 @@ $play_welcome_voice = true;
             overflow-y: auto;
         }
         .section:nth-child(1) {
-            flex: 0 0 30%;
-            min-width: 280px;
-            max-width: 400px;
+            flex: 0 0 320px; /* Fixed width: doesn't shrink or grow */
         }
         .section:nth-child(2) {
-            flex: 1 1 40%;
-            min-width: 350px;
+            flex: 1; /* Takes up all available remaining space */
+            min-width: 400px;
         }
         .history-section {
-            flex: 0 0 20%;
-            min-width: 140px;
-            max-width: 220px;
-            padding: 12px 8px;
+            flex: 0 0 250px; /* Fixed width for the history list */
+            padding: 12px 15px;
             border-radius: 10px;
             background-color: #f7fbff;
-            max-height: calc(82vh - 30px);
+            max-height: calc(85vh - 40px);
             overflow-y: auto;
             border: 2px solid #63b3ed;
         }
@@ -321,13 +318,9 @@ $play_welcome_voice = true;
             margin-bottom: 3px;
         }
         .stats-container {
-            background: #e0f2fe;
-            padding: 10px;
-            border-radius: 10px;
-            border: 2px solid #93c5fd;
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
+            grid-template-columns: 1fr 1fr; /* Side-by-side stats */
+            gap: 10px;
         }
         .stat-item span {
             display: block;
@@ -583,310 +576,12 @@ $play_welcome_voice = true;
     const wordBank = {
         beginner: [
             { word: "cat", phonemes: ["k","æ","t"], example: "The cat is on the mat." },
-            { word: "bat", phonemes: ["b","æ","t"], example: "I have a baseball bat." },
-            { word: "rat", phonemes: ["ɹ","æ","t"], example: "The rat ate the cheese." },
-            { word: "hat", phonemes: ["h","æ","t"], example: "Put on your sun hat." },
-            { word: "mat", phonemes: ["m","æ","t"], example: "Sit on the floor mat." },
-            { word: "van", phonemes: ["v","æ","n"], example: "The white van is fast." },
-            { word: "pan", phonemes: ["p","æ","n"], example: "The frying pan is hot." },
-            { word: "fan", phonemes: ["f","æ","n"], example: "Turn on the electric fan." },
-            { word: "map", phonemes: ["m","æ","p"], example: "Look at the world map." },
-            { word: "tap", phonemes: ["t","æ","p"], example: "Water flows from the tap." },
-            { word: "cap", phonemes: ["k","æ","p"], example: "I wear a blue baseball cap." },
-            { word: "bag", phonemes: ["b","æ","g"], example: "My school bag is heavy." },
-            { word: "tag", phonemes: ["t","æ","g"], example: "Check the price tag." },
-            { word: "bed", phonemes: ["b","ɛ","d"], example: "Lie down on the soft bed." },
-            { word: "net", phonemes: ["n","ɛ","t"], example: "The fish is in the net." },
-            { word: "pet", phonemes: ["p","ɛ","t"], example: "The dog is a good pet." },
-            { word: "jet", phonemes: ["dʒ","ɛ","t"], example: "The jet plane is fast." },
-            { word: "hen", phonemes: ["h","ɛ","n"], example: "The hen laid an egg." },
-            { word: "pen", phonemes: ["p","ɛ","n"], example: "Write with a black pen." },
-            { word: "ten", phonemes: ["t","ɛ","n"], example: "I have ten fingers." },
-            { word: "pig", phonemes: ["p","ɪ","g"], example: "The pink pig is eating." },
-            { word: "wig", phonemes: ["w","ɪ","g"], example: "She wears a curly wig." },
-            { word: "dig", phonemes: ["d","ɪ","g"], example: "Dig a hole in the sand." },
-            { word: "fig", phonemes: ["f","ɪ","g"], example: "A fig is a sweet fruit." },
-            { word: "kit", phonemes: ["k","ɪ","t"], example: "I have a first aid kit." },
-            { word: "zip", phonemes: ["z","ɪ","p"], example: "Zip up your warm jacket." },
-            { word: "lip", phonemes: ["l","ɪ","p"], example: "Put balm on your lip." },
-            { word: "bin", phonemes: ["b","ɪ","n"], example: "Put trash in the bin." },
-            { word: "pin", phonemes: ["p","ɪ","n"], example: "Use a safety pin." },
-            { word: "fin", phonemes: ["f","ɪ","n"], example: "The shark has a tall fin." },
-            { word: "tin", phonemes: ["t","ɪ","n"], example: "The tuna is in a tin." },
-            { word: "six", phonemes: ["s","ɪ","k","s"], example: "I see six little birds." },
-            { word: "dog", phonemes: ["d","ɔ","g"], example: "The dog is barking." },
-            { word: "log", phonemes: ["l","ɔ","g"], example: "The turtle is on the log." },
-            { word: "fog", phonemes: ["f","ɔ","g"], example: "The fog is very thick." },
-            { word: "mop", phonemes: ["m","ɑ","p"], example: "Clean the floor with a mop." },
-            { word: "top", phonemes: ["t","ɑ","p"], example: "The spinning top is blue." },
-            { word: "pot", phonemes: ["p","ɑ","t"], example: "The flower is in the pot." },
-            { word: "dot", phonemes: ["d","ɑ","t"], example: "The ladybug has a dot." },
-            { word: "cot", phonemes: ["c","ɑ","t"], example: "The baby sleeps in a cot." },
-            { word: "box", phonemes: ["b","ɑ","k","s"], example: "The toy is in the box." },
-            { word: "fox", phonemes: ["f","ɑ","k","s"], example: "The red fox is clever." },
-            { word: "sun", phonemes: ["s","ʌ","n"], example: "The sun is yellow." },
-            { word: "bun", phonemes: ["b","ʌ","n"], example: "I ate a sweet bun." },
-            { word: "gum", phonemes: ["g","ʌ","m"], example: "Do not chew gum in class." },
-            { word: "mud", phonemes: ["m","ʌ","d"], example: "The pig is in the mud." },
-            { word: "bud", phonemes: ["b","ʌ","d"], example: "The flower has a bud." },
-            { word: "bug", phonemes: ["b","ʌ","g"], example: "Look at the little bug." },
-            { word: "hug", phonemes: ["h","ʌ","g"], example: "Give me a big hug." },
-            { word: "rug", phonemes: ["ɹ","ʌ","g"], example: "Sit on the red rug." },
-            { word: "mug", phonemes: ["m","ʌ","g"], example: "The hot cocoa is in a mug." },
-            { word: "jug", phonemes: ["dʒ","ʌ","g"], example: "The milk is in the jug." },
-            { word: "tub", phonemes: ["t","ʌ","b"], example: "Wash in the bath tub." },
-            { word: "cup", phonemes: ["k","ʌ","p"], example: "Drink from the blue cup." },
-            { word: "bus", phonemes: ["b","ʌ","s"], example: "We go on the school bus." },
-            { word: "nut", phonemes: ["n","ʌ","t"], example: "The squirrel has a nut." },
-            { word: "hut", phonemes: ["h","ʌ","t"], example: "They live in a small hut." },
-            { word: "web", phonemes: ["w","ɛ","b"], example: "The spider made a web." },
-            { word: "box", phonemes: ["b","ɑ","k","s"], example: "Put the books in the box." },
-            { word: "ham", phonemes: ["h","æ","m"], example: "I like ham in my bread." },
-            { word: "egg", phonemes: ["ɛ","g"], example: "The bird laid an egg." },
-            { word: "jam", phonemes: ["dʒ","æ","m"], example: "Put strawberry jam on toast." },
-            { word: "ram", phonemes: ["ɹ","æ","m"], example: "The ram has big horns." },
-            { word: "yam", phonemes: ["j","æ","m"], example: "The sweet yam is orange." },
-            { word: "dam", phonemes: ["d","æ","m"], example: "The beaver built a dam." },
-            { word: "cab", phonemes: ["k","æ","b"], example: "We took a yellow cab." },
-            { word: "bib", phonemes: ["b","ɪ","b"], example: "The baby wears a bib." },
-            { word: "rib", phonemes: ["ɹ","ɪ","b"], example: "I can feel my rib." },
-            { word: "cub", phonemes: ["k","ʌ","b"], example: "The bear cub is cute." },
-            { word: "sub", phonemes: ["s","ʌ","b"], example: "The sub is under water." },
-            { word: "leg", phonemes: ["l","ɛ","g"], example: "The table has a leg." },
-            { word: "peg", phonemes: ["p","ɛ","g"], example: "Hang your coat on the peg." },
-            { word: "beg", phonemes: ["b","ɛ","g"], example: "The dog will beg for food." },
-            { word: "mix", phonemes: ["m","ɪ","k","s"], example: "Mix the cake batter." },
-            { word: "fix", phonemes: ["f","ɪ","k","s"], example: "Dad can fix the car." },
-            { word: "tax", phonemes: ["t","æ","k","s"], example: "Pay the sales tax." },
-            { word: "gas", phonemes: ["g","æ","s"], example: "The car needs gas." },
-            { word: "pad", phonemes: ["p","æ","d"], example: "Write on the ink pad." },
-            { word: "dad", phonemes: ["d","æ","d"], example: "My dad is very tall." },
-            { word: "bad", phonemes: ["b","æ","d"], example: "The rotten apple is bad." },
-            { word: "mad", phonemes: ["m","æ","d"], example: "The angry man is mad." },
-            { word: "lad", phonemes: ["l","æ","d"], example: "The young lad is happy." },
-            { word: "sad", phonemes: ["s","æ","d"], example: "Do not be sad today." },
-            { word: "lid", phonemes: ["l","ɪ","d"], example: "Put the lid on the pot." },
-            { word: "kid", phonemes: ["k","ɪ","d"], example: "The little kid is playing." },
-            { word: "hid", phonemes: ["h","ɪ","d"], example: "The cat hid in the box." },
-            { word: "rod", phonemes: ["ɹ","ɑ","d"], example: "Use the fishing rod." },
-            { word: "pod", phonemes: ["p","ɑ","d"], example: "The peas are in a pod." },
-            { word: "cod", phonemes: ["k","ɑ","d"], example: "The cod is a big fish." },
-            { word: "bud", phonemes: ["b","ʌ","d"], example: "The rose bud is pink." },
-            { word: "mud", phonemes: ["m","ʌ","d"], example: "Wipe the mud off shoes." },
-            { word: "sud", phonemes: ["s","ʌ","d"], example: "The soap has a lot of sud." },
-            { word: "wax", phonemes: ["w","æ","k","s"], example: "The candle is made of wax." },
-            { word: "dip", phonemes: ["d","ɪ","p"], example: "Dip the chip in sauce." },
-            { word: "pip", phonemes: ["p","ɪ","p"], example: "The apple has a pip." },
-            { word: "hip", phonemes: ["h","ɪ","p"], example: "Put your hand on your hip." },
-            { word: "sip", phonemes: ["s","ɪ","p"], example: "Take a sip of water." },
-            { word: "tip", phonemes: ["t","ɪ","p"], example: "The tip of the pencil." },
-            { word: "rip", phonemes: ["ɹ","ɪ","p"], example: "There is a rip in my shirt." },
-            { word: "gap", phonemes: ["g","æ","p"], example: "The gap in the fence." }
-        ],
-        intermediate: [
-            { word: "ship", phonemes: ["ʃ","ɪ","p"], example: "The big ship is on the sea." },
-            { word: "shop", phonemes: ["ʃ","ɑ","p"], example: "Go to the toy shop." },
-            { word: "fish", phonemes: ["f","ɪ","ʃ"], example: "The goldfish is swimming." },
-            { word: "dish", phonemes: ["d","ɪ","ʃ"], example: "Put food in the dish." },
-            { word: "shell", phonemes: ["ʃ","ɛ","l"], example: "I found a seashell." },
-            { word: "shed", phonemes: ["ʃ","ɛ","d"], example: "Tools are in the shed." },
-            { word: "shoe", phonemes: ["ʃ","uː"], example: "Tie your left shoe." },
-            { word: "duck", phonemes: ["d","ʌ","k"], example: "The yellow duck swims." },
-            { word: "rock", phonemes: ["ɹ","ɑ","k"], example: "The gray rock is heavy." },
-            { word: "sock", phonemes: ["s","ɑ","k"], example: "I lost my blue sock." },
-            { word: "back", phonemes: ["b","æ","k"], example: "My back is straight." },
-            { word: "neck", phonemes: ["n","ɛ","k"], example: "The giraffe has a long neck." },
-            { word: "lock", phonemes: ["l","ɑ","k"], example: "Lock the front door." },
-            { word: "bell", phonemes: ["b","ɛ","l"], example: "The school bell rang." },
-            { word: "frog", phonemes: ["f","ɹ","ɑ","g"], example: "The green frog jumped." },
-            { word: "flag", phonemes: ["f","l","æ","g"], example: "The flag is waving." },
-            { word: "star", phonemes: ["s","t","ɑː","ɹ"], example: "The star is in the sky." },
-            { word: "tree", phonemes: ["t","ɹ","iː"], example: "The apple tree is tall." },
-            { word: "drum", phonemes: ["d","ɹ","ʌ","m"], example: "Bang on the loud drum." },
-            { word: "grass", phonemes: ["g","ɹ","æ","s"], example: "The green grass is soft." },
-            { word: "brush", phonemes: ["b","ɹ","ʌ","ʃ"], example: "Brush your messy hair." },
-            { word: "bread", phonemes: ["b","ɹ","ɛ","d"], example: "I like toasted bread." },
-            { word: "clock", phonemes: ["k","l","ɑ","k"], example: "The clock on the wall." },
-            { word: "spoon", phonemes: ["s","p","uː","n"], example: "Eat with a silver spoon." },
-            { word: "snail", phonemes: ["s","n","eɪ","l"], example: "The snail is very slow." },
-            { word: "snake", phonemes: ["s","n","eɪ","k"], example: "The snake is in the grass." },
-            { word: "bench", phonemes: ["b","ɛ","n","tʃ"], example: "Sit on the park bench." },
-            { word: "lamp", phonemes: ["l","æ","m","p"], example: "Turn on the desk lamp." },
-            { word: "tent", phonemes: ["t","ɛ","n","t"], example: "We sleep in a blue tent." },
-            { word: "crab", phonemes: ["k","ɹ","æ","b"], example: "The crab has sharp claws." },
-            { word: "truck", phonemes: ["t","ɹ","ʌ","k"], example: "The red truck is big." },
-            { word: "plate", phonemes: ["p","l","eɪ","t"], example: "Put food on the plate." },
-            { word: "plant", phonemes: ["p","l","æ","n","t"], example: "Water the green plant." },
-            { word: "swing", phonemes: ["s","w","ɪ","ŋ"], example: "Play on the tire swing." },
-            { word: "brick", phonemes: ["b","ɹ","ɪ","k"], example: "The house is made of brick." },
-            { word: "block", phonemes: ["b","l","ɑ","k"], example: "Build with a wood block." },
-            { word: "glass", phonemes: ["g","l","æ","s"], example: "Drink from a clear glass." },
-            { word: "dress", phonemes: ["d","ɹ","ɛ","s"], example: "She has a pink dress." },
-            { word: "stick", phonemes: ["s","t","ɪ","k"], example: "The dog found a stick." },
-            { word: "stone", phonemes: ["s","t","oʊ","n"], example: "Throw a small stone." },
-            { word: "cloud", phonemes: ["k","l","aʊ","d"], example: "Look at the white cloud." },
-            { word: "bench", phonemes: ["b","ɛ","n","tʃ"], example: "The wood bench is hard." },
-            { word: "swing", phonemes: ["s","w","ɪ","ŋ"], example: "I can go high on the swing." },
-            { word: "clown", phonemes: ["k","l","aʊ","n"], example: "The clown has a red nose." },
-            { word: "skirt", phonemes: ["s","k","ɜː","ɹ","t"], example: "She wears a blue skirt." },
-            { word: "shirt", phonemes: ["ʃ","ɜː","ɹ","t"], example: "Put on your clean shirt." },
-            { word: "spoon", phonemes: ["s","p","uː","n"], example: "I need a soup spoon." },
-            { word: "stork", phonemes: ["s","t","ɔː","ɹ","k"], example: "The stork has long legs." },
-            { word: "shark", phonemes: ["ʃ","ɑː","ɹ","k"], example: "The shark is in the ocean." },
-            { word: "bench", phonemes: ["b","ɛ","n","tʃ"], example: "Wait on the park bench." },
-            { word: "globe", phonemes: ["g","l","oʊ","b"], example: "Find our country on the globe." },
-            { word: "flute", phonemes: ["f","l","uː","t"], example: "She plays the silver flute." },
-            { word: "grape", phonemes: ["g","ɹ","eɪ","p"], example: "The purple grape is sweet." },
-            { word: "sheep", phonemes: ["ʃ","iː","p"], example: "The white sheep is soft." },
-            { word: "brush", phonemes: ["b","ɹ","ʌ","ʃ"], example: "Use a hair brush." },
-            { word: "watch", phonemes: ["w","ɑ","tʃ"], example: "Check the wrist watch." },
-            { word: "whale", phonemes: ["w","eɪ","l"], example: "The blue whale is huge." },
-            { word: "bench", phonemes: ["b","ɛ","n","tʃ"], example: "The garden bench is green." },
-            { word: "stair", phonemes: ["s","t","ɛ","ɹ"], example: "Walk up the wood stair." },
-            { word: "brick", phonemes: ["b","ɹ","ɪ","k"], example: "A red brick wall." },
-            { word: "plums", phonemes: ["p","l","ʌ","m","z"], example: "A bowl of purple plums." },
-            { word: "stems", phonemes: ["s","t","ɛ","m","z"], example: "Flowers have green stems." },
-            { word: "skunk", phonemes: ["s","k","ʌ","ŋ","k"], example: "The skunk is black and white." },
-            { word: "swan", phonemes: ["s","w","ɑ","n"], example: "The white swan swims." },
-            { word: "stool", phonemes: ["s","t","uː","l"], example: "Sit on the tall stool." },
-            { word: "scarf", phonemes: ["s","k","ɑː","ɹ","f"], example: "Wear a warm red scarf." },
-            { word: "twins", phonemes: ["t","w","ɪ","n","z"], example: "The twins look the same." },
-            { word: "crane", phonemes: ["k","ɹ","eɪ","n"], example: "The tall crane is at work." },
-            { word: "grill", phonemes: ["g","ɹ","ɪ","l"], example: "Cook corn on the grill." },
-            { word: "shelf", phonemes: ["ʃ","ɛ","l","f"], example: "Put books on the shelf." },
-            { word: "trunk", phonemes: ["t","ɹ","ʌ","ŋ","k"], example: "The elephant has a trunk." },
-            { word: "quill", phonemes: ["k","w","ɪ","l"], example: "An old ink quill." },
-            { word: "quilt", phonemes: ["k","w","ɪ","l","t"], example: "A warm patch quilt." },
-            { word: "drill", phonemes: ["d","ɹ","ɪ","l"], example: "Use the power drill." },
-            { word: "chest", phonemes: ["tʃ","ɛ","s","t"], example: "A wooden toy chest." },
-            { word: "chain", phonemes: ["tʃ","eɪ","n"], example: "A metal dog chain." },
-            { word: "check", phonemes: ["tʃ","ɛ","k"], example: "A black and white check." },
-            { word: "bench", phonemes: ["b","ɛ","n","tʃ"], example: "The piano bench is low." },
-            { word: "beach", phonemes: ["b","iː","tʃ"], example: "Play on the sandy beach." },
-            { word: "peach", phonemes: ["p","iː","tʃ"], example: "A soft fuzzy peach." },
-            { word: "torch", phonemes: ["t","ɔː","ɹ","tʃ"], example: "Carry a bright torch." },
-            { word: "teeth", phonemes: ["t","iː","θ"], example: "Brush your white teeth." },
-            { word: "mouth", phonemes: ["m","aʊ","θ"], example: "Open your mouth wide." },
-            { word: "path", phonemes: ["p","æ","θ"], example: "The forest walking path." },
-            { word: "cloth", phonemes: ["k","l","ɑ","θ"], example: "Wipe it with a cloth." },
-            { word: "thumb", phonemes: ["θ","ʌ","m"], example: "Show a thumbs up." },
-            { word: "three", phonemes: ["θ","ɹ","iː"], example: "One, two, three apples." },
-            { word: "wheat", phonemes: ["w","iː","t"], example: "A field of gold wheat." },
-            { word: "wheel", phonemes: ["w","iː","l"], example: "The car has a round wheel." },
-            { word: "whale", phonemes: ["w","eɪ","l"], example: "The whale swims deep." },
-            { word: "whip", phonemes: ["w","ɪ","p"], example: "A long leather whip." },
-            { word: "whistle", phonemes: ["w","ɪ","s","əl"], example: "Blow the silver whistle." },
-            { word: "white", phonemes: ["w","aɪ","t"], example: "A sheet of white paper." },
-            { word: "bench", phonemes: ["b","ɛ","n","tʃ"], example: "Sit on the wood bench." },
-            { word: "stump", phonemes: ["s","t","ʌ","m","p"], example: "A brown tree stump." },
-            { word: "skirt", phonemes: ["s","k","ɜː","ɹ","t"], example: "A pink flared skirt." },
-            { word: "swing", phonemes: ["s","w","ɪ","ŋ"], example: "The swing is in the yard." },
-            { word: "slide", phonemes: ["s","l","aɪ","d"], example: "Go down the blue slide." },
-            { word: "spoon", phonemes: ["s","p","uː","n"], example: "A silver soup spoon." },
-            { word: "star", phonemes: ["s","t","ɑː","ɹ"], example: "The star is yellow." }
-        ],
-        advanced: [
-            { word: "cake", phonemes: ["k","eɪ","k"], example: "A chocolate birthday cake." },
-            { word: "kite", phonemes: ["k","aɪ","t"], example: "Fly a red kite." },
-            { word: "bike", phonemes: ["b","aɪ","k"], example: "I ride my blue bike." },
-            { word: "rope", phonemes: ["ɹ","oʊ","p"], example: "A long jump rope." },
-            { word: "bone", phonemes: ["b","oʊ","n"], example: "The dog has a bone." },
-            { word: "cone", phonemes: ["k","oʊ","n"], example: "An ice cream cone." },
-            { word: "nose", phonemes: ["n","oʊ","z"], example: "Touch your small nose." },
-            { word: "rose", phonemes: ["ɹ","oʊ","z"], example: "A red garden rose." },
-            { word: "gate", phonemes: ["g","eɪ","t"], example: "Close the garden gate." },
-            { word: "plane", phonemes: ["p","l","eɪ","n"], example: "The white plane flies." },
-            { word: "whale", phonemes: ["w","eɪ","l"], example: "The whale is huge." },
-            { word: "house", phonemes: ["h","aʊ","s"], example: "A house with a roof." },
-            { word: "mouse", phonemes: ["m","aʊ","s"], example: "The mouse ate cheese." },
-            { word: "leaf", phonemes: ["l","iː","f"], example: "A green tree leaf." },
-            { word: "boat", phonemes: ["b","oʊ","t"], example: "A sailboat on water." },
-            { word: "coat", phonemes: ["k","oʊ","t"], example: "Wear a winter coat." },
-            { word: "goat", phonemes: ["g","oʊ","t"], example: "A goat with horns." },
-            { word: "train", phonemes: ["t","ɹ","eɪ","n"], example: "A long steam train." },
-            { word: "cloud", phonemes: ["k","l","aʊ","d"], example: "A fluffy white cloud." },
-            { word: "globe", phonemes: ["g","l","oʊ","b"], example: "A world map globe." },
-            { word: "flute", phonemes: ["f","l","uː","t"], example: "A silver music flute." },
-            { word: "grape", phonemes: ["g","ɹ","eɪ","p"], example: "A bunch of grapes." },
-            { word: "sheep", phonemes: ["ʃ","iː","p"], example: "A white wool sheep." },
-            { word: "watch", phonemes: ["w","ɑ","tʃ"], example: "Check the wrist watch." },
-            { word: "bridge", phonemes: ["b","ɹ","ɪ","dʒ"], example: "A stone river bridge." },
-            { word: "phone", phonemes: ["f","oʊ","n"], example: "Answer the black phone." },
-            { word: "stove", phonemes: ["s","t","oʊ","v"], example: "Cook on the gas stove." },
-            { word: "cube", phonemes: ["k","j","uː","b"], example: "An ice cube tray." },
-            { word: "dice", phonemes: ["d","aɪ","s"], example: "Roll the white dice." },
-            { word: "slide", phonemes: ["s","l","aɪ","d"], example: "The playground slide." },
-            { word: "frame", phonemes: ["f","ɹ","eɪ","m"], example: "A wooden photo frame." },
-            { word: "smile", phonemes: ["s","m","aɪ","l"], example: "See the happy smile." },
-            { word: "fruit", phonemes: ["f","ɹ","uː","t"], example: "A bowl of fresh fruit." },
-            { word: "juice", phonemes: ["dʒ","uː","s"], example: "A glass of orange juice." },
-            { word: "moon", phonemes: ["m","uː","n"], example: "The moon is round." },
-            { word: "spoon", phonemes: ["s","p","uː","n"], example: "A silver soup spoon." },
-            { word: "book", phonemes: ["b","ʊ","k"], example: "Read a story book." },
-            { word: "hook", phonemes: ["h","ʊ","k"], example: "Hang it on a hook." },
-            { word: "foot", phonemes: ["f","ʊ","t"], example: "Put a shoe on your foot." },
-            { word: "boot", phonemes: ["b","uː","t"], example: "A black rubber boot." },
-            { word: "star", phonemes: ["s","t","ɑː","ɹ"], example: "A bright yellow star." },
-            { word: "car", phonemes: ["k","ɑː","ɹ"], example: "A fast red car." },
-            { word: "jar", phonemes: ["dʒ","ɑː","ɹ"], example: "A glass jam jar." },
-            { word: "park", phonemes: ["p","ɑː","ɹ","k"], example: "Play in the green park." },
-            { word: "fork", phonemes: ["f","ɔː","ɹ","k"], example: "Eat with a silver fork." },
-            { word: "corn", phonemes: ["k","ɔː","ɹ","n"], example: "Yellow corn on the cob." },
-            { word: "horn", phonemes: ["h","ɔː","ɹ","n"], example: "The car blew its horn." },
-            { word: "bird", phonemes: ["b","ɜː","ɹ","d"], example: "A small blue bird." },
-            { word: "shirt", phonemes: ["ʃ","ɜː","ɹ","t"], example: "A clean white shirt." },
-            { word: "skirt", phonemes: ["s","k","ɜː","ɹ","t"], example: "A pink pleated skirt." },
-            { word: "purse", phonemes: ["p","ɜː","ɹ","s"], example: "A leather coin purse." },
-            { word: "turtle", phonemes: ["t","ɜː","ɹ","t","əl"], example: "A slow green turtle." },
-            { word: "crown", phonemes: ["k","ɹ","aʊ","n"], example: "The king wears a crown." },
-            { word: "clown", phonemes: ["k","l","aʊ","n"], example: "The funny circus clown." },
-            { word: "owl", phonemes: ["aʊ","l"], example: "The owl is in the tree." },
-            { word: "flower", phonemes: ["f","l","aʊ","ɚ"], example: "A red garden flower." },
-            { word: "mouse", phonemes: ["m","aʊ","s"], example: "A small brown mouse." },
-            { word: "house", phonemes: ["h","aʊ","s"], example: "A red brick house." },
-            { word: "couch", phonemes: ["k","aʊ","tʃ"], example: "Sit on the soft couch." },
-            { word: "coin", phonemes: ["k","ɔɪ","n"], example: "A gold round coin." },
-            { word: "oil", phonemes: ["ɔɪ","l"], example: "A bottle of olive oil." },
-            { word: "toy", phonemes: ["t","ɔɪ"], example: "A colorful toy car." },
-            { word: "boy", phonemes: ["b","ɔɪ"], example: "The little boy is happy." },
-            { word: "nail", phonemes: ["n","eɪ","l"], example: "A sharp metal nail." },
-            { word: "snail", phonemes: ["s","n","eɪ","l"], example: "A snail has a shell." },
-            { word: "tail", phonemes: ["t","eɪ","l"], example: "The dog wags its tail." },
-            { word: "tray", phonemes: ["t","ɹ","eɪ"], example: "Food on a plastic tray." },
-            { word: "spray", phonemes: ["s","p","ɹ","eɪ"], example: "A water spray bottle." },
-            { word: "seed", phonemes: ["s","iː","d"], example: "Plant a sunflower seed." },
-            { word: "tree", phonemes: ["t","ɹ","iː"], example: "A tall green tree." },
-            { word: "bee", phonemes: ["b","iː"], example: "A yellow honey bee." },
-            { word: "jeep", phonemes: ["dʒ","iː","p"], example: "A green off-road jeep." },
-            { word: "meat", phonemes: ["m","iː","t"], example: "A piece of red meat." },
-            { word: "leaf", phonemes: ["l","iː","f"], example: "A green maple leaf." },
-            { word: "seal", phonemes: ["s","iː","l"], example: "A seal in the ocean." },
-            { word: "soap", phonemes: ["s","oʊ","p"], example: "A bar of white soap." },
-            { word: "road", phonemes: ["ɹ","oʊ","d"], example: "A long paved road." },
-            { word: "toad", phonemes: ["t","oʊ","d"], example: "A brown bumpy toad." },
-            { word: "bowl", phonemes: ["b","oʊ","l"], example: "A bowl of hot soup." },
-            { word: "snow", phonemes: ["s","n","oʊ"], example: "The white cold snow." },
-            { word: "window", phonemes: ["w","ɪ","n","d","oʊ"], example: "Look out the window." },
-            { word: "glue", phonemes: ["g","l","uː"], example: "A bottle of white glue." },
-            { word: "blue", phonemes: ["b","l","uː"], example: "The sky is bright blue." },
-            { word: "suit", phonemes: ["s","uː","t"], example: "A black business suit." },
-            { word: "straw", phonemes: ["s","t","ɹ","ɔː"], example: "Drink with a straw." },
-            { word: "claw", phonemes: ["k","l","ɔː"], example: "The cat has a sharp claw." },
-            { word: "saw", phonemes: ["s","ɔː"], example: "Use a wood hand saw." },
-            { word: "paw", phonemes: ["p","ɔː"], example: "A puppy has a soft paw." },
-            { word: "ball", phonemes: ["b","ɔː","l"], example: "A round soccer ball." },
-            { word: "wall", phonemes: ["w","ɔː","l"], example: "A tall stone wall." },
-            { word: "chalk", phonemes: ["tʃ","ɔː","k"], example: "Write with white chalk." },
-            { word: "shelf", phonemes: ["ʃ","ɛ","l","f"], example: "A wood book shelf." },
-            { word: "bench", phonemes: ["b","ɛ","n","tʃ"], example: "A wooden park bench." },
-            { word: "bridge", phonemes: ["b","ɹ","ɪ","dʒ"], example: "A small river bridge." },
-            { word: "fridge", phonemes: ["f","ɹ","ɪ","dʒ"], example: "The milk is in the fridge." },
-            { word: "badge", phonemes: ["b","æ","dʒ"], example: "A shiny police badge." },
-            { word: "fudge", phonemes: ["f","ʌ","dʒ"], example: "A piece of chocolate fudge." },
-            { word: "witch", phonemes: ["w","ɪ","tʃ"], example: "The witch has a hat." },
-            { word: "watch", phonemes: ["w","ɑ","tʃ"], example: "Check your wrist watch." },
-            { word: "patch", phonemes: ["p","æ","tʃ"], example: "A patch on the jeans." }
+            { word: "dog", phonemes: ["d","ɒ","g"], example: "The dog can run fast." },
+            { word: "sun", phonemes: ["s","ʌ","n"], example: "The sun is hot today." },
+            { word: "pig", phonemes: ["p","ɪ","g"], example: "The pink pig is in the mud." },
+            { word: "bus", phonemes: ["b","ʌ","s"], example: "I ride the yellow bus to school." }
         ]
+
     };
     const wordDisplay = document.getElementById("wordDisplay");
     const phonemeDisplay = document.getElementById("phonemeDisplay");

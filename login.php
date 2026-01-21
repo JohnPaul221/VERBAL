@@ -2,9 +2,8 @@
 session_start();
 require_once 'config/database.php';
 
-// Safety check for PDO connection
 if (!isset($pdo) || !($pdo instanceof PDO)) {
-    die("Database connection failed. Check config/database.php.");
+    die("Database connection failed.");
 }
 
 $message = '';
@@ -14,46 +13,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $role     = $_POST['role'];
 
-    $table = '';
-    if ($role === "student") {
-        $table = "students";
-    } elseif ($role === "teacher") {
-        $table = "teachers";
-    } else {
-        $message = "Invalid role selected.";
-    }
+    $table = ($role === "teacher") ? "teachers" : "students";
 
     if (!empty($table)) {
         try {
-            // Retrieve id, username, and the PLAINTEXT password
             $stmt = $pdo->prepare("SELECT id, username, password FROM $table WHERE username = :username");
             $stmt->bindParam(':username', $username);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // **FIXED: Use PLAINTEXT comparison**
             if ($user && $password === $user['password']) {
-                // Regenerate session ID upon successful login (Security Best Practice)
                 session_regenerate_id(true);
-
                 $_SESSION['user_id']   = $user['id'];
                 $_SESSION['username']  = $user['username'];
                 $_SESSION['role']      = $role;
 
-                if ($role === "student") {
-                    header("Location: student/student_dashboard.php");
-                } elseif ($role === "teacher") {
-                    header("Location: teacher/teacher_dashboard.php");
-                }
+                header("Location: " . $role . "/" . $role . "_dashboard.php");
                 exit();
             } else {
-                // Generic error message for security
                 $message = "Invalid username or password.";
             }
         } catch (PDOException $e) {
-            error_log("Login Query Error: " . $e->getMessage());
-            // Hide specific database error details from the user
-            $message = "Login failed due to an application error.";
+            error_log($e->getMessage());
+            $message = "Application error.";
         }
     }
 }
@@ -64,249 +46,206 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Premium Login | 4K Responsive</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        :root {
+            --primary: #4fc3f7;
+            --primary-dark: #0288d1;
+            --text-main: #01579b;
+            --white: rgba(255, 255, 255, 0.95);
+            /* Scaling factor for 4K */
+            font-size: 18px;
+        }
+
+        @media (min-width: 2560px) {
+            :root { font-size: 24px; } /* Scale everything up for 4K */
+        }
+
         body {
             margin: 0;
             padding: 0;
-            height: 100vh;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(to bottom, #87ceeb, #ccf2ff);
-            overflow: hidden;
-            position: relative;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #87ceeb 0%, #ccf2ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
         }
 
+        /* Animated Background Elements */
         .cloud {
             position: absolute;
             background: #fff;
-            border-radius: 50%;
-            opacity: 0.9;
+            border-radius: 50rem;
+            opacity: 0.8;
+            z-index: 1;
         }
-        .cloud:before, .cloud:after {
+        .cloud::before, .cloud::after {
             content: '';
             position: absolute;
             background: #fff;
             border-radius: 50%;
         }
 
-        .cloud1, .cloud1b { width: 120px; height: 60px; top: 10%; }
-        .cloud1:before, .cloud1b:before { width: 60px; height: 60px; top: -30px; left: 10px; }
-        .cloud1:after, .cloud1b:after { width: 80px; height: 80px; top: -40px; right: 15px; }
-        .cloud1 { animation: float 70s linear infinite; left: -200px; animation-delay: 0s; }
-        .cloud1b { animation: float 70s linear infinite; left: -200px; animation-delay: 35s; }
-
-        .cloud2, .cloud2b { width: 150px; height: 70px; top: 20%; }
-        .cloud2:before, .cloud2b:before { width: 70px; height: 70px; top: -35px; left: 20px; }
-        .cloud2:after, .cloud2b:after { width: 90px; height: 90px; top: -45px; right: 25px; }
-        .cloud2 { animation: float 90s linear infinite; left: -200px; animation-delay: 0s; }
-        .cloud2b { animation: float 90s linear infinite; left: -200px; animation-delay: 45s; }
-
-        .cloud3 { width: 180px; height: 80px; bottom: 20%; left: -200px;
-            animation: float 80s linear infinite; }
-        .cloud3:before { width: 90px; height: 90px; top: -45px; left: 30px; }
-        .cloud3:after { width: 110px; height: 110px; top: -55px; right: 20px; }
-
-        .cloud4 { width: 130px; height: 60px; bottom: 10%; left: -200px;
-            animation: float 100s linear infinite; }
-        .cloud4:before { width: 60px; height: 60px; top: -30px; left: 15px; }
-        .cloud4:after { width: 80px; height: 80px; top: -40px; right: 10px; }
+        .cloud1 { width: 15rem; height: 6rem; top: 10%; animation: float 60s linear infinite; }
+        .cloud2 { width: 20rem; height: 8rem; top: 25%; animation: float 85s linear infinite reverse; }
 
         @keyframes float {
-            from { transform: translateX(0); }
-            to   { transform: translateX(120vw); }
+            from { transform: translateX(-20vw); }
+            to { transform: translateX(110vw); }
         }
 
-        .balloon, .animal {
+        /* Decorative Images - Scaled for high res */
+        .decoration {
             position: absolute;
-            animation: floatY 10s ease-in-out infinite alternate;
-            opacity: 0.9;
+            pointer-events: none;
+            transition: all 0.5s ease;
+            z-index: 2;
         }
-        @keyframes floatY {
-            from { transform: translateY(0px); }
-            to   { transform: translateY(-25px); }
-        }
-        .balloon { font-size: 60px; }
-        .b1 { top: 15%; left: 20%; }
-        .b2 { bottom: 20%; right: 25%; }
+        .books { width: 25rem; left: 5%; bottom: 10%; }
+        .boy { width: 28rem; right: 2%; bottom: 5%; }
 
-        .animal { font-size: 100px; }
-        .a2 { top: 30%; right: 30%; font-size: 110px; }
-        .a3 { top: 15%; right: 41%; font-size: 90px; }
-        .a4 { bottom: 15%; left: 20%; font-size: 100px; }
-
-        .books {
-            position: absolute;
-            top: 50%;
-            left: 17%;
-            transform: translate(-50%, -50%);
-            width: 450px;
-            height: auto;
-        }
-
-        .bag {
-            position: absolute;
-            top: 20%;
-            left: 19%;
-            width: 440px;
-            height: auto;
-        }
-        .boy {
-            position: absolute;
-            top: 45%;
-            right: -7%  ;
-            transform: translateY(-50%);
-            width: 450px;
-            height: auto;
-        }
-        .bubble {
-            position: absolute;
-            top: 30%;
-            right: 13%;
-            background: #fff;
-            padding: 20px 35px;
-            border-radius: 25px;
-            border: 3px solid #4fc3f7;
-            font-size: 24px;
-            font-weight: bold;
-            color: #01579b;
-            box-shadow: 3px 3px 12px rgba(0,0,0,0.25);
-        }
-        .bubble::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            right: -20px;
-            transform: translateY(-50%);
-            border-width: 10px 0 10px 20px;
-            border-style: solid;
-            border-color: transparent transparent transparent #fff;
-            filter: drop-shadow(2px 0px 2px rgba(0,0,0,0.1));
-        }
-
+        /* Login Card */
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            width: 340px;
+            background: var(--white);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 22rem;
             text-align: center;
             z-index: 10;
-
-            position: absolute;
-            top: 40%;
-            right: 25%;
-            transform: translateY(-40%);
-
-            animation: pop 0.8s ease;
-        }
-        @keyframes pop {
-            0% { transform: scale(0.8) translateY(-40%); opacity: 0; }
-            100% { transform: scale(1) translateY(-40%); opacity: 1; }
+            border: 1px solid rgba(255,255,255,0.3);
+            animation: fadeIn 0.8s ease-out;
         }
 
-        h2 { color: #01579b; }
-        input[type="text"] {
-            width: 90%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #4fc3f7;
-            border-radius: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .password-box {
-            position: relative;
-            width: 90%;
-            margin: 10px auto;
-        }
-        .password-box input[type="password"], .password-box input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #4fc3f7;
-            border-radius: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .password-box .toggle-eye {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 16px;
-            color: #666;
-        }
-        input[type="submit"] {
-            background: #4fc3f7;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 15px;
-            font-size: 18px;
-            cursor: pointer;
-            color: #fff;
-            font-weight: bold;
-            width: 95%;
-        }
-        input[type="submit"]:hover { background: #0288d1; }
 
-        .message { color: red; font-weight: bold; }
-        .link { margin-top: 15px; font-size: 14px; }
-        .link a { color: #01579b; text-decoration: none; font-weight: bold; }
-        .link a:hover { text-decoration: underline; }
+        h2 {
+            color: var(--text-main);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+
+        /* Modern Toggle */
         .toggle {
             display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            background: #e3f2fd;
-            border-radius: 30px;
-            padding: 4px;
+            background: #f0f7ff;
+            border-radius: 1rem;
+            padding: 0.4rem;
+            margin-bottom: 2rem;
         }
         .toggle button {
             flex: 1;
             border: none;
             background: transparent;
-            padding: 8px 0;
-            font-size: 14px;
-            border-radius: 20px;
+            padding: 0.8rem;
+            font-weight: 600;
+            border-radius: 0.7rem;
             cursor: pointer;
             transition: 0.3s;
         }
         .toggle button.active {
-            background: #4fc3f7;
-            color: #fff;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 195, 247, 0.3);
+        }
+
+        /* Form Inputs */
+        .input-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0eef5;
+            border-radius: 0.8rem;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 195, 247, 0.1);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-eye {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #90a4ae;
+        }
+
+        input[type="submit"] {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.8rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 1rem;
+        }
+        input[type="submit"]:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(2, 136, 209, 0.3);
+        }
+
+        .message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .link { margin-top: 1.5rem; color: #607d8b; }
+        .link a { color: var(--primary-dark); text-decoration: none; font-weight: 700; }
+
+        /* Bubble for 4K */
+        .bubble {
+            position: absolute;
+            top: 15%;
+            right: 10%;
+            background: white;
+            padding: 1.5rem 2.5rem;
+            border-radius: 2rem;
             font-weight: bold;
+            color: var(--text-main);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            z-index: 5;
         }
-        .forgot {
-            text-align: right;
-            width: 90%;
-            margin: auto;
-            font-size: 13px;
-        }
-        .forgot a { color: #01579b; text-decoration: none; }
-        .forgot a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-<img src="upload/books.png" alt="Books" class="books">
-<img src="upload/bag.png" alt="Bag" class="bag">
-<img src="upload/boy.png" alt="Boy" class="boy">
-<div class="bubble">Welcome</div>
 
 <div class="cloud cloud1"></div>
-<div class="cloud cloud1b"></div>
 <div class="cloud cloud2"></div>
-<div class="cloud cloud2b"></div>
-<div class="cloud cloud3"></div>
-<div class="cloud cloud4"></div>
 
-<div class="balloon b1">🎈</div>
-<div class="balloon b2">🎈</div>
+<img src="upload/books.png" alt="Books" class="decoration books">
+<img src="upload/boy.png" alt="Boy" class="decoration boy">
 
-<div class="animal a2">🦁</div>
-<div class="animal a3">🦊</div>
-<div class="animal a4">🐵</div>
+<div class="bubble">Let's Learn! 🚀</div>
 
 <div class="container">
     <div class="toggle">
@@ -314,65 +253,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button id="teacherBtn">Teacher</button>
     </div>
 
-    <h2>Log In</h2>
+    <h2>Welcome Back</h2>
+
     <?php if ($message): ?>
-        <p class="message"><?= htmlspecialchars($message) ?></p>
+        <div class="message"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
     <form method="POST" action="">
         <input type="hidden" name="role" id="role" value="student">
 
-        <input type="text" name="username" placeholder="Username" required>
-        <div class="password-box">
-            <input type="password" name="password" id="password" placeholder="Password" required>
-            <span class="toggle-eye" onclick="togglePassword()"><i class="fa-regular fa-eye"></i></span>
-            <div class="forgot"><a href="#">Forgot Password?</a></div>
+        <div class="input-group">
+            <input type="text" name="username" placeholder="Username" required>
         </div>
-        <input type="submit" value="Log In">
+
+        <div class="input-group">
+            <div class="password-wrapper">
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <span class="toggle-eye" onclick="togglePassword()">
+                    <i class="fa-regular fa-eye"></i>
+                </span>
+            </div>
+        </div>
+
+        <input type="submit" value="Sign In">
     </form>
 
     <div class="link">
-        Don't have an account? <a href="signup.php">Sign up here</a>!
+        New here? <a href="signup.php">Create Account</a>
     </div>
 </div>
 
 <script>
     function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = document.querySelector('.toggle-eye i');
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash');
+        const passInput = document.getElementById('password');
+        const icon = document.querySelector('.toggle-eye i');
+        const isPass = passInput.type === "password";
+
+        passInput.type = isPass ? "text" : "password";
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    }
+
+    const sBtn = document.getElementById("studentBtn");
+    const tBtn = document.getElementById("teacherBtn");
+    const roleInput = document.getElementById("role");
+
+    function setRole(role) {
+        roleInput.value = role;
+        if(role === 'student') {
+            sBtn.classList.add('active');
+            tBtn.classList.remove('active');
         } else {
-            passwordInput.type = "password";
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye');
+            tBtn.classList.add('active');
+            sBtn.classList.remove('active');
         }
     }
 
-    function clearLoginFields() {
-        document.querySelector('input[name="username"]').value = "";
-        document.getElementById('password').value = "";
-        // Reset eye icon to 'show password' if you switch modes
-        document.querySelector('.toggle-eye i').classList.remove('fa-eye-slash');
-        document.querySelector('.toggle-eye i').classList.add('fa-eye');
-        document.getElementById('password').type = 'password';
-    }
-
-    document.getElementById("studentBtn").addEventListener("click", function(){
-        this.classList.add("active");
-        document.getElementById("teacherBtn").classList.remove("active");
-        document.getElementById("role").value = "student";
-        clearLoginFields();
-    });
-
-    document.getElementById("teacherBtn").addEventListener("click", function(){
-        this.classList.add("active");
-        document.getElementById("studentBtn").classList.remove("active");
-        document.getElementById("role").value = "teacher";
-        clearLoginFields();
-    });
+    sBtn.addEventListener("click", () => setRole('student'));
+    tBtn.addEventListener("click", () => setRole('teacher'));
 </script>
 </body>
 </html>

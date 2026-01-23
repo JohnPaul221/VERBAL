@@ -23,7 +23,7 @@ $play_welcome_voice = true;
             @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
             :root {
-                /* Adventure Palette base sa huling image */
+                /* Adventure Palette */
                 --sky-blue: #70d6ff;       /* Bright sky */
                 --cloud-white: #ffffff;
                 --grass-green: #6bcb77;    /* Adventure green */
@@ -35,7 +35,6 @@ $play_welcome_voice = true;
 
             body {
                 height: 100vh;
-                /* Gradient na parang maliwanag na umaga */
                 background: linear-gradient(180deg, var(--sky-blue) 0%, #e0f2fe 100%);
                 font-family: "Nunito", sans-serif;
                 padding: 10px 20px;
@@ -87,14 +86,14 @@ $play_welcome_voice = true;
                 box-shadow: 0 4px 0px #d64545;
             }
 
-            /* Main Container - Sinunod ang layout sa image */
+            /* Main Container */
             .main-container {
                 max-width: 98vw;
                 margin: 0 auto;
                 height: calc(100vh - 80px);
                 display: flex;
                 gap: 15px;
-                background: rgba(255, 255, 255, 0.4); /* Transparent glass look */
+                background: rgba(255, 255, 255, 0.4);
                 border-radius: 30px;
                 padding: 15px;
                 backdrop-filter: blur(8px);
@@ -117,6 +116,12 @@ $play_welcome_voice = true;
                 box-sizing: border-box;
             }
 
+
+            /* Remove scroll from the "Read the Word" section specifically */
+            .section:nth-of-type(2) {
+                overflow-y: hidden;
+            }
+
             .divider {
                 width: 4px;
                 background: var(--cloud-white);
@@ -134,10 +139,10 @@ $play_welcome_voice = true;
                 gap: 10px;
             }
 
-            /* Word Box - Parang sign board sa kalsada */
+            /* Word Box */
             .reading-material {
                 background: #f0f9ff;
-                padding: 15px;
+                padding: 12px; /* Slightly reduced padding */
                 border-radius: 20px;
                 border: 4px solid var(--sky-blue);
                 margin-bottom: 10px;
@@ -145,7 +150,7 @@ $play_welcome_voice = true;
             }
 
             #wordDisplay {
-                font-size: 2.6rem;
+                font-size: 2.3rem; /* Slightly reduced to save vertical space */
                 color: var(--street-blue);
                 text-align: center;
                 font-weight: 900;
@@ -179,15 +184,15 @@ $play_welcome_voice = true;
                 box-shadow: none;
             }
 
-            /* Mic - Central Adventure Hub */
-            .mic-container { width: 80px; height: 80px; margin: 15px auto; }
+            /* Mic - Central Hub */
+            .mic-container { width: 70px; height: 70px; margin: 10px auto; }
             .mic-icon {
                 width: 100%; height: 100%;
                 background-color: var(--street-blue);
                 border: 5px solid var(--cloud-white);
                 border-radius: 50%;
                 display: flex; justify-content: center; align-items: center;
-                color: white; font-size: 30px;
+                color: white; font-size: 25px;
                 box-shadow: 0 5px 15px rgba(77, 150, 255, 0.4);
             }
 
@@ -197,12 +202,12 @@ $play_welcome_voice = true;
             }
 
             /* Stats & Progress */
-            .progress-bar { height: 15px; background: #edf2f7; border-radius: 20px; margin-bottom: 10px; overflow: hidden; }
+            .progress-bar { height: 12px; background: #edf2f7; border-radius: 20px; margin-bottom: 10px; overflow: hidden; }
             .progress-bar-inner { background: var(--grass-green); height: 100%; transition: width 0.4s; }
 
-            .stat-item .value { color: var(--sun-yellow); font-size: 1.8rem; font-weight: 900; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
+            .stat-item .value { color: var(--sun-yellow); font-size: 1.6rem; font-weight: 900; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 
-            /* Custom Scrollbar */
+            /* Custom Scrollbar for other sections */
             .section::-webkit-scrollbar { width: 8px; }
             .section::-webkit-scrollbar-thumb { background: var(--sky-blue); border-radius: 10px; }
 
@@ -210,6 +215,18 @@ $play_welcome_voice = true;
                 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
                 70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
                 100% { transform: scale(1); }
+            }
+
+            /* Scoreboard adjustments for fit */
+            .stats-container {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+            .stat-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
         </style>
     </head>

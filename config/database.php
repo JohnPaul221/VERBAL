@@ -8,7 +8,7 @@
 $host = 'localhost';
 $dbname = 'verbal';
 $user = 'root';
-$pass = 'diddies4evah_31';
+$pass = '';
 
 $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 $options = [

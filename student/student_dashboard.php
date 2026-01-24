@@ -13,336 +13,375 @@ $username = $_SESSION['username'];
 $play_welcome_voice = true;
 ?>
 <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>VERBAL PRACTICE</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VERBAL PRACTICE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
-            :root {
-                /* Adventure Palette */
-                --sky-blue: #70d6ff;       /* Bright sky */
-                --cloud-white: #ffffff;
-                --grass-green: #6bcb77;    /* Adventure green */
-                --sun-yellow: #ffd93d;     /* Highlighting */
-                --street-blue: #4d96ff;    /* Primary buttons */
-                --text-main: #2b2d42;      /* Clear readability */
-                --accent-orange: #ff6b6b;  /* Warning/Logout */
-            }
+        :root {
+            /* Adventure Palette - Light Mode */
+            --sky-blue: #70d6ff;
+            --cloud-white: #ffffff;
+            --grass-green: #6bcb77;
+            --sun-yellow: #ffd93d;
+            --street-blue: #4d96ff;
+            --text-main: #2b2d42;
+            --accent-orange: #ff6b6b;
+            --bg-gradient: linear-gradient(180deg, var(--sky-blue) 0%, #e0f2fe 100%);
+            --container-bg: rgba(255, 255, 255, 0.4);
+            --card-bg: var(--cloud-white);
+            --reading-bg: #f0f9ff;
+            --border-color: #e2e8f0;
 
-            body {
-                height: 100vh;
-                background: linear-gradient(180deg, var(--sky-blue) 0%, #e0f2fe 100%);
-                font-family: "Nunito", sans-serif;
-                padding: 10px 20px;
-                color: var(--text-main);
-                margin: 0;
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-                box-sizing: border-box;
-            }
+            /* Theme Switch Positions */
+            --sun-top: 10px;
+            --moon-top: -100px;
+        }
 
-            /* Decorative clouds effect */
-            body::after {
-                content: "☁️";
-                position: absolute;
-                font-size: 100px;
-                top: 50px;
-                right: 10%;
-                opacity: 0.2;
-                z-index: -1;
-            }
+        .dark-mode {
+            /* Adventure Palette - Dark Mode */
+            --sky-blue: #1a1a2e;
+            --cloud-white: #24243e;
+            --grass-green: #4ade80;
+            --sun-yellow: #fbbf24;
+            --street-blue: #60a5fa;
+            --text-main: #e2e8f0;
+            --accent-orange: #f87171;
+            --bg-gradient: radial-gradient(circle at center, #1a0633 0%, #050505 100%);
+            --container-bg: rgba(30, 30, 45, 0.6);
+            --card-bg: #1e1e2f;
+            --reading-bg: #16213e;
+            --border-color: #4d96ff;
 
-            .page-header {
-                height: 50px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 5px;
-            }
+            --sun-top: -100px;
+            --moon-top: 10px;
+        }
 
-            #usernameDisplay {
-                background: var(--cloud-white);
-                padding: 6px 15px;
-                border-radius: 20px;
-                border: 3px solid var(--street-blue);
-                color: var(--street-blue);
-                font-weight: 900;
-                box-shadow: 0 4px 0px rgba(77, 150, 255, 0.2);
-            }
+        body {
+            height: 100vh;
+            background: var(--bg-gradient);
+            font-family: "Nunito", sans-serif;
+            padding: 10px 20px;
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-sizing: border-box;
+            transition: 0.5s ease;
+        }
 
-            #logoutBtn {
-                background: var(--accent-orange);
-                color: white;
-                border: none;
-                border-radius: 12px;
-                padding: 8px 15px;
-                cursor: pointer;
-                font-weight: 700;
-                box-shadow: 0 4px 0px #d64545;
-            }
+        /* THEME SWITCHER STYLE */
+        .sun, .moon {
+            position: fixed; right: 150px; width: 40px; height: 40px; border-radius: 50%;
+            cursor: pointer; z-index: 1000; transition: 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .sun { top: var(--sun-top); background: #ffd93d; color: #ff6b6b; box-shadow: 0 0 15px #ffd93d; }
+        .moon { top: var(--moon-top); background: #60a5fa; color: white; box-shadow: 0 0 15px #60a5fa; }
 
-            /* Main Container */
-            .main-container {
-                max-width: 98vw;
-                margin: 0 auto;
-                height: calc(100vh - 80px);
-                display: flex;
-                gap: 15px;
-                background: rgba(255, 255, 255, 0.4);
-                border-radius: 30px;
-                padding: 15px;
-                backdrop-filter: blur(8px);
-                border: 6px solid var(--cloud-white);
-                box-sizing: border-box;
-            }
+        body::after {
+            content: "☁️";
+            position: absolute;
+            font-size: 100px;
+            top: 50px;
+            right: 10%;
+            opacity: 0.2;
+            z-index: -1;
+        }
 
-            /* Adventure Cards */
-            .section, .history-section {
-                flex: 1;
-                padding: 15px;
-                border-radius: 25px;
-                background-color: var(--cloud-white);
-                max-height: 100%;
-                overflow-y: auto;
-                display: flex;
-                flex-direction: column;
-                border: 2px solid #e2e8f0;
-                box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-                box-sizing: border-box;
-            }
+        .page-header {
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
 
+        #usernameDisplay {
+            background: var(--card-bg);
+            padding: 6px 15px;
+            border-radius: 20px;
+            border: 3px solid var(--street-blue);
+            color: var(--street-blue);
+            font-weight: 900;
+            box-shadow: 0 4px 0px rgba(77, 150, 255, 0.2);
+            transition: 0.5s;
+        }
 
-            /* Remove scroll from the "Read the Word" section specifically */
-            .section:nth-of-type(2) {
-                overflow-y: hidden;
-            }
+        #logoutBtn {
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 4px 0px #d64545;
+        }
 
-            .divider {
-                width: 4px;
-                background: var(--cloud-white);
-                border-radius: 10px;
-                opacity: 0.5;
-            }
+        .main-container {
+            max-width: 98vw;
+            margin: 0 auto;
+            height: calc(100vh - 80px);
+            display: flex;
+            gap: 15px;
+            background: var(--container-bg);
+            border-radius: 30px;
+            padding: 15px;
+            backdrop-filter: blur(8px);
+            border: 6px solid var(--cloud-white);
+            box-sizing: border-box;
+            transition: 0.5s;
+        }
 
-            h2 {
-                color: var(--street-blue);
-                font-size: 1.3rem;
-                margin-bottom: 12px;
-                font-weight: 900;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
+        .section, .history-section {
+            flex: 1;
+            padding: 15px;
+            border-radius: 25px;
+            background-color: var(--card-bg);
+            max-height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+            transition: 0.5s;
+        }
 
-            /* Word Box */
-            .reading-material {
-                background: #f0f9ff;
-                padding: 12px; /* Slightly reduced padding */
-                border-radius: 20px;
-                border: 4px solid var(--sky-blue);
-                margin-bottom: 10px;
-                position: relative;
-            }
+        .section:nth-of-type(2) { overflow-y: hidden; }
 
-            #wordDisplay {
-                font-size: 2.3rem; /* Slightly reduced to save vertical space */
-                color: var(--street-blue);
-                text-align: center;
-                font-weight: 900;
-                text-shadow: 2px 2px 0px var(--cloud-white);
-            }
+        .divider {
+            width: 4px;
+            background: var(--cloud-white);
+            border-radius: 10px;
+            opacity: 0.5;
+            transition: 0.5s;
+        }
 
-            /* Playful Buttons */
-            button {
-                padding: 10px 20px;
-                border-radius: 15px;
-                border: none;
-                font-weight: 900;
-                cursor: pointer;
-                transition: 0.2s;
-            }
+        h2 {
+            color: var(--street-blue);
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-            .btn-primary {
-                background: var(--accent-orange);
-                color: white;
-                box-shadow: 0 5px 0px #d64545;
-            }
+        .reading-material {
+            background: var(--reading-bg);
+            padding: 12px;
+            border-radius: 20px;
+            border: 4px solid var(--sky-blue);
+            margin-bottom: 10px;
+            position: relative;
+            transition: 0.5s;
+        }
 
-            .btn-secondary {
-                background: var(--street-blue);
-                color: white;
-                box-shadow: 0 5px 0px #2a6fdb;
-            }
+        #wordDisplay {
+            font-size: 2.3rem;
+            color: var(--street-blue);
+            text-align: center;
+            font-weight: 900;
+            text-shadow: 2px 2px 0px var(--card-bg);
+        }
 
-            button:active {
-                transform: translateY(4px);
-                box-shadow: none;
-            }
+        button {
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: none;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-            /* Mic - Central Hub */
-            .mic-container { width: 70px; height: 70px; margin: 10px auto; }
-            .mic-icon {
-                width: 100%; height: 100%;
-                background-color: var(--street-blue);
-                border: 5px solid var(--cloud-white);
-                border-radius: 50%;
-                display: flex; justify-content: center; align-items: center;
-                color: white; font-size: 25px;
-                box-shadow: 0 5px 15px rgba(77, 150, 255, 0.4);
-            }
+        .btn-primary {
+            background: var(--accent-orange);
+            color: white;
+            box-shadow: 0 5px 0px #d64545;
+        }
 
-            .mic-icon.listening {
-                background-color: var(--accent-orange);
-                animation: pulse 1s infinite;
-            }
+        .btn-secondary {
+            background: var(--street-blue);
+            color: white;
+            box-shadow: 0 5px 0px #2a6fdb;
+        }
 
-            /* Stats & Progress */
-            .progress-bar { height: 12px; background: #edf2f7; border-radius: 20px; margin-bottom: 10px; overflow: hidden; }
-            .progress-bar-inner { background: var(--grass-green); height: 100%; transition: width 0.4s; }
+        button:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
 
-            .stat-item .value { color: var(--sun-yellow); font-size: 1.6rem; font-weight: 900; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
+        .mic-container { width: 70px; height: 70px; margin: 10px auto; }
+        .mic-icon {
+            width: 100%; height: 100%;
+            background-color: var(--street-blue);
+            border: 5px solid var(--cloud-white);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 25px;
+            box-shadow: 0 5px 15px rgba(77, 150, 255, 0.4);
+            transition: 0.5s;
+        }
 
-            /* Custom Scrollbar for other sections */
-            .section::-webkit-scrollbar { width: 8px; }
-            .section::-webkit-scrollbar-thumb { background: var(--sky-blue); border-radius: 10px; }
+        .mic-icon.listening {
+            background-color: var(--accent-orange);
+            animation: pulse 1s infinite;
+        }
 
-            @keyframes pulse {
-                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
-                70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
-                100% { transform: scale(1); }
-            }
+        .progress-bar { height: 12px; background: #edf2f7; border-radius: 20px; margin-bottom: 10px; overflow: hidden; }
+        .progress-bar-inner { background: var(--grass-green); height: 100%; transition: width 0.4s; }
 
-            /* Scoreboard adjustments for fit */
-            .stats-container {
-                display: flex;
-                flex-direction: column;
-                gap: 5px;
-            }
-            .stat-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-        </style>
-    </head>
+        .stat-item .value { color: var(--sun-yellow); font-size: 1.6rem; font-weight: 900; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 
-    <body>
-    <header class="page-header">
-        <?php echo '<span id="usernameDisplay">Hello, ' . htmlspecialchars($username) . '!</span>'; ?>
-        <button id="logoutBtn" onclick="window.location.href='../login.php';">
-            <i class="fa-solid fa-right-from-bracket"></i> Logout
-        </button>
-    </header>
-    <main>
-        <div class="main-container">
+        .section::-webkit-scrollbar { width: 8px; }
+        .section::-webkit-scrollbar-thumb { background: var(--sky-blue); border-radius: 10px; }
 
-            <div class="section">
-                <h2>Your Turn to Talk! 🎤</h2>
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
+            100% { transform: scale(1); }
+        }
 
-                <div class="flex-space-between mb-4">
-                    <div>Level: <span id="levelDisplay" style="font-weight: bold; color: #10b981;">Beginner</span></div>
-                    <div>Word: <span id="progressText" style="font-weight: bold; color: #10b981;">0 / 5</span></div>
-                </div>
+        .stats-container { display: flex; flex-direction: column; gap: 5px; }
+        .stat-item { display: flex; justify-content: space-between; align-items: center; }
 
-                <div class="progress-bar">
-                    <div class="progress-bar-inner" style="width: 0%"></div>
-                </div>
+        /* Dark Mode Select Fix */
+        select {
+            background: var(--card-bg);
+            color: var(--text-main);
+            padding: 5px;
+            border-radius: 10px;
+            border: 2px solid var(--street-blue);
+        }
+    </style>
+</head>
 
-                <label for="difficulty" style="display: block; font-size: 1.2rem; font-weight: bold; margin-bottom: 8px;">Pick a Level:</label>
-                <select id="difficulty">
-                    <option value="beginner">🌟 Beginner (Easy Words)</option>
-                    <option value="intermediate">👍 Intermediate (Medium Words)</option>
-                    <option value="advanced">🧠 Advanced (Hard Words)</option>
-                </select>
+<body id="mainBody">
+<div class="sun" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i></div>
+<div class="moon" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></div>
 
-                <div class="mic-container">
-                    <div id="micBtn" class="mic-icon"><i class="fa-solid fa-microphone"></i></div>
-                </div>
+<header class="page-header">
+    <?php echo '<span id="usernameDisplay">Hello, ' . htmlspecialchars($username) . '!</span>'; ?>
+    <button id="logoutBtn" onclick="window.location.href='../login.php';">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
+</header>
+<main>
+    <div class="main-container">
 
-                <div id="status" class="status">Click the big circle to start!</div>
+        <div class="section">
+            <h2>Your Turn to Talk! 🎤</h2>
 
-                <div id="waveformContainer" class="waveform">
-                    <canvas id="waveformCanvas"></canvas>
-                </div>
-
-                <div class="flex-center mt-4">
-                    <button id="leaderboardBtn" class="btn-primary" onclick="window.location.href='../leaderboard.php';">
-                        🏆 Leaderboard
-                    </button>
-                    <button id="nextBtn" class="btn-secondary" disabled>👉 Next Word!</button>
-                </div>
+            <div class="flex-space-between mb-4">
+                <div>Level: <span id="levelDisplay" style="font-weight: bold; color: #10b981;">Beginner</span></div>
+                <div>Word: <span id="progressText" style="font-weight: bold; color: #10b981;">0 / 5</span></div>
             </div>
 
-            <div class="divider"></div>
+            <div class="progress-bar">
+                <div class="progress-bar-inner" style="width: 0%"></div>
+            </div>
 
-            <div class="section">
-                <h2>The Word to Read 📖</h2>
+            <label for="difficulty" style="display: block; font-size: 1.2rem; font-weight: bold; margin-bottom: 8px;">Pick a Level:</label>
+            <select id="difficulty">
+                <option value="beginner">🌟 Beginner (Easy Words)</option>
+                <option value="intermediate">👍 Intermediate (Medium Words)</option>
+                <option value="advanced">🧠 Advanced (Hard Words)</option>
+            </select>
 
-                <div class="reading-material">
-                    <div id="wordDisplay">
-                        Ready to begin
+            <div class="mic-container">
+                <div id="micBtn" class="mic-icon"><i class="fa-solid fa-microphone"></i></div>
+            </div>
+
+            <div id="status" class="status">Click the big circle to start!</div>
+
+            <div id="waveformContainer" class="waveform">
+                <canvas id="waveformCanvas"></canvas>
+            </div>
+
+            <div class="flex-center mt-4">
+                <button id="leaderboardBtn" class="btn-primary" onclick="window.location.href='../leaderboard.php';">
+                    🏆 Leaderboard
+                </button>
+                <button id="nextBtn" class="btn-secondary" disabled>👉 Next Word!</button>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+            <h2>The Word to Read 📖</h2>
+
+            <div class="reading-material">
+                <div id="wordDisplay">
+                    Ready to begin
+                </div>
+                <div class="flex-center mt-4">
+                    <button id="playWordBtn" class="btn-primary">
+                        <i class="fa-solid fa-volume-high"></i> Listen to the Word
+                    </button>
+                </div>
+                <div id="phonemeDisplay"></div>
+            </div>
+
+            <h3>You Said:</h3>
+            <div class="transcript" id="transcript" style="color: var(--text-main);">...</div>
+
+            <div class="rating-container">
+                <div class="rating" id="rating">0</div>
+                <div id="stars"></div>
+            </div>
+
+            <div class="feedback-scoreboard-container">
+                <div class="feedback-container">
+                    <h3>Example Sentence! 📝</h3>
+                    <div id="feedbackMessage" class="feedback-message" style="background: var(--reading-bg); padding: 10px; border-radius: 10px;">
+                        Practice sentence will appear here when you start.
                     </div>
                     <div class="flex-center mt-4">
-                        <button id="playWordBtn" class="btn-primary">
-                            <i class="fa-solid fa-volume-high"></i> Listen to the Word
+                        <button id="playFeedbackBtn" class="btn-primary">
+                            <i class="fa-solid fa-volume-high"></i> Listen to Sentence
                         </button>
                     </div>
-                    <div id="phonemeDisplay"></div>
                 </div>
 
-                <h3>You Said:</h3>
-                <div class="transcript" id="transcript">...</div>
-
-                <div class="rating-container">
-                    <div class="rating" id="rating">0</div>
-                    <div id="stars"></div>
-                </div>
-
-                <div class="feedback-scoreboard-container">
-                    <div class="feedback-container">
-                        <h3>Example Sentence! 📝</h3>
-                        <div id="feedbackMessage" class="feedback-message bg-initial-feedback">
-                            Practice sentence will appear here when you start.
+                <div class="scoreboard-container">
+                    <hr style="border: 1px dashed #60a5fa; margin: 8px 0;">
+                    <h3>My Scoreboard 🏆</h3>
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <span>Words Attempted:</span>
+                            <span id="attemptedCount" class="value">0</span>
                         </div>
-                        <div class="flex-center mt-4">
-                            <button id="playFeedbackBtn" class="btn-primary">
-                                <i class="fa-solid fa-volume-high"></i> Listen to Sentence
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="scoreboard-container">
-                        <hr style="border: 1px dashed #60a5fa; margin: 8px 0;">
-                        <h3>My Scoreboard 🏆</h3>
-                        <div class="stats-container">
-                            <div class="stat-item">
-                                <span>Words Attempted:</span>
-                                <span id="attemptedCount" class="value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span>Accuracy:</span>
-                                <span id="accuracyRate" class="value">0%</span>
-                            </div>
+                        <div class="stat-item">
+                            <span>Accuracy:</span>
+                            <span id="accuracyRate" class="value">0%</span>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="divider"></div>
-
-            <div class="history-section">
-                <h2>Attempts History</h2>
-                <div id="wordHistory">No attempts yet.</div>
-                <div id="historyMessage" class="history-message"></div>
-            </div>
-
         </div>
+
+        <div class="divider"></div>
+
+        <div class="history-section">
+            <h2>Attempts History</h2>
+            <div id="wordHistory">No attempts yet.</div>
+            <div id="historyMessage" class="history-message"></div>
+        </div>
+
+    </div>
+
         <script>
+            function toggleTheme() {
+                document.body.classList.toggle('dark-mode');
+            }
             const STUDENT_ID = <?php echo json_encode($student_id); ?>;
             const USERNAME = <?php echo json_encode($username); ?>;
             const PLAY_WELCOME_VOICE = <?php echo json_encode($play_welcome_voice); ?>;

@@ -20,6 +20,65 @@ $play_welcome_voice = true;
     <title>VERBAL PRACTICE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Dark Mode Toggle Button Position */
+        #themeToggle {
+            position: absolute;
+            top: 25px;
+            right: 140px; /* Katabi ng logout */
+            padding: 8px 12px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            background: var(--glass);
+            border: 1px solid #bae6fd;
+            z-index: 100;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .main-container {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-mode .section {
+            background-color: #334155;
+            color: #f1f5f9;
+        }
+
+        body.dark-mode h2, body.dark-mode h3, body.dark-mode .status {
+            color: #38bdf8;
+        }
+
+        body.dark-mode .reading-material {
+            background: #164e63;
+            border-color: #22d3ee;
+        }
+
+        body.dark-mode #wordDisplay {
+            color: #22d3ee;
+        }
+
+        body.dark-mode .transcript {
+            background-color: #064e3b;
+            color: #34d399;
+            border-color: #059669;
+        }
+
+        body.dark-mode .feedback-message.bg-initial-feedback {
+            background: #475569;
+            color: #cbd5e1;
+        }
+
+        body.dark-mode #usernameDisplay {
+            background: rgba(30, 41, 59, 0.8);
+            color: #38bdf8;
+            border-color: #334155;
+        }
         :root { --primary: #3b82f6; --primary-dark: #1e40af; --success: #10b981; --danger: #ef4444; --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%); --glass: rgba(255, 255, 255, 0.95); }
         body { height: 100vh; background: var(--bg-gradient); font-family: "Poppins", sans-serif; padding: 10px 20px; color: #334155; margin: 0; display: flex; flex-direction: column; overflow: hidden; }
         h2 { color: var(--primary-dark); font-size: 1.5rem; margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
@@ -152,6 +211,9 @@ $play_welcome_voice = true;
 </head>
 <body>
 <header class="page-header">
+    <button id="themeToggle" title="Toggle Light/Dark Mode">
+        <i class="fa-solid fa-moon"></i>
+    </button>
     <?php echo '<span id="usernameDisplay">Hello, ' . htmlspecialchars($username) . '!</span>'; ?>
     <button id="logoutBtn" onclick="window.location.href='../login.php';"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
 </header>
@@ -225,40 +287,16 @@ $play_welcome_voice = true;
     <?php
     $manualWords = [
         // Beginner (1-100)
-            "sun", "moon", "star", "cloud", "rain", "tree", "bird", "fish", "apple", "book",
-            "cat", "dog", "ball", "cup", "hat", "pen", "egg", "fan", "box", "toy",
-            "milk", "door", "bed", "frog", "duck", "cake", "boat", "car", "bus", "key",
-            "leaf", "ant", "bee", "cow", "pig", "bat", "bag", "net", "ice", "fire",
-            "lamp", "ring", "shoe", "soap", "soup", "kite", "gift", "flag", "drum", "bell",
-            "crab", "deer", "goat", "lamb", "lion", "bear", "wolf", "seed", "corn", "pear",
-            "desk", "fork", "bowl", "wall", "roof", "gate", "road", "hill", "lake", "rock",
-            "hand", "foot", "nose", "eyes", "ears", "hair", "neck", "back", "knee", "toes",
-            "pink", "blue", "red", "gold", "gray", "ship", "bike", "card", "baby", "home",
-            "farm", "park", "nest", "zero", "five", "nine", "king", "lamp", "duck", "bell",
-
-        // Intermediate (101-200)
-            "mountain", "garden", "balloon", "camera", "bottle", "window", "kitchen", "market", "school", "pencil",
-            "village", "forest", "bridge", "island", "planet", "rocket", "doctor", "farmer", "worker", "singer",
-            "picture", "blanket", "bicycle", "chicken", "dolphin", "elephant", "giraffe", "hamster", "octopus", "penguin",
-            "rainbow", "thunder", "weather", "clothes", "glasses", "jewelry", "pockets", "sneakers", "watches", "whistle",
-            "breakfast", "sandwich", "vegetable", "chocolate", "pancake", "cucumber", "eggplant", "mushroom", "potatoes", "tomatoes",
-            "butterfly", "squirrel", "mosquito", "scorpion", "alligator", "kangaroo", "ostrich", "reindeer", "dinosaur", "tortoise",
-            "airplane", "ambulance", "firetruck", "helicopter", "spaceship", "submarine", "traincar", "sailboat", "motorcycle", "tractor",
-            "building", "hospital", "library", "museum", "restaurant", "stadium", "theater", "workshop", "apartment", "castle",
-            "keyboard", "monitor", "notebook", "speaker", "telephone", "television", "flashlight", "microscope", "telescope", "compass",
-            "calendar", "dictionary", "envelope", "magazine", "newspaper", "postcard", "scissors", "umbrella", "backpack", "suitcase",
-
-        // Advanced (201-300)
-            "architecture", "environment", "technology", "literature", "philosophy", "psychology", "astronomy", "government", "university", "experience",
-            "adventure", "celebration", "communication", "competition", "description", "education", "imagination", "information", "organization", "population",
-            "discovery", "electricity", "foundation", "generation", "instrument", "investment", "management", "permission", "production", "reflection",
-            "vocabulary", "transportation", "satisfaction", "reputation", "personality", "opportunity", "negotiation", "membership", "leadership", "friendship",
-            "championship", "relationship", "partnership", "scholarship", "internship", "citizenship", "stewardship", "fellowship", "craftsmanship", "agriculture",
-            "biotechnology", "cryptography", "dermatology", "engineering", "genealogy", "hieroglyphics", "illustration", "journalism", "kinematics", "landscape",
-            "mathematics", "nanotechnology", "oceanography", "photography", "quarantine", "radioactivity", "spectroscopy", "topography", "ultraviolet", "vulnerability",
-            "wilderness", "xenophobia", "yesteryear", "zoology", "abundance", "benevolent", "consequence", "determination", "enthusiasm", "fluctuation",
-            "gravitation", "hospitality", "independence", "jurisdiction", "knowledgeable", "limitation", "magnificent", "notification", "observation", "perspective",
-            "qualitative", "resilience", "significant", "terminology", "unification", "verification", "wavelength", "xenon", "yield", "zenith"
+            "sun", "moon", "star", "rain", "tree",
+            "bird", "fish", "cat", "dog", "cow",
+            "pig", "ant", "bee", "frog", "duck",
+            "apple", "cake", "milk", "egg", "cup",
+            "hat", "bag", "pen", "book", "box",
+            "ball", "toy", "car", "bus", "bike",
+            "bed", "door", "home", "farm", "park",
+            "hand", "foot", "eye", "nose", "ear",
+            "red", "blue", "pink", "leaf", "rock",
+            "boat", "kite", "key", "ring", "bell",
     ];
 
     $imageLibrary = [];
@@ -282,11 +320,34 @@ $play_welcome_voice = true;
 
         const wordBank = {
             beginner: [
-                { word: "sun", phonemes: ["s","ʌ","n"], example: "The sun is very bright today." },
-                { word: "moon", phonemes: ["m","uː","n"], example: "The moon shines at night." },
-                { word: "star", phonemes: ["s","t","ɑː","r"], example: "Look at the shining star." },
+                { word: "sun", phonemes: ["s","ʌ","n"], example: "The sun is bright." },
+                { word: "moon", phonemes: ["m","uː","n"], example: "The moon is up." },
+                { word: "star", phonemes: ["s","t","ɑː","r"], example: "I see a star." },
+                { word: "rain", phonemes: ["r","eɪ","n"], example: "The rain falls." },
+                { word: "tree", phonemes: ["t","r","iː"], example: "The tree is tall." },
             ]
         };
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+
+        // Check for saved theme in localStorage
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
 
         const wordDisplay = document.getElementById("wordDisplay");
         const phonemeDisplay = document.getElementById("phonemeDisplay");

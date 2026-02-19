@@ -17,13 +17,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($table)) {
         try {
+            // Get user based on username
             $stmt = $pdo->prepare("SELECT id, username, password FROM $table WHERE username = :username");
             $stmt->bindParam(':username', $username);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            // CHANGED: Direct comparison ($password === $user['password'])
             if ($user && $password === $user['password']) {
                 session_regenerate_id(true);
+
+                if ($role === 'teacher') {
+                    $_SESSION['teacher_id'] = $user['id'];
+                }
+
                 $_SESSION['user_id']   = $user['id'];
                 $_SESSION['username']  = $user['username'];
                 $_SESSION['role']      = $role;
@@ -40,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <style>
         :root {
-            /* DAY MODE (Forest/Sky Blend) */
             --bg: linear-gradient(180deg, #4facfe 0%, #00f2fe 35%, #a8e063 85%, #56ab2f 100%);
             --container-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 248, 233, 0.95) 100%);
             --text-main: #2d5a27;
@@ -69,7 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .dark-mode {
-            /* ORIGINAL DARK MODE - STRICTLY UNCHANGED */
             --bg: radial-gradient(circle at center, #1a0633 0%, #050505 100%);
             --container-bg: rgba(65, 63, 81, 0.6);
             --text-main: #ffffff;
@@ -96,7 +100,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* --- BACKGROUND LAYERS --- */
+        /* --- DAGDAG NA ANIMATIONS --- */
+        @keyframes containerEntrance {
+            from { opacity: 0; transform: scale(0.8) translateY(50px); filter: blur(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+
+        @keyframes celestialEntrance {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            80% { transform: scale(1.1) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        /* Improved Leaf Fall Animation */
+        .leaf {
+            position: absolute;
+            width: 15px;
+            height: 10px;
+            background: #8bc34a;
+            border-radius: 10px 0;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 5;
+            animation: fallRotate linear infinite;
+        }
+
+        @keyframes fallRotate {
+            0% { top: -10%; transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(50px) rotate(90deg); }
+            50% { transform: translateX(-50px) rotate(180deg); }
+            75% { transform: translateX(50px) rotate(270deg); }
+            100% { top: 110%; transform: translateX(0) rotate(360deg); }
+        }
+
+        /* Star Twinkle */
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0; transition: 1s; }
+        .dark-mode .star { opacity: 0.7; animation: twinkle var(--d) infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+
+        /* --------------------------- */
+
         .landscape-bg, .cloud-bg, .cosmic-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
@@ -119,13 +162,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .t2 { left: 22%; transform: scale(0.9); opacity: 0.8; }
         .t3 { right: 15%; transform: scale(1.4); }
 
-        /* --- CELESTIALS AS SWITCHES --- */
         .sun, .moon {
             position: fixed; right: 10%;
             width: 100px; height: 100px; border-radius: 50%;
             transition: 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            z-index: 100; /* Higher z-index to be clickable */
+            z-index: 100;
             cursor: pointer;
+            animation: celestialEntrance 1.2s ease-out backwards;
         }
         .sun {
             top: var(--sun-top);
@@ -140,7 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             pointer-events: var(--moon-pointer);
         }
 
-        /* --- CLOUDS --- */
         .cloud-bg { opacity: var(--cloud-opacity); transition: 0.8s; z-index: 1; }
         .cloud { position: absolute; background: #ffffff; width: 150px; height: 50px; border-radius: 50px; animation: moveClouds linear infinite; }
         .cloud::after, .cloud::before { content: ''; position: absolute; background: #ffffff; border-radius: 50%; }
@@ -151,7 +193,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .c2 { top: 40%; animation-duration: 60s; animation-delay: -10s; transform: scale(1.2); }
         .c3 { top: 70%; animation-duration: 35s; animation-delay: -5s; transform: scale(0.6); }
 
-        /* --- COSMIC --- */
         .cosmic-bg { opacity: var(--cosmic-opacity); transition: 0.8s; z-index: 1; }
         .meteor { position: absolute; width: 2px; height: 100px; background: linear-gradient(to bottom, transparent, #fff); animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-150px) rotate(-45deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh) translateX(500px) rotate(-45deg); opacity: 0; } }
@@ -167,7 +208,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .p5 { width: 15px; height: 15px; top: 40%; left: 35%; background: #fff; box-shadow: 0 0 15px #fff; animation: pulse 3s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 
-        /* --- LOGIN CONTAINER --- */
         .container {
             background: var(--container-bg);
             backdrop-filter: blur(20px);
@@ -181,10 +221,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 25px 50px rgba(0,0,0,0.2);
             transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            animation: containerEntrance 1s cubic-bezier(0.22, 1, 0.36, 1) backwards;
         }
 
         h2 { color: var(--text-main); font-weight: 900; text-transform: uppercase; margin: 0; font-size: 2rem; }
-        .sub-header { color: var(--text-main); font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.7; }
         input { width: 100%; padding: 0.9rem 1.2rem; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; color: #333; margin-bottom: 12px; outline: none; box-sizing: border-box; }
         .dark-mode input { color: #ffffff; }
         .login-btn { background: var(--btn-bg); color: var(--btn-text); width: 100%; padding: 1rem; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
@@ -195,17 +235,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="sun" onclick="toggleTheme()"></div>
 <div class="moon" onclick="toggleTheme()"></div>
 
-<div class="cloud-bg">
+<div class="cloud-bg" id="cloudContainer">
     <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
 </div>
-<div class="landscape-bg">
+<div class="landscape-bg" id="landscapeContainer">
     <div class="mountain m1"></div><div class="mountain m2"></div>
     <div class="tree t1"><div class="tree-top"></div><div class="tree-trunk"></div></div>
     <div class="tree t2"><div class="tree-top"></div><div class="tree-trunk"></div></div>
     <div class="tree t3"><div class="tree-top"></div><div class="tree-trunk"></div></div>
 </div>
 
-<div class="cosmic-bg">
+<div class="cosmic-bg" id="cosmicContainer">
     <div class="meteor"></div><div class="meteor"></div><div class="meteor"></div>
     <div class="planet p1"></div><div class="planet p2"></div>
     <div class="planet p3"></div><div class="planet p4"></div>
@@ -214,7 +254,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container">
     <h2>LOGIN</h2>
-    <div class="sub-header">Premium Portal</div>
 
     <?php if ($message): ?>
         <div style="color: #ff4081; font-size: 0.8rem; margin-bottom: 15px; font-weight: bold;"><?= $message ?></div>
@@ -229,7 +268,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" placeholder="Password" required>
         <button type="submit" class="login-btn">LOGIN <i class="fas fa-arrow-right"></i></button>
-        <a href="signup.php" style="display: block; margin-top: 25px; font-size: 0.8rem; color: var(--text-main); text-decoration: none; opacity: 0.7;">Create Account</a>
+
+        <a href="signup.php" id="signupLink" style="display: none; margin-top: 25px; font-size: 0.8rem; color: var(--text-main); text-decoration: none; opacity: 0.7;">Create Account</a>
     </form>
 </div>
 
@@ -242,15 +282,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.getElementById('role').value = r;
         const sBtn = document.getElementById('sBtn');
         const tBtn = document.getElementById('tBtn');
+        const signupLink = document.getElementById('signupLink');
+
         if (r === 'student') {
-            sBtn.style.background = 'var(--input-border)'; sBtn.style.color = 'white';
-            tBtn.style.background = 'transparent'; tBtn.style.color = 'var(--text-main)';
+            sBtn.style.background = 'var(--input-border)';
+            sBtn.style.color = 'white';
+            tBtn.style.background = 'transparent';
+            tBtn.style.color = 'var(--text-main)';
+            signupLink.style.display = 'none';
         } else {
-            tBtn.style.background = 'var(--input-border)'; tBtn.style.color = 'white';
-            sBtn.style.background = 'transparent'; sBtn.style.color = 'var(--text-main)';
+            tBtn.style.background = 'var(--input-border)';
+            tBtn.style.color = 'white';
+            sBtn.style.background = 'transparent';
+            sBtn.style.color = 'var(--text-main)';
+            signupLink.style.display = 'block';
         }
     }
-    window.onload = () => setRole('student');
+
+    function initDynamicAssets() {
+        const cosmic = document.getElementById('cosmicContainer');
+        const landscape = document.getElementById('landscapeContainer');
+
+        // Stars generator
+        for (let i = 0; i < 60; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.setProperty('--d', (Math.random() * 3 + 2) + 's');
+            cosmic.appendChild(star);
+        }
+
+        // Improved Leaves generator
+        for (let i = 0; i < 15; i++) {
+            const leaf = document.createElement('div');
+            leaf.className = 'leaf';
+            leaf.style.left = Math.random() * 100 + '%';
+            leaf.style.animationDuration = (Math.random() * 5 + 7) + 's';
+            leaf.style.animationDelay = (Math.random() * -10) + 's';
+            landscape.appendChild(leaf);
+        }
+    }
+
+    window.onload = () => {
+        setRole('student');
+        initDynamicAssets();
+    };
 </script>
 </body>
 </html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b6043ded-f50c-4822-af0e-0fee6e7a8d08" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/upload/rain.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/tree.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/login.php" beforeDir="false" afterPath="$PROJECT_DIR$/login.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/signup.php" beforeDir="false" afterPath="$PROJECT_DIR$/signup.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/student_dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/student_dashboard.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher/teacher_dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/teacher_dashboard.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/moon.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/moon.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/star.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/star.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/sun.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/sun.jpg" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP" />
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="3942Jn2in4bKjpuu4BzAs0f4pna" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/dlc-maj-bato&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-c7e53b3be11b-JavaScript-PS-253.28294.345" />
+        <option value="bundled-php-predefined-a98d8de5180a-09080813851e-com.jetbrains.php.sharedIndexes-PS-253.28294.345" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b6043ded-f50c-4822-af0e-0fee6e7a8d08" name="Changes" comment="" />
+      <created>1769940953456</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1769940953456</updated>
+      <workItem from="1769940954277" duration="698000" />
+      <workItem from="1770021069598" duration="23000" />
+      <workItem from="1770031113981" duration="221000" />
+      <workItem from="1770036519106" duration="3000" />
+      <workItem from="1770120462112" duration="1000" />
+      <workItem from="1770206325890" duration="2000" />
+      <workItem from="1770289213711" duration="2000" />
+      <workItem from="1770864111988" duration="614000" />
+      <workItem from="1770874567390" duration="7000" />
+      <workItem from="1771329473430" duration="5083000" />
+      <workItem from="1771380237759" duration="11000" />
+      <workItem from="1771418520943" duration="5051000" />
+      <workItem from="1771506038185" duration="8073000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

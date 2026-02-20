@@ -100,45 +100,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* --- DAGDAG NA ANIMATIONS --- */
+        /* Entrance Animations */
         @keyframes containerEntrance {
-            from { opacity: 0; transform: scale(0.8) translateY(50px); filter: blur(10px); }
+            from { opacity: 0; transform: scale(0.9) translateY(30px); filter: blur(5px); }
             to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
         }
 
         @keyframes celestialEntrance {
             0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-            80% { transform: scale(1.1) rotate(10deg); }
             100% { transform: scale(1) rotate(0); opacity: 1; }
         }
 
-        /* Improved Leaf Fall Animation */
+        /* Leaves and Stars */
         .leaf {
-            position: absolute;
-            width: 15px;
-            height: 10px;
-            background: #8bc34a;
-            border-radius: 10px 0;
-            opacity: 0.6;
-            pointer-events: none;
-            z-index: 5;
+            position: absolute; width: 15px; height: 10px; background: #8bc34a;
+            border-radius: 10px 0; opacity: 0.6; pointer-events: none; z-index: 5;
             animation: fallRotate linear infinite;
         }
 
         @keyframes fallRotate {
             0% { top: -10%; transform: translateX(0) rotate(0deg); }
-            25% { transform: translateX(50px) rotate(90deg); }
-            50% { transform: translateX(-50px) rotate(180deg); }
-            75% { transform: translateX(50px) rotate(270deg); }
-            100% { top: 110%; transform: translateX(0) rotate(360deg); }
+            100% { top: 110%; transform: translateX(100px) rotate(360deg); }
         }
 
-        /* Star Twinkle */
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0; transition: 1s; }
         .dark-mode .star { opacity: 0.7; animation: twinkle var(--d) infinite; }
-        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
-
-        /* --------------------------- */
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
         .landscape-bg, .cloud-bg, .cosmic-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -158,9 +145,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .tree { position: absolute; bottom: 20px; width: 60px; height: 100px; display: flex; flex-direction: column; align-items: center; }
         .tree-top { width: 60px; height: 75px; background: #43a047; border-radius: 50% 50% 40% 40%; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1); }
         .tree-trunk { width: 12px; height: 25px; background: #5d4037; border-radius: 0 0 4px 4px; }
-        .t1 { left: 10%; transform: scale(1.2); }
-        .t2 { left: 22%; transform: scale(0.9); opacity: 0.8; }
-        .t3 { right: 15%; transform: scale(1.4); }
+
+        /* Tree Placements */
+        .t1 { left: 5%; transform: scale(1.1); }
+        .t2 { left: 18%; transform: scale(0.85); opacity: 0.85; }
+        .t3 { right: 5%; transform: scale(1.3); }
+        .t4 { right: 20%; transform: scale(1.1); } /* Added Tree */
+        .t5 { left: 30%; transform: scale(0.7); opacity: 0.7; } /* Added Tree */
 
         .sun, .moon {
             position: fixed; right: 10%;
@@ -221,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 25px 50px rgba(0,0,0,0.2);
             transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            animation: containerEntrance 1s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+            animation: containerEntrance 1s ease-out backwards;
         }
 
         h2 { color: var(--text-main); font-weight: 900; text-transform: uppercase; margin: 0; font-size: 2rem; }
@@ -235,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="sun" onclick="toggleTheme()"></div>
 <div class="moon" onclick="toggleTheme()"></div>
 
-<div class="cloud-bg" id="cloudContainer">
+<div class="cloud-bg">
     <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
 </div>
 <div class="landscape-bg" id="landscapeContainer">
@@ -243,6 +234,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="tree t1"><div class="tree-top"></div><div class="tree-trunk"></div></div>
     <div class="tree t2"><div class="tree-top"></div><div class="tree-trunk"></div></div>
     <div class="tree t3"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+    <div class="tree t4"><div class="tree-top"></div><div class="tree-trunk"></div></div>
+    <div class="tree t5"><div class="tree-top"></div><div class="tree-trunk"></div></div>
 </div>
 
 <div class="cosmic-bg" id="cosmicContainer">
@@ -316,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             cosmic.appendChild(star);
         }
 
-        // Improved Leaves generator
+        // Leaves generator
         for (let i = 0; i < 15; i++) {
             const leaf = document.createElement('div');
             leaf.className = 'leaf';

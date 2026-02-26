@@ -2,10 +2,6 @@
 session_start();
 require_once 'config/database.php';
 
-if (!isset($pdo) || !($pdo instanceof PDO)) {
-    die("Database connection failed.");
-}
-
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,35 +11,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $table = ($role === "teacher") ? "teachers" : "students";
 
-    if (!empty($table)) {
-        try {
-            // Get user based on username
-            $stmt = $pdo->prepare("SELECT id, username, password FROM $table WHERE username = :username");
-            $stmt->bindParam(':username', $username);
-            $stmt->execute();
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        // Query para makuha ang user info kasama ang grade para sa redirect
+        $stmt = $pdo->prepare("SELECT id, username, password" . ($role === 'student' ? ", grade" : "") . " FROM $table WHERE username = :username");
+        $stmt->execute([':username' => $username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // CHANGED: Direct comparison ($password === $user['password'])
-            if ($user && $password === $user['password']) {
-                session_regenerate_id(true);
+        if ($user && $password === $user['password']) {
+            session_regenerate_id(true);
 
-                if ($role === 'teacher') {
-                    $_SESSION['teacher_id'] = $user['id'];
-                }
+            $_SESSION['user_id']  = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role']     = $role;
 
-                $_SESSION['user_id']   = $user['id'];
-                $_SESSION['username']  = $user['username'];
-                $_SESSION['role']      = $role;
-
-                header("Location: " . $role . "/" . $role . "_dashboard.php");
-                exit();
+            if ($role === 'teacher') {
+                $_SESSION['teacher_id'] = $user['id'];
+                header("Location: teacher/teacher_dashboard.php");
             } else {
-                $message = "Invalid username or password.";
+                $_SESSION['grade'] = $user['grade'];
+
+                // REDIRECT LOGIC BASE SA GRADE LEVEL
+                $gradePage = "student/Grade-" . $user['grade'] . ".php";
+                if (file_exists($gradePage)) {
+                    header("Location: " . $gradePage);
+                } else {
+                    header("Location: student/student_dashboard.php");
+                }
             }
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            $message = "Application error.";
+            exit();
+        } else {
+            $message = "Invalid username or password.";
         }
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+        $message = "Database error. Please try again later.";
     }
 }
 ?>
@@ -52,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V.E.R.B.A.L</title>
+    <title>V.E.R.B.A.L | Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -100,7 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Entrance Animations */
         @keyframes containerEntrance {
             from { opacity: 0; transform: scale(0.9) translateY(30px); filter: blur(5px); }
             to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
@@ -111,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             100% { transform: scale(1) rotate(0); opacity: 1; }
         }
 
-        /* Leaves and Stars */
         .leaf {
             position: absolute; width: 15px; height: 10px; background: #8bc34a;
             border-radius: 10px 0; opacity: 0.6; pointer-events: none; z-index: 5;
@@ -146,12 +145,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .tree-top { width: 60px; height: 75px; background: #43a047; border-radius: 50% 50% 40% 40%; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1); }
         .tree-trunk { width: 12px; height: 25px; background: #5d4037; border-radius: 0 0 4px 4px; }
 
-        /* Tree Placements */
         .t1 { left: 5%; transform: scale(1.1); }
         .t2 { left: 18%; transform: scale(0.85); opacity: 0.85; }
         .t3 { right: 5%; transform: scale(1.3); }
-        .t4 { right: 20%; transform: scale(1.1); } /* Added Tree */
-        .t5 { left: 30%; transform: scale(0.7); opacity: 0.7; } /* Added Tree */
+        .t4 { right: 20%; transform: scale(1.1); }
+        .t5 { left: 30%; transform: scale(0.7); opacity: 0.7; }
 
         .sun, .moon {
             position: fixed; right: 10%;

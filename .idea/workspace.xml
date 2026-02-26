@@ -5,13 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6043ded-f50c-4822-af0e-0fee6e7a8d08" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/student/Grade-1.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/Grade-2.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/get_mastered_sentences.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/load_progress.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/save_progress.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/save_rating.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teacher/class-reports.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teacher/student-page.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/add_student.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/database.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/database.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/edit.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/leaderboard.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/load_progress.php" beforeDir="false" afterPath="$PROJECT_DIR$/load_progress.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/login.php" beforeDir="false" afterPath="$PROJECT_DIR$/login.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_progress.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_rating.php" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/signup.php" beforeDir="false" afterPath="$PROJECT_DIR$/signup.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student/student_dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/student_dashboard.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test2.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/veri.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/student_dashboard.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher/teacher_dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/teacher_dashboard.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +43,9 @@
   &quot;associatedIndex&quot;: 6
 }</component>
   <component name="ProjectId" id="3942Jn2in4bKjpuu4BzAs0f4pna" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -42,14 +58,20 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;Main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/dlc-maj-bato&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/VERBAL/student&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\xampp\htdocs\VERBAL\student" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -81,7 +103,16 @@
       <workItem from="1771506038185" duration="8586000" />
       <workItem from="1771565176217" duration="3000" />
       <workItem from="1771588969539" duration="4569000" />
-      <workItem from="1771596899923" duration="4737000" />
+      <workItem from="1771596899923" duration="4923000" />
+      <workItem from="1771671240103" duration="12205000" />
+      <workItem from="1771759301513" duration="11267000" />
+      <workItem from="1771799085968" duration="1278000" />
+      <workItem from="1771812116359" duration="637000" />
+      <workItem from="1771845729320" duration="8745000" />
+      <workItem from="1771926536100" duration="17476000" />
+      <workItem from="1771984224315" duration="3005000" />
+      <workItem from="1772016364617" duration="8517000" />
+      <workItem from="1772106192347" duration="12907000" />
     </task>
     <servers />
   </component>

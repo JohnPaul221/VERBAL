@@ -1,28 +1,26 @@
 <?php
 global $pdo;
 header('Content-Type: application/json');
-require_once('config/database.php');
+require_once('../config/database.php'); // Siguraduhing nandito ang $pdo connection
 
-if (!isset($_GET['student_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Student ID not provided.']);
-    exit();
+$student_id = $_GET['student_id'] ?? null;
+
+if (!$student_id) {
+    echo json_encode(['success' => false, 'message' => 'Student ID missing']);
+    exit;
 }
 
-$student_id = filter_var($_GET['student_id'], FILTER_SANITIZE_NUMBER_INT);
-
 try {
-    $stmt = $pdo->prepare("SELECT * FROM student_progress WHERE student_id = ? LIMIT 1");
+    $stmt = $pdo->prepare("SELECT difficulty, word_index, words_attempted, words_correct 
+                           FROM student_progress WHERE student_id = ?");
     $stmt->execute([$student_id]);
     $progress = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($progress) {
-        echo json_encode(['success' => true, 'progress' => $progress]);
-    } else {
-        echo json_encode(['success' => true, 'progress' => null, 'message' => 'No progress found.']);
-    }
-
+    echo json_encode([
+        'success' => true,
+        'progress' => $progress ?: null
+    ]);
 } catch (PDOException $e) {
-    error_log("Database error in load_progress.php: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'Database error.']);
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 ?>

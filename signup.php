@@ -1,57 +1,68 @@
 <?php
 session_start();
-require_once "config/database.php";
-global $pdo;
+require_once 'config/database.php';
+
+if (!isset($pdo) || !($pdo instanceof PDO)) {
+    die("Database connection failed.");
+}
 
 $message = '';
-$message_type = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullname = trim($_POST['fullname']);
     $username = trim($_POST['username']);
-    $grade    = $_POST['grade'];
-    $section  = trim($_POST['section']);
     $password = $_POST['password'];
+    $grade    = $_POST['grade'];
+    $section  = $_POST['section'];
 
-    if (strlen($password) < 8) {
-        $message = "Password must be at least 8 characters.";
-        $message_type = "error";
-    } else {
-        $checkUser = $pdo->prepare("SELECT id FROM teachers WHERE username = ?");
-        $checkUser->execute([$username]);
+    $profile_path = 'uploads/default.png';
+    if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] === 0) {
+        $upload_dir = 'uploads/';
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
-        $checkClass = $pdo->prepare("SELECT id FROM teachers WHERE grade = ? AND section = ?");
-        $checkClass->execute([$grade, $section]);
+        $file_ext = pathinfo($_FILES['profile_img']['name'], PATHINFO_EXTENSION);
+        $file_name = time() . '_' . $username . '.' . $file_ext;
+        $profile_path = $upload_dir . $file_name;
 
-        if ($checkUser->rowCount() > 0) {
-            $message = "Username already taken.";
-            $message_type = "error";
-        } elseif ($checkClass->rowCount() > 0) {
-            $message = "Grade $grade - Section $section already has an assigned teacher.";
-            $message_type = "error";
+        move_uploaded_file($_FILES['profile_img']['tmp_name'], $profile_path);
+    }
+
+    try {
+        $check_stmt = $pdo->prepare("SELECT id FROM teachers WHERE username = :username");
+        $check_stmt->execute([':username' => $username]);
+
+        if ($check_stmt->fetch()) {
+            $message = "Username is already taken.";
         } else {
-            $profile_filename = "default.png";
-            if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] === 0) {
-                $upload_dir = 'uploads/profiles/';
-                if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-                $file_ext = pathinfo($_FILES['profile_img']['name'], PATHINFO_EXTENSION);
-                $profile_filename = "teacher_" . time() . "_" . $username . "." . $file_ext;
-                move_uploaded_file($_FILES['profile_img']['tmp_name'], $upload_dir . $profile_filename);
-            }
+            // Ginamit ang 'grade_handle' para mag-match sa SQL table mo
+            $sql = "INSERT INTO teachers (fullname, username, password, grade_handle, section, profile_img) 
+                    VALUES (:fullname, :username, :password, :grade, :section, :profile_img)";
 
-            $sql = "INSERT INTO teachers (fullname, username, grade, section, password, profile_img) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
+            $result = $stmt->execute([
+                ':fullname'    => $fullname,
+                ':username'    => $username,
+                ':password'    => $password,
+                ':grade'       => $grade,
+                ':section'     => $section,
+                ':profile_img' => $profile_path
+            ]);
 
-            if ($stmt->execute([fullname, $username, $grade, $section, $password, $profile_filename])) {
-                $message = "Registration successful! Redirecting...";
-                $message_type = "success";
-                echo "<script>setTimeout(() => { window.location.href = 'login.php'; }, 2000);</script>";
+            if ($result) {
+                header("Location: login.php?registration=success");
+                exit();
             }
+        }
+    } catch (PDOException $e) {
+        if ($e->getCode() == 23000) {
+            $message = "This Grade and Section is already assigned to another teacher.";
+        } else {
+            $message = "Application error. Please try again later.";
         }
     }
 }
 
+// Binalik lahat ng original quotes mo
 $quotes = [
     ["text" => "Your hard work today is the success of a child tomorrow. Take it one breath at a time.", "author" => "Teacher's Heart"],
     ["text" => "It's okay to be tired. It means you've given your heart to something that matters.", "author" => "Unknown"],
@@ -143,7 +154,7 @@ $random_quote = $quotes[array_rand($quotes)];
             position: relative;
         }
 
-        /* --- Floating Particle Design --- */
+        /* Binalik ang Particles */
         .particle {
             position: absolute;
             background: var(--gradient);
@@ -162,7 +173,6 @@ $random_quote = $quotes[array_rand($quotes)];
             100% { transform: translate(50px, 50px) scale(1.1) rotate(15deg); }
         }
 
-        /* --- Main Wrapper --- */
         .wrapper {
             display: flex;
             width: 100%;
@@ -178,7 +188,6 @@ $random_quote = $quotes[array_rand($quotes)];
             animation: zoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* --- Quote Side (Left) --- */
         .quote-side {
             flex: 1;
             background: var(--gradient);
@@ -193,28 +202,14 @@ $random_quote = $quotes[array_rand($quotes)];
 
         .quote-side::before {
             content: "";
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             z-index: -1;
         }
 
-        .quote-side h2 {
-            font-size: 2.5rem;
-            line-height: 1.1;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+        .quote-side h2 { font-size: 2.5rem; line-height: 1.1; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .quote-line { width: 60px; height: 5px; background: var(--accent); margin: 25px 0; border-radius: 10px; box-shadow: 0 0 15px rgba(96, 165, 250, 0.6); }
 
-        .quote-line {
-            width: 60px;
-            height: 5px;
-            background: var(--accent);
-            margin: 25px 0;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
-        }
-
-        /* --- Form Side (Right) --- */
         .form-side {
             flex: 1.2;
             padding: 35px 60px;
@@ -237,113 +232,43 @@ $random_quote = $quotes[array_rand($quotes)];
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
         }
 
-        /* Profile Upload Design */
-        .profile-upload {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
+        .profile-upload { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
         .profile-circle {
             width: 80px; height: 80px;
             border-radius: 50%;
             border: 3px solid #f1f5f9;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: center; align-items: center;
-            cursor: pointer;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: #f8fafc;
-            position: relative;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #f8fafc; position: relative; overflow: hidden;
         }
-        .profile-circle:hover {
-            transform: scale(1.08) rotate(5deg);
-            border-color: var(--secondary);
-            background: #fff;
-        }
-        .profile-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
 
         .form-group { margin-bottom: 12px; position: relative; }
+        label { display: block; margin-bottom: 5px; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 12px 18px; border: 2px solid #f1f5f9; border-radius: 14px; background: #f8fafc; transition: 0.3s all ease; font-size: 0.9rem; color: #1e293b; }
+        input:focus { outline: none; border-color: var(--secondary); background: white; transform: translateY(-1px); }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px 18px;
-            border: 2px solid #f1f5f9;
-            border-radius: 14px;
-            background: #f8fafc;
-            transition: 0.3s all ease;
-            font-size: 0.9rem;
-            color: #1e293b;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--secondary);
-            background: white;
-            box-shadow: 0 8px 20px -5px rgba(59, 130, 246, 0.15);
-            transform: translateY(-1px);
-        }
-
-        /* Password Toggle Decoration */
         .password-container { position: relative; }
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #94a3b8;
-            transition: 0.3s;
-        }
-        .toggle-password:hover { color: var(--secondary); }
+        .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         .btn-submit {
-            width: 100%;
-            padding: 16px;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: 18px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.4s;
-            margin-top: 15px;
+            width: 100%; padding: 16px; background: var(--gradient); color: white; border: none; border-radius: 18px;
+            font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.4s; margin-top: 15px;
             box-shadow: 0 15px 30px -10px rgba(30, 58, 138, 0.4);
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 1px;
         }
+        .btn-submit:hover { transform: translateY(-3px); filter: brightness(1.1); }
 
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 35px -10px rgba(30, 58, 138, 0.5);
-            filter: brightness(1.1);
-        }
+        .alert { background: #fee2e2; color: #dc2626; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 15px; font-size: 0.85rem; border: 1px solid #fecaca; }
 
         .footer { margin-top: 18px; text-align: center; color: #94a3b8; font-size: 0.85rem; }
-        .footer a { color: var(--secondary); text-decoration: none; font-weight: 800; border-bottom: 2px solid transparent; transition: 0.3s; }
-        .footer a:hover { border-bottom-color: var(--secondary); }
+        .footer a { color: var(--secondary); text-decoration: none; font-weight: 800; }
 
-        /* Tablet/Mobile Fix */
         @media (max-width: 850px) {
-            .wrapper { flex-direction: column; height: auto; max-height: none; margin: 15px; border-radius: 30px; }
+            .wrapper { flex-direction: column; max-height: none; }
             .quote-side { display: none; }
-            .form-side { padding: 30px; }
-            body { overflow-y: auto; height: auto; }
         }
     </style>
 </head>
@@ -358,13 +283,17 @@ $random_quote = $quotes[array_rand($quotes)];
         <div class="quote-container animate__animated animate__fadeIn">
             <h2 class="animate__animated animate__lightSpeedInLeft">Create Your<br>Teacher Account</h2>
             <div class="quote-line"></div>
-            <p style="font-size: 1.1rem; font-style: italic; opacity: 0.9;">"Education is the most powerful weapon which you can use to change the world."</p>
-            <p style="margin-top: 15px; font-weight: 700; color: var(--accent);">— Nelson Mandela</p>
+            <p style="font-size: 1.1rem; font-style: italic; opacity: 0.9;">"<?php echo $random_quote['text']; ?>"</p>
+            <p style="margin-top: 15px; font-weight: 700; color: var(--accent);">— <?php echo $random_quote['author']; ?></p>
         </div>
     </div>
 
     <div class="form-side">
         <div class="logo animate__animated animate__pulse animate__infinite">V.E.R.B.A.L.</div>
+
+        <?php if ($message): ?>
+            <div class="alert animate__animated animate__shakeX"><?php echo $message; ?></div>
+        <?php endif; ?>
 
         <form id="regForm" action="" method="POST" enctype="multipart/form-data" autocomplete="off">
             <div class="profile-upload animate__animated animate__fadeIn">
@@ -373,17 +302,17 @@ $random_quote = $quotes[array_rand($quotes)];
                     <img id="image-preview" style="display: none;">
                 </div>
                 <input type="file" name="profile_img" id="profile_input" accept="image/*" hidden onchange="previewImage(event)">
-                <label style="margin-top: 8px; font-size: 0.6rem; color: #94a3b8; text-transform: none; letter-spacing: 0;">Tap to set profile picture</label>
+                <label style="margin-top: 8px; font-size: 0.6rem; color: #94a3b8; text-transform: none;">Tap to set profile picture</label>
             </div>
 
             <div class="form-group animate__animated animate__fadeInLeft">
                 <label>Full Name</label>
-                <input type="text" name="fullname" required>
+                <input type="text" name="fullname" required value="<?php echo isset($_POST['fullname']) ? htmlspecialchars($_POST['fullname']) : ''; ?>">
             </div>
 
             <div class="form-group animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
                 <label>Username</label>
-                <input type="text" name="username" required>
+                <input type="text" name="username" required value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
             </div>
 
             <div class="grid animate__animated animate__fadeInLeft" style="animation-delay: 0.2s;">
@@ -391,17 +320,13 @@ $random_quote = $quotes[array_rand($quotes)];
                     <label>Grade Handle</label>
                     <select name="grade" required>
                         <option value="" disabled selected></option>
-                        <option value="1">Grade 1</option>
-                        <option value="2">Grade 2</option>
-                        <option value="3">Grade 3</option>
-                        <option value="4">Grade 4</option>
-                        <option value="5">Grade 5</option>
-                        <option value="6">Grade 6</option>
+                        <option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option>
+                        <option value="4">Grade 4</option><option value="5">Grade 5</option><option value="6">Grade 6</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Section Handle</label>
-                    <input type="text" name="section" required>
+                    <input type="text" name="section" required value="<?php echo isset($_POST['section']) ? htmlspecialchars($_POST['section']) : ''; ?>">
                 </div>
             </div>
 
@@ -432,7 +357,6 @@ $random_quote = $quotes[array_rand($quotes)];
         reader.onload = function() {
             output.src = reader.result;
             output.style.display = "block";
-            output.classList.add('animate__animated', 'animate__zoomIn');
             icon.style.display = "none";
         };
         reader.readAsDataURL(event.target.files[0]);
@@ -452,7 +376,7 @@ $random_quote = $quotes[array_rand($quotes)];
 
     document.getElementById('regForm').onsubmit = function() {
         const btn = document.getElementById('submitBtn');
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> CREATING ACCOUNT...';
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> CREATING...';
         btn.style.opacity = '0.9';
         btn.style.pointerEvents = 'none';
     };

@@ -5,25 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6043ded-f50c-4822-af0e-0fee6e7a8d08" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/student/Grade-1.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/student/Grade-2.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/student/get_mastered_sentences.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/student/load_progress.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/student/save_progress.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/student/save_rating.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teacher/class-reports.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teacher/student-page.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/principal/all_reports.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/principal/manage_teachers.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/principal/principal_dashboard.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/principal/section_view.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teacher/edit_student.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teacher/student-report.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/add_student.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/database.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/database.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/edit.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/leaderboard.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_progress.php" beforeDir="false" afterPath="$PROJECT_DIR$/load_progress.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/login.php" beforeDir="false" afterPath="$PROJECT_DIR$/login.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/save_progress.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/save_rating.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/signup.php" beforeDir="false" afterPath="$PROJECT_DIR$/signup.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student/student_dashboard.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/Grade-1.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-1.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/Grade-2.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/load_progress.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/load_progress.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/save_progress.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/save_progress.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/save_rating.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/save_rating.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher/class-reports.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/class-reports.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher/student-page.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/student-page.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/teacher/teacher_dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/teacher_dashboard.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -58,7 +54,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;Main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/VERBAL/student&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/mrms-aclc&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -69,6 +65,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\xampp\htdocs\VERBAL\principal" />
       <recent name="C:\xampp\htdocs\VERBAL\student" />
     </key>
   </component>
@@ -113,6 +110,16 @@
       <workItem from="1771984224315" duration="3005000" />
       <workItem from="1772016364617" duration="8517000" />
       <workItem from="1772106192347" duration="12907000" />
+      <workItem from="1772190176571" duration="8292000" />
+      <workItem from="1772332648311" duration="1302000" />
+      <workItem from="1772370099883" duration="9177000" />
+      <workItem from="1772421889440" duration="19000" />
+      <workItem from="1772441258552" duration="2952000" />
+      <workItem from="1772449123682" duration="784000" />
+      <workItem from="1772538682044" duration="3386000" />
+      <workItem from="1772705678034" duration="3572000" />
+      <workItem from="1772711363023" duration="3696000" />
+      <workItem from="1772763017197" duration="535000" />
     </task>
     <servers />
   </component>

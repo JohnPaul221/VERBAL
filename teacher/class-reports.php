@@ -3,15 +3,17 @@ session_start();
 require_once '../config/database.php';
 global $pdo;
 
-// 1. SECURITY CHECK
-if (!isset($_SESSION['teacher_id']) || $_SESSION['role'] !== 'teacher') {
+// --- FIXED LOGIC: Multi-Role Session Security ---
+if (!isset($_SESSION['teacher_logged_in']) || $_SESSION['teacher_logged_in'] !== true || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit();
 }
 
 $teacher_id = $_SESSION['teacher_id'];
+// ----------------------------------------------
 
 try {
+    // Kunin ang data ng teacher para malaman ang Grade at Section na hawak niya
     $stmt = $pdo->prepare("SELECT * FROM teachers WHERE id = ?");
     $stmt->execute([$teacher_id]);
     $teacher = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -22,19 +24,26 @@ try {
         exit();
     }
 
-    $t_grade = $teacher['grade_handle'] ?? 'N/A';
-    $t_section = $teacher['section'] ?? 'N/A';
+    $t_grade = $teacher['grade_handle']; // Mula sa table 'teachers'
+    $t_section = $teacher['section'];    // Mula sa table 'teachers'
 
+    // 2. FILTER LOGIC (Daily, Weekly, Monthly)
     $range = isset($_GET['range']) ? $_GET['range'] : 'all';
     $rate_condition = "";
 
     switch ($range) {
-        case 'daily': $rate_condition = " AND DATE(sr.created_at) = CURDATE()"; break;
-        case 'weekly': $rate_condition = " AND YEARWEEK(sr.created_at, 1) = YEARWEEK(CURDATE(), 1)"; break;
-        case 'monthly': $rate_condition = " AND MONTH(sr.created_at) = MONTH(CURDATE()) AND YEAR(sr.created_at) = YEAR(CURDATE())"; break;
+        case 'daily':
+            $rate_condition = " AND DATE(sr.created_at) = CURDATE()";
+            break;
+        case 'weekly':
+            $rate_condition = " AND YEARWEEK(sr.created_at, 1) = YEARWEEK(CURDATE(), 1)";
+            break;
+        case 'monthly':
+            $rate_condition = " AND MONTH(sr.created_at) = MONTH(CURDATE()) AND YEAR(sr.created_at) = YEAR(CURDATE())";
+            break;
     }
 
-    // Ginamit ang mas mabilis na JOIN query pero same result columns
+    // 3. MAIN QUERY: KINOKONEKTA ANG 'students' AT 'student_ratings'
     $sql_reports = "SELECT 
                         s.id, 
                         s.fullname, 
@@ -81,16 +90,14 @@ try {
             --shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
         }
 
-        /* FIT TO SCREEN LOGIC - NO VERTICAL SCROLL ON BODY */
         html, body { height: 100vh; width: 100vw; margin: 0; padding: 0; overflow: hidden; background: var(--bg-body); font-family: 'Plus Jakarta Sans', sans-serif; }
         * { box-sizing: border-box; -ms-overflow-style: none; scrollbar-width: none; }
         *::-webkit-scrollbar { display: none; }
 
         .app-container { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
 
-        /* SIDEBAR WITH ORIGINAL HOVER & SLIDE EFFECTS */
         .sidebar { width: 280px; background: var(--sidebar-dark); padding: 40px 25px; display: flex; flex-direction: column; color: white; flex-shrink: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .logo { font-size: 1.6rem; font-weight: 800; margin-bottom: 50px; animation: fadeInDown 0.8s; }
+        .logo { font-size: 1.6rem; font-weight: 800; margin-bottom: 50px; }
         .nav-link { display: flex; align-items: center; padding: 16px 20px; color: var(--text-gray); text-decoration: none; border-radius: 20px; font-weight: 700; transition: 0.3s; margin-bottom: 8px; }
         .nav-link:hover { background: rgba(255, 255, 255, 0.05); color: white; transform: translateX(8px); }
         .nav-link.active { background: var(--accent); color: white; box-shadow: 0px 10px 20px rgba(67, 24, 255, 0.3); }
@@ -98,77 +105,42 @@ try {
         .logout-btn { margin-top: auto; color: #ff5f5f; border: 1px solid rgba(255, 95, 95, 0.2); text-align: center; cursor: pointer; padding: 12px; border-radius: 12px; transition: 0.3s; font-weight: 700; }
         .logout-btn:hover { background: #ff5f5f; color: white; transform: scale(1.02); }
 
-        /* MAIN CONTENT AREA */
         .main-wrapper { flex: 1; padding: 25px 35px; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-shrink: 0; }
+        .header-area h1 { font-size: 1.8rem; font-weight: 800; margin: 0; }
 
-        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-shrink: 0; animation: fadeInDown 0.8s; }
-        .header-area h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
-
-        /* EXPORT PDF BUTTON STYLE */
-        .btn-print {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 15px;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0px 10px 20px rgba(67, 24, 255, 0.2);
-        }
-
-        .btn-print:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0px 15px 25px rgba(67, 24, 255, 0.3);
-            background: #3310DB;
-        }
+        .btn-print { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
+        .btn-print:hover { background: #3310DB; transform: translateY(-2px); }
 
         .analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px; flex-shrink: 0; }
-        .glass-card { background: white; padding: 25px; border-radius: 30px; box-shadow: var(--shadow); transition: 0.4s; }
-        .glass-card:hover { transform: translateY(-5px); }
+        .glass-card { background: white; padding: 25px; border-radius: 30px; box-shadow: var(--shadow); }
 
-        /* TOOLBAR & SEARCH */
         .toolbar { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; flex-shrink: 0; }
         .range-picker { display: flex; background: #E9EDF7; padding: 5px; border-radius: 15px; gap: 5px; }
-        .range-btn { text-decoration: none; padding: 8px 18px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; color: var(--accent); transition: 0.3s; }
-        .range-btn.active { background: var(--accent); color: white; box-shadow: 0 5px 10px rgba(67, 24, 255, 0.2); }
+        .range-btn { text-decoration: none; padding: 8px 18px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; color: var(--accent); }
+        .range-btn.active { background: var(--accent); color: white; }
 
-        .search-box { flex: 1; background: white; border: none; padding: 12px 25px; border-radius: 50px; box-shadow: var(--shadow); font-weight: 600; outline: none; transition: 0.3s; }
-        .search-box:focus { box-shadow: 0 10px 25px rgba(67, 24, 255, 0.1); }
+        .search-box { flex: 1; border: none; padding: 12px 25px; border-radius: 50px; box-shadow: var(--shadow); font-weight: 600; outline: none; }
 
-        /* TABLE AREA */
-        .table-wrap { background: white; border-radius: 30px; box-shadow: var(--shadow); flex: 1; overflow-y: auto; position: relative; animation: fadeInUp 1s; }
+        .table-wrap { background: white; border-radius: 30px; box-shadow: var(--shadow); flex: 1; overflow-y: auto; }
         table { width: 100%; border-collapse: collapse; }
-        thead { position: sticky; top: 0; background: white; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        th { text-align: left; padding: 18px 25px; color: var(--text-gray); font-size: 0.7rem; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid #F1F4F9; }
-        td { padding: 18px 25px; border-bottom: 1px solid #F1F4F9; font-weight: 700; font-size: 0.9rem; transition: 0.2s; }
-        tr:hover td { background: #f8faff; }
+        thead { position: sticky; top: 0; background: white; z-index: 10; }
+        th { text-align: left; padding: 18px 25px; color: var(--text-gray); font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid #F1F4F9; }
+        td { padding: 18px 25px; border-bottom: 1px solid #F1F4F9; font-weight: 700; font-size: 0.9rem; }
 
-        /* STATUS BADGES */
-        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; display: inline-block; }
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
         .status-advanced { background: rgba(5, 205, 153, 0.1); color: var(--success); }
         .status-proficient { background: rgba(67, 24, 255, 0.1); color: var(--accent); }
         .status-struggling { background: rgba(238, 93, 80, 0.1); color: var(--danger); }
 
-        .progress-mini { width: 80px; height: 6px; background: #F4F7FE; border-radius: 10px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 12px; }
-        .fill-mini { height: 100%; background: var(--accent); border-radius: 10px; transition: 1s ease-out; }
+        .progress-mini { width: 80px; height: 6px; background: #F4F7FE; border-radius: 10px; overflow: hidden; display: inline-block; margin-right: 12px; }
+        .fill-mini { height: 100%; background: var(--accent); }
 
-        /* PRINT MEDIA QUERY - FIXED FOR PDF EXPORT */
         @media print {
-            @page { size: landscape; margin: 10mm; }
-            .sidebar, .toolbar, .btn-print, .logout-btn, .range-picker { display: none !important; }
-            .app-container { display: block !important; }
-            .main-wrapper { padding: 0 !important; width: 100% !important; overflow: visible !important; height: auto !important; }
-            .table-wrap { overflow: visible !important; box-shadow: none !important; border-radius: 0 !important; border: 1px solid #eee; }
+            .sidebar, .toolbar, .btn-print, .logout-btn { display: none !important; }
+            .main-wrapper { padding: 0 !important; width: 100% !important; overflow: visible !important; }
+            .table-wrap { overflow: visible !important; }
             body { background: white !important; overflow: visible !important; }
-            thead { position: static !important; }
-            th, td { border: 1px solid #eee !important; color: #000 !important; }
-            .glass-card { box-shadow: none !important; border: 1px solid #eee; margin-bottom: 20px; page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -198,20 +170,20 @@ try {
 
         <div class="analytics-grid">
             <div class="glass-card">
-                <h3 style="margin-bottom: 15px; font-size: 0.9rem; font-weight: 800; color: var(--text-gray);">STUDENT ACCURACY</h3>
+                <h3 style="margin-bottom: 15px; font-size: 0.9rem; font-weight: 800; color: var(--text-gray);">TOP 8 STUDENT ACCURACY</h3>
                 <div style="height: 180px;"><canvas id="reportChart"></canvas></div>
             </div>
             <div class="glass-card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
-                <p style="font-size: 0.7rem; font-weight: 800; color: var(--text-gray); text-transform: uppercase;"><?= $range ?> Average</p>
+                <p style="font-size: 0.7rem; font-weight: 800; color: var(--text-gray); text-transform: uppercase;"><?= ucfirst($range) ?> Average</p>
                 <?php
-                $avg_acc = 0; $count = 0;
+                $avg_acc = 0; $count_active = 0;
                 foreach($reports as $r) {
                     if($r['words_attempted'] > 0) {
                         $avg_acc += ($r['words_correct'] / $r['words_attempted']) * 100;
-                        $count++;
+                        $count_active++;
                     }
                 }
-                $final_avg = ($count > 0) ? round($avg_acc / $count) : 0;
+                $final_avg = ($count_active > 0) ? round($avg_acc / $count_active) : 0;
                 ?>
                 <h2 style="font-size: 3.5rem; font-weight: 900; color: var(--accent);"><?= $final_avg ?>%</h2>
                 <p style="font-weight: 700; color: var(--text-dark);">Class Proficiency</p>
@@ -225,13 +197,7 @@ try {
                 <a href="?range=weekly" class="range-btn <?= $range == 'weekly' ? 'active' : '' ?>">Weekly</a>
                 <a href="?range=monthly" class="range-btn <?= $range == 'monthly' ? 'active' : '' ?>">Monthly</a>
             </div>
-            <input type="text" id="studentSearch" class="search-box" placeholder="Search by student name..." onkeyup="filterReports()">
-            <select id="levelFilter" class="filter-select" onchange="filterReports()" style="background: white; border: none; padding: 12px 20px; border-radius: 15px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow); outline: none;">
-                <option value="all">All Levels</option>
-                <option value="advanced">Advanced</option>
-                <option value="proficient">Proficient</option>
-                <option value="struggling">Struggling</option>
-            </select>
+            <input type="text" id="studentSearch" class="search-box" placeholder="Search student name..." onkeyup="filterReports()">
         </div>
 
         <div class="table-wrap">
@@ -269,8 +235,6 @@ try {
     </main>
 </div>
 
-
-
 <script>
     const ctx = document.getElementById('reportChart').getContext('2d');
     let chart = new Chart(ctx, {
@@ -282,62 +246,56 @@ try {
                 data: [],
                 backgroundColor: '#4318FF',
                 borderRadius: 8,
-                barThickness: 20
+                // --- ITO ANG NAGPAPAPAYAT SA BARS ---
+                barPercentage: 0.4,
+                categoryPercentage: 0.8
             }]
         },
         options: {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, max: 100, grid: { display: false }, ticks: { font: { weight: 'bold' } } },
-                x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
+                y: { beginAtZero: true, max: 100 },
+                x: { grid: { display: false } }
             }
         }
     });
 
     function filterReports() {
         const query = document.getElementById('studentSearch').value.toLowerCase();
-        const level = document.getElementById('levelFilter').value;
         const rows = document.querySelectorAll('#reportTbody tr');
 
         let chartLabels = [];
         let chartData = [];
-        let count = 0;
 
         rows.forEach(row => {
             const name = row.cells[0].innerText;
-            const status = row.getAttribute('data-status');
             const accuracy = parseInt(row.cells[3].innerText);
 
-            const matchesSearch = name.toLowerCase().includes(query);
-            const matchesLevel = (level === 'all' || status === level);
-
-            if (matchesSearch && matchesLevel) {
+            if (name.toLowerCase().includes(query)) {
                 row.style.display = '';
-                if (count < 10) {
-                    chartLabels.push(name.split(' ')[0]);
-                    chartData.push(accuracy);
-                    count++;
-                }
+                chartLabels.push(name.split(' ')[0]);
+                chartData.push(accuracy);
             } else {
                 row.style.display = 'none';
             }
         });
 
-        chart.data.labels = chartLabels;
-        chart.data.datasets[0].data = chartData;
+        // --- TOP 8 LAMANG ANG IPAPAKITA SA GRAPH ---
+        chart.data.labels = chartLabels.slice(0, 8);
+        chart.data.datasets[0].data = chartData.slice(0, 8);
         chart.update();
     }
 
     function handleLogout() {
         Swal.fire({
             title: 'Logout Account?',
-            text: "Are you sure you want to end your session?",
+            text: "Are you sure?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#4318FF',
-            confirmButtonText: 'Yes, Logout'
-        }).then((result) => { if (result.isConfirmed) window.location.href = "../logout.php"; });
+            confirmButtonText: 'Yes'
+        }).then((result) => { if (result.isConfirmed) window.location.href = "../login.php"; });
     }
 
     window.onload = filterReports;

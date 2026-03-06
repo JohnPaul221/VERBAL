@@ -1,50 +1,76 @@
 <?php
 session_start();
 require_once 'config/database.php';
+global $pdo;
 
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
-    $role     = $_POST['role'];
-
-    $table = ($role === "teacher") ? "teachers" : "students";
+    $selected_role = $_POST['role'] ?? 'student';
 
     try {
-        // Query para makuha ang user info kasama ang grade para sa redirect
-        $stmt = $pdo->prepare("SELECT id, username, password" . ($role === 'student' ? ", grade" : "") . " FROM $table WHERE username = :username");
-        $stmt->execute([':username' => $username]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($selected_role === 'teacher') {
+            // 1. CHECK SA PRINCIPALS TABLE
+            $stmt = $pdo->prepare("SELECT * FROM principals WHERE username = ? AND password = ?");
+            $stmt->execute([$username, $password]);
+            $principal = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && $password === $user['password']) {
-            session_regenerate_id(true);
+            if ($principal) {
+                $_SESSION['teacher_logged_in'] = true; // UNIQUE KEY
+                $_SESSION['principal_id'] = $principal['id'];
+                $_SESSION['role'] = 'principal';
+                $_SESSION['fullname'] = $principal['fullname'];
+                header("Location: principal/principal_dashboard.php");
+                exit();
+            }
 
-            $_SESSION['user_id']  = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role']     = $role;
+            // 2. CHECK SA TEACHERS TABLE
+            $stmt = $pdo->prepare("SELECT * FROM teachers WHERE username = ? AND password = ?");
+            $stmt->execute([$username, $password]);
+            $teacher = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($role === 'teacher') {
-                $_SESSION['teacher_id'] = $user['id'];
+            if ($teacher) {
+                $_SESSION['teacher_logged_in'] = true; // UNIQUE KEY
+                $_SESSION['teacher_id'] = $teacher['id'];
+                $_SESSION['role'] = 'teacher';
+                $_SESSION['fullname'] = $teacher['fullname'];
                 header("Location: teacher/teacher_dashboard.php");
+                exit();
             } else {
-                $_SESSION['grade'] = $user['grade'];
+                $message = "Invalid Teacher credentials.";
+            }
 
-                // REDIRECT LOGIC BASE SA GRADE LEVEL
-                $gradePage = "student/Grade-" . $user['grade'] . ".php";
+        } else if ($selected_role === 'student') {
+            // 3. CHECK SA STUDENTS TABLE
+            $stmt = $pdo->prepare("SELECT * FROM students WHERE username = ? AND password = ?");
+            $stmt->execute([$username, $password]);
+            $student = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($student) {
+                $_SESSION['student_logged_in'] = true; // UNIQUE KEY
+                $_SESSION['student_id'] = $student['id'];
+                $_SESSION['role'] = 'student';
+                $_SESSION['fullname'] = $student['fullname'];
+                $_SESSION['grade'] = $student['grade'];
+
+                $update = $pdo->prepare("UPDATE students SET last_login = NOW() WHERE id = ?");
+                $update->execute([$student['id']]);
+
+                $gradePage = "student/Grade-" . $student['grade'] . ".php";
                 if (file_exists($gradePage)) {
                     header("Location: " . $gradePage);
                 } else {
                     header("Location: student/student_dashboard.php");
                 }
+                exit();
+            } else {
+                $message = "Invalid Student credentials.";
             }
-            exit();
-        } else {
-            $message = "Invalid username or password.";
         }
     } catch (PDOException $e) {
-        error_log($e->getMessage());
-        $message = "Database error. Please try again later.";
+        $message = "Database Error: " . $e->getMessage();
     }
 }
 ?>
@@ -217,6 +243,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         input { width: 100%; padding: 0.9rem 1.2rem; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; color: #333; margin-bottom: 12px; outline: none; box-sizing: border-box; }
         .dark-mode input { color: #ffffff; }
         .login-btn { background: var(--btn-bg); color: var(--btn-text); width: 100%; padding: 1rem; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+
+        /* NEW: Password Wrapper Styles */
+        .pass-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .pass-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            cursor: pointer;
+            color: var(--text-main);
+            opacity: 0.6;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
@@ -257,7 +298,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <input type="hidden" name="role" id="role" value="student">
         <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
+
+        <div class="pass-wrapper">
+            <input type="password" name="password" id="passwordInput" placeholder="Password" required>
+            <i class="fas fa-eye" id="togglePass"></i>
+        </div>
+
         <button type="submit" class="login-btn">LOGIN <i class="fas fa-arrow-right"></i></button>
 
         <a href="signup.php" id="signupLink" style="display: none; margin-top: 25px; font-size: 0.8rem; color: var(--text-main); text-decoration: none; opacity: 0.7;">Create Account</a>
@@ -269,8 +315,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.body.classList.toggle('dark-mode');
     }
 
+    // NEW: Toggle Password Script
+    const togglePass = document.getElementById('togglePass');
+    const passwordInput = document.getElementById('passwordInput');
+
+    togglePass.addEventListener('click', () => {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        togglePass.classList.toggle('fa-eye');
+        togglePass.classList.toggle('fa-eye-slash');
+    });
+
     function setRole(r) {
         document.getElementById('role').value = r;
+
+        document.querySelector('input[name="username"]').value = '';
+        document.querySelector('input[name="password"]').value = '';
+
         const sBtn = document.getElementById('sBtn');
         const tBtn = document.getElementById('tBtn');
         const signupLink = document.getElementById('signupLink');
@@ -294,7 +355,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const cosmic = document.getElementById('cosmicContainer');
         const landscape = document.getElementById('landscapeContainer');
 
-        // Stars generator
         for (let i = 0; i < 60; i++) {
             const star = document.createElement('div');
             star.className = 'star';
@@ -307,7 +367,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             cosmic.appendChild(star);
         }
 
-        // Leaves generator
         for (let i = 0; i < 15; i++) {
             const leaf = document.createElement('div');
             leaf.className = 'leaf';

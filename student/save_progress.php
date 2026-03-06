@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once('../config/database.php');
 global $pdo;
 
@@ -17,9 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // INAYOS: Ginamit ang 'student_progress_main' at inayos ang VALUES logic
-        $sql = "INSERT INTO student_progress_main (student_id, difficulty, word_index, words_attempted, words_correct) 
-                VALUES (?, ?, ?, ?, ?) 
+        // Ang query na ito ay mag-uupdate sa record kung nage-exist na ang student_id + difficulty
+        $sql = "INSERT INTO student_progress_main 
+                (student_id, difficulty, word_index, words_attempted, words_correct, last_updated) 
+                VALUES 
+                (:sid, :diff, :widx, :watt, :wcor, CURRENT_TIMESTAMP) 
                 ON DUPLICATE KEY UPDATE 
                 word_index = VALUES(word_index), 
                 words_attempted = VALUES(words_attempted), 
@@ -27,14 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 last_updated = CURRENT_TIMESTAMP";
 
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$student_id, $difficulty, $word_index, $words_attempted, $words_correct]);
+        $stmt->execute([
+            'sid'  => $student_id,
+            'diff' => $difficulty,
+            'widx' => $word_index,
+            'watt' => $words_attempted,
+            'wcor' => $words_correct
+        ]);
 
         echo json_encode(['success' => true]);
     } catch (PDOException $e) {
         error_log("Save Progress Error: " . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'Database error occurred.']);
+        echo json_encode(['success' => false, 'message' => 'Database error']);
     }
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid Request']);
 }
 ?>

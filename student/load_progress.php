@@ -1,7 +1,7 @@
 <?php
+global $pdo;
 session_start();
 require_once('../config/database.php');
-global $pdo;
 
 header('Content-Type: application/json');
 
@@ -14,13 +14,13 @@ if ($student_id === 0) {
 }
 
 try {
+    // 1. Mastery Status mula sa students table
     $stmtUser = $pdo->prepare("SELECT mastery_unlocked FROM students WHERE id = ?");
     $stmtUser->execute([$student_id]);
     $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
-
     $mastery_status = $user ? (int)$user['mastery_unlocked'] : 0;
 
-    // INAYOS: Ginamit ang 'student_progress_main' base sa database dump mo
+    // 2. Progress mula sa student_progress_main (Dito galing ang 0/10 na progress)
     $stmtProgress = $pdo->prepare("SELECT word_index, words_attempted, words_correct FROM student_progress_main WHERE student_id = ? AND difficulty = ?");
     $stmtProgress->execute([$student_id, $difficulty]);
     $progress = $stmtProgress->fetch(PDO::FETCH_ASSOC);
@@ -28,19 +28,15 @@ try {
     echo json_encode([
         'success' => true,
         'mastery_unlocked' => $mastery_status,
-        'progress' => $progress ? [
-            'word_index' => (int)$progress['word_index'],
-            'words_attempted' => (int)$progress['words_attempted'],
-            'words_correct' => (int)$progress['words_correct']
-        ] : [
-            'word_index' => 0,
-            'words_attempted' => 0,
-            'words_correct' => 0
+        'progress' => [
+            'word_index' => $progress ? (int)$progress['word_index'] : 0,
+            'words_attempted' => $progress ? (int)$progress['words_attempted'] : 0,
+            'words_correct' => $progress ? (int)$progress['words_correct'] : 0
         ]
     ]);
 
 } catch (PDOException $e) {
     error_log("Load Progress Error: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'Database error occurred.']);
+    echo json_encode(['success' => false, 'message' => 'Database error']);
 }
 ?>

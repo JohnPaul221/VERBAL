@@ -12,34 +12,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($selected_role === 'teacher') {
-            // 1. CHECK SA PRINCIPALS TABLE
-            $stmt = $pdo->prepare("SELECT * FROM principals WHERE username = ? AND password = ?");
-            $stmt->execute([$username, $password]);
-            $principal = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($principal) {
-                $_SESSION['teacher_logged_in'] = true; // UNIQUE KEY
-                $_SESSION['principal_id'] = $principal['id'];
-                $_SESSION['role'] = 'principal';
-                $_SESSION['fullname'] = $principal['fullname'];
-                header("Location: principal/principal_dashboard.php");
-                exit();
-            }
-
-            // 2. CHECK SA TEACHERS TABLE
+            // 1. CHECK SA TEACHERS TABLE (Primary Role)
             $stmt = $pdo->prepare("SELECT * FROM teachers WHERE username = ? AND password = ?");
             $stmt->execute([$username, $password]);
             $teacher = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($teacher) {
-                $_SESSION['teacher_logged_in'] = true; // UNIQUE KEY
+                $_SESSION['teacher_logged_in'] = true;
                 $_SESSION['teacher_id'] = $teacher['id'];
+                $_SESSION['teacher_role'] = 'teacher';
                 $_SESSION['role'] = 'teacher';
                 $_SESSION['fullname'] = $teacher['fullname'];
                 header("Location: teacher/teacher_dashboard.php");
                 exit();
+            }
+
+            // 2. CHECK SA PRINCIPALS TABLE
+            $stmt = $pdo->prepare("SELECT * FROM principals WHERE username = ? AND password = ?");
+            $stmt->execute([$username, $password]);
+            $principal = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($principal) {
+                $_SESSION['principal_logged_in'] = true;
+                $_SESSION['principal_id'] = $principal['id'];
+                $_SESSION['principal_role'] = 'principal';
+                $_SESSION['role'] = 'principal';
+                $_SESSION['fullname'] = $principal['fullname'];
+                header("Location: principal/principal_dashboard.php");
+                exit();
             } else {
-                $message = "Invalid Teacher credentials.";
+                $message = "Invalid Teacher or Principal credentials.";
             }
 
         } else if ($selected_role === 'student') {
@@ -49,8 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($student) {
-                $_SESSION['student_logged_in'] = true; // UNIQUE KEY
+                $_SESSION['student_logged_in'] = true;
                 $_SESSION['student_id'] = $student['id'];
+                $_SESSION['student_role'] = 'student';
                 $_SESSION['role'] = 'student';
                 $_SESSION['fullname'] = $student['fullname'];
                 $_SESSION['grade'] = $student['grade'];
@@ -59,11 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $update->execute([$student['id']]);
 
                 $gradePage = "student/Grade-" . $student['grade'] . ".php";
-                if (file_exists($gradePage)) {
-                    header("Location: " . $gradePage);
-                } else {
-                    header("Location: student/student_dashboard.php");
-                }
+                header("Location: " . (file_exists($gradePage) ? $gradePage : "student/student_dashboard.php"));
                 exit();
             } else {
                 $message = "Invalid Student credentials.";
@@ -86,45 +85,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         :root {
             --bg: linear-gradient(180deg, #4facfe 0%, #00f2fe 35%, #a8e063 85%, #56ab2f 100%);
             --container-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 248, 233, 0.95) 100%);
-            --text-main: #2d5a27;
-            --input-bg: #f1f8e9;
-            --input-border: #8bc34a;
-            --btn-bg: linear-gradient(to right, #689f38 0%, #8bc34a 100%);
-            --btn-text: #ffffff;
-            --cosmic-opacity: 0;
-            --cloud-opacity: 1;
-            --landscape-opacity: 1;
-            --sun-top: 10%;
-            --moon-top: -200px;
-            --sun-pointer: auto;
-            --moon-pointer: none;
+            --text-main: #2d5a27; --input-bg: #f1f8e9; --input-border: #8bc34a;
+            --btn-bg: linear-gradient(to right, #689f38 0%, #8bc34a 100%); --btn-text: #ffffff;
+            --cosmic-opacity: 0; --cloud-opacity: 1; --landscape-opacity: 1;
+            --sun-top: 10%; --moon-top: -200px; --sun-pointer: auto; --moon-pointer: none;
         }
 
         .dark-mode {
             --bg: radial-gradient(circle at center, #1a0633 0%, #050505 100%);
-            --container-bg: rgba(65, 63, 81, 0.6);
-            --text-main: #ffffff;
-            --input-bg: rgba(30, 30, 45, 0.8);
-            --input-border: #7e57c2;
-            --btn-bg: linear-gradient(to right, #ff4081, #f50057);
-            --btn-text: #ffffff;
-            --cosmic-opacity: 1;
-            --cloud-opacity: 0;
-            --landscape-opacity: 0;
-            --sun-top: -200px;
-            --moon-top: 10%;
-            --sun-pointer: none;
-            --moon-pointer: auto;
+            --container-bg: rgba(65, 63, 81, 0.6); --text-main: #ffffff;
+            --input-bg: rgba(30, 30, 45, 0.8); --input-border: #7e57c2;
+            --btn-bg: linear-gradient(to right, #ff4081, #f50057); --btn-text: #ffffff;
+            --cosmic-opacity: 1; --cloud-opacity: 0; --landscape-opacity: 0;
+            --sun-top: -200px; --moon-top: 10%; --sun-pointer: none; --moon-pointer: auto;
         }
 
         body {
             margin: 0; padding: 0; height: 100vh; width: 100vw;
             font-family: 'Segoe UI', sans-serif;
-            background: var(--bg);
-            background-attachment: fixed;
+            background: var(--bg); background-attachment: fixed;
             display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden; transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes containerEntrance {
@@ -153,8 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
         .landscape-bg, .cloud-bg, .cosmic-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
         }
 
         .landscape-bg {
@@ -178,25 +158,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .t5 { left: 30%; transform: scale(0.7); opacity: 0.7; }
 
         .sun, .moon {
-            position: fixed; right: 10%;
-            width: 100px; height: 100px; border-radius: 50%;
-            transition: 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            z-index: 100;
-            cursor: pointer;
-            animation: celestialEntrance 1.2s ease-out backwards;
+            position: fixed; right: 10%; width: 100px; height: 100px; border-radius: 50%;
+            transition: 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55); z-index: 100;
+            cursor: pointer; animation: celestialEntrance 1.2s ease-out backwards;
         }
-        .sun {
-            top: var(--sun-top);
-            background: radial-gradient(circle, #fff9c4, #fbc02d);
-            box-shadow: 0 0 50px #fbc02d;
-            pointer-events: var(--sun-pointer);
-        }
-        .moon {
-            top: var(--moon-top);
-            background: radial-gradient(circle at 30% 30%, #ffffff, #bdc3c7);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
-            pointer-events: var(--moon-pointer);
-        }
+        .sun { top: var(--sun-top); background: radial-gradient(circle, #fff9c4, #fbc02d); box-shadow: 0 0 50px #fbc02d; pointer-events: var(--sun-pointer); }
+        .moon { top: var(--moon-top); background: radial-gradient(circle at 30% 30%, #ffffff, #bdc3c7); box-shadow: 0 0 30px rgba(255, 255, 255, 0.4); pointer-events: var(--moon-pointer); }
 
         .cloud-bg { opacity: var(--cloud-opacity); transition: 0.8s; z-index: 1; }
         .cloud { position: absolute; background: #ffffff; width: 150px; height: 50px; border-radius: 50px; animation: moveClouds linear infinite; }
@@ -217,47 +184,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .planet { position: absolute; border-radius: 50%; }
         .p1 { width: 180px; height: 180px; top: -40px; left: 5%; background: radial-gradient(circle at 30% 30%, #5e35b1, #1a0633); box-shadow: inset -20px -20px 50px rgba(0,0,0,0.7); }
-        .p2 { width: 100px; height: 100px; bottom: 10%; right: 10%; background: radial-gradient(circle at 30% 30%, #d81b60, #4a001f); box-shadow: inset -15px -15px 40px rgba(0,0,0,0.8); }
+        .p2 { width: 100px; height: 100px; bottom: 10%; right: 10%; background: radial-gradient(circle at 30% 30%, #d81b60, #4a001f); }
         .p3 { width: 40px; height: 40px; top: 20%; right: 20%; background: #3949ab; opacity: 0.6; filter: blur(1px); }
-        .p4 { width: 60px; height: 60px; bottom: 20%; left: 15%; background: #00acc1; box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5); }
+        .p4 { width: 60px; height: 60px; bottom: 20%; left: 15%; background: #00acc1; }
         .p5 { width: 15px; height: 15px; top: 40%; left: 35%; background: #fff; box-shadow: 0 0 15px #fff; animation: pulse 3s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 
         .container {
-            background: var(--container-bg);
-            backdrop-filter: blur(20px);
-            padding: 3rem 2.5rem;
-            border-radius: 40px;
-            width: 90%;
-            max-width: 320px;
-            text-align: center;
-            z-index: 10;
-            border: 2px solid var(--input-border);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            animation: containerEntrance 1s ease-out backwards;
+            background: var(--container-bg); backdrop-filter: blur(20px);
+            padding: 3rem 2.5rem; border-radius: 40px; width: 90%; max-width: 320px;
+            text-align: center; z-index: 10; border: 2px solid var(--input-border);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; animation: containerEntrance 1s ease-out backwards;
         }
 
         h2 { color: var(--text-main); font-weight: 900; text-transform: uppercase; margin: 0; font-size: 2rem; }
         input { width: 100%; padding: 0.9rem 1.2rem; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; color: #333; margin-bottom: 12px; outline: none; box-sizing: border-box; }
         .dark-mode input { color: #ffffff; }
-        .login-btn { background: var(--btn-bg); color: var(--btn-text); width: 100%; padding: 1rem; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
 
-        /* NEW: Password Wrapper Styles */
-        .pass-wrapper {
-            position: relative;
-            width: 100%;
+        .login-btn {
+            background: var(--btn-bg); color: var(--btn-text); width: 100%; padding: 1rem;
+            border-radius: 50px; border: none; font-weight: 900; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
         }
-        .pass-wrapper i {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            cursor: pointer;
-            color: var(--text-main);
-            opacity: 0.6;
-            z-index: 100;
-        }
+
+        .pass-wrapper { position: relative; width: 100%; }
+        .pass-wrapper i { position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--text-main); opacity: 0.6; z-index: 100; }
     </style>
 </head>
 <body>
@@ -268,6 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="cloud-bg">
     <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
 </div>
+
 <div class="landscape-bg" id="landscapeContainer">
     <div class="mountain m1"></div><div class="mountain m2"></div>
     <div class="tree t1"><div class="tree-top"></div><div class="tree-trunk"></div></div>
@@ -286,10 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container">
     <h2>LOGIN</h2>
-
-    <?php if ($message): ?>
-        <div style="color: #ff4081; font-size: 0.8rem; margin-bottom: 15px; font-weight: bold;"><?= $message ?></div>
-    <?php endif; ?>
+    <?php if ($message): ?><div style="color: #ff4081; font-size: 0.8rem; margin-bottom: 15px; font-weight: bold;"><?= $message ?></div><?php endif; ?>
 
     <form method="POST">
         <div style="display: flex; gap: 10px; margin-bottom: 20px;">
@@ -297,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="button" id="tBtn" onclick="setRole('teacher')" style="flex:1; padding: 6px; border-radius: 15px; border: 1px solid var(--input-border); background: transparent; color: var(--text-main); cursor: pointer; font-size: 0.8rem;">Teacher</button>
         </div>
         <input type="hidden" name="role" id="role" value="student">
-        <input type="text" name="username" placeholder="Username" required>
+        <input type="text" name="username" id="usernameInput" placeholder="Username" required>
 
         <div class="pass-wrapper">
             <input type="password" name="password" id="passwordInput" placeholder="Password" required>
@@ -305,19 +255,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button type="submit" class="login-btn">LOGIN <i class="fas fa-arrow-right"></i></button>
-
         <a href="signup.php" id="signupLink" style="display: none; margin-top: 25px; font-size: 0.8rem; color: var(--text-main); text-decoration: none; opacity: 0.7;">Create Account</a>
     </form>
 </div>
 
-<script>
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-    }
 
-    // NEW: Toggle Password Script
+
+<script>
+    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
     const togglePass = document.getElementById('togglePass');
     const passwordInput = document.getElementById('passwordInput');
+    const usernameInput = document.getElementById('usernameInput');
 
     togglePass.addEventListener('click', () => {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -328,25 +276,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     function setRole(r) {
         document.getElementById('role').value = r;
-
-        document.querySelector('input[name="username"]').value = '';
-        document.querySelector('input[name="password"]').value = '';
-
+        usernameInput.value = '';
+        passwordInput.value = '';
         const sBtn = document.getElementById('sBtn');
         const tBtn = document.getElementById('tBtn');
         const signupLink = document.getElementById('signupLink');
 
         if (r === 'student') {
-            sBtn.style.background = 'var(--input-border)';
-            sBtn.style.color = 'white';
-            tBtn.style.background = 'transparent';
-            tBtn.style.color = 'var(--text-main)';
+            sBtn.style.background = 'var(--input-border)'; sBtn.style.color = 'white';
+            tBtn.style.background = 'transparent'; tBtn.style.color = 'var(--text-main)';
             signupLink.style.display = 'none';
         } else {
-            tBtn.style.background = 'var(--input-border)';
-            tBtn.style.color = 'white';
-            sBtn.style.background = 'transparent';
-            sBtn.style.color = 'var(--text-main)';
+            tBtn.style.background = 'var(--input-border)'; tBtn.style.color = 'white';
+            sBtn.style.background = 'transparent'; sBtn.style.color = 'var(--text-main)';
             signupLink.style.display = 'block';
         }
     }
@@ -354,33 +296,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     function initDynamicAssets() {
         const cosmic = document.getElementById('cosmicContainer');
         const landscape = document.getElementById('landscapeContainer');
-
         for (let i = 0; i < 60; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 3 + 'px';
-            star.style.width = size;
-            star.style.height = size;
-            star.style.top = Math.random() * 100 + '%';
-            star.style.left = Math.random() * 100 + '%';
+            const star = document.createElement('div'); star.className = 'star';
+            const size = Math.random() * 3 + 'px'; star.style.width = size; star.style.height = size;
+            star.style.top = Math.random() * 100 + '%'; star.style.left = Math.random() * 100 + '%';
             star.style.setProperty('--d', (Math.random() * 3 + 2) + 's');
             cosmic.appendChild(star);
         }
-
         for (let i = 0; i < 15; i++) {
-            const leaf = document.createElement('div');
-            leaf.className = 'leaf';
-            leaf.style.left = Math.random() * 100 + '%';
-            leaf.style.animationDuration = (Math.random() * 5 + 7) + 's';
-            leaf.style.animationDelay = (Math.random() * -10) + 's';
+            const leaf = document.createElement('div'); leaf.className = 'leaf';
+            leaf.style.left = Math.random() * 100 + '%'; leaf.style.animationDuration = (Math.random() * 5 + 7) + 's';
             landscape.appendChild(leaf);
         }
     }
-
-    window.onload = () => {
-        setRole('student');
-        initDynamicAssets();
-    };
+    window.onload = () => { setRole('student'); initDynamicAssets(); };
 </script>
 </body>
 </html>

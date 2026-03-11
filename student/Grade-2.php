@@ -1,35 +1,63 @@
 <?php
+global $pdo;
 session_start();
 require_once('../config/database.php');
 
-// --- FIXED LOGIC: Multi-Role Session Security ---
-// Gagamit tayo ng 'student_logged_in' para kahit i-refresh, hindi madi-disturbo ng teacher session
 if (!isset($_SESSION['student_logged_in']) || $_SESSION['student_logged_in'] !== true || $_SESSION['grade'] != '2') {
     header("Location: ../login.php");
     exit();
 }
 
-// Siguraduhin na ang variables ay tumutugma sa login.php
 $student_id = $_SESSION['student_id'];
 $username = $_SESSION['fullname'];
-// ----------------------------------------------
 
-$play_welcome_voice = true;
+// --- ETO YUNG BINAGO PARA HINDI PAULIT-ULIT ANG WELCOME ---
+$play_welcome_voice = false;
+if (!isset($_SESSION['welcome_voiced_grade1'])) {
+    $play_welcome_voice = true;
+    $_SESSION['welcome_voiced_grade1'] = true;
+}
 
-// Logic para sa One-time Pop-up kada log-in
+try {
+    $sqlBeg = "SELECT COUNT(DISTINCT word) as beg_perfect 
+                   FROM student_ratings 
+                   WHERE student_id = :sid AND score = 5 
+                   AND (difficulty = 'beginner' OR difficulty IS NULL)";
+    $stmtBeg = $pdo->prepare($sqlBeg);
+    $stmtBeg->execute(['sid' => $student_id]);
+    $beg_count = $stmtBeg->fetch()['beg_perfect'] ?? 0;
+
+    $sqlInt = "SELECT COUNT(DISTINCT word) as int_perfect 
+                   FROM student_ratings 
+                   WHERE student_id = :sid AND score = 5 
+                   AND difficulty = 'intermediate'";
+    $stmtInt = $pdo->prepare($sqlInt);
+    $stmtInt->execute(['sid' => $student_id]);
+    $int_count = $stmtInt->fetch()['int_perfect'] ?? 0;
+
+    $total_perfect_words = $beg_count;
+} catch (PDOException $e) {
+    error_log("Unlock Logic Error: " . $e->getMessage());
+    $beg_count = 0; $int_count = 0;
+}
+
+$intermediate_unlocked = ($beg_count >= 40);
+$advanced_unlocked     = ($int_count >= 40);
+
 $show_parental_note = false;
 if (!isset($_SESSION['note_shown_grade1'])) {
     $show_parental_note = true;
     $_SESSION['note_shown_grade1'] = true;
 }
 
-// Fetch Word Library for Images
-$manualWords = ["sun", "moon", "star", "rain", "tree", "bird", "fish", "cat", "dog", "cow"];
 $imageLibrary = [];
-foreach ($manualWords as $word) {
-    $wordLower = strtolower($word);
-    $localPath = "../upload/" . $wordLower . ".jpg";
-    $imageLibrary[$wordLower] = file_exists($localPath) ? $localPath . "?v=" . filemtime($localPath) : "https://via.placeholder.com/400?text=" . $wordLower;
+$uploadDir = "../upload/";
+if (is_dir($uploadDir)) {
+    $files = glob($uploadDir . "*.{jpg,jpeg,png,JPG,JPEG,PNG}", GLOB_BRACE);
+    foreach ($files as $file) {
+        $filename = strtolower(pathinfo($file, PATHINFO_FILENAME));
+        $imageLibrary[$filename] = $file . "?v=" . filemtime($file);
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -111,6 +139,12 @@ foreach ($manualWords as $word) {
             background-position: center;
             cursor: zoom-in;
             flex-shrink: 0;
+            visibility: hidden; /* NAG-ADD NG VISIBILITY HIDDEN */
+        }
+
+        /* PAG WALA NAMAN IMAGE, DISPLAY NONE PARA HINDI PANGIT SA LAYOUT */
+        .word-image-box.hidden {
+            display: none !important;
         }
 
         #wordImage { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
@@ -157,7 +191,7 @@ foreach ($manualWords as $word) {
         .progress-bar-inner { height: 100%; width: 0%; background: #1E90FF !important; transition: width 0.6s ease-in-out; }
 
         /* --- PRO SENTENCE --- */
-        #feedbackMessage { font-size: 1.8rem; font-weight: 800; padding: 15px; border-radius: 20px; line-height: 1.3; text-align: center; width: 95%; margin: 8px auto; background: #FFFFFF; border: 3px solid #DFE4EA; color: #2F3542; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+        #feedbackMessage { font-size: 1.8rem; font-weight: 800; padding: 15px; border-radius: 20px; line-height: 1.3; text-align: center; width: 95%; margin: 8px auto; background: #FFFFFF; border: 3px solid #DFE4EA; color: #2F3542; min-height: 60px; display: flex; align-items: center; justify-content: center; visibility: hidden; }
         .bg-success-feedback { background: #E3F2FD !important; color: #1976D2 !important; border: 3px solid #2196F3 !important; }
 
         /* --- PRO STARS --- */
@@ -191,15 +225,14 @@ foreach ($manualWords as $word) {
         .btn-primary { background: var(--kids-yellow); color: #574B15; box-shadow: 0 4px 0 #E1B12C; }
         .btn-secondary { background: var(--kids-blue); color: white; box-shadow: 0 4px 0 #0984E3; width: 90%; }
         button:active { transform: translateY(2px); box-shadow: none; }
-        body.dark-mode { background: #2F3542; color: white; }
-        body.dark-mode .main-container { background: #57606F; border-color: #2F3542; }
-        body.dark-mode .fa-star { color: #57606F; }
     </style>
 </head>
 <body>
 <header class="page-header">
     <span id="usernameDisplay">Hello, <?php echo htmlspecialchars($username); ?>!</span>
-    <button id="logoutBtn" onclick="window.location.href='../login.php';"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    <button id="logoutBtn" onclick="window.location.href='../logout.php';">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
 </header>
 <main>
     <div class="main-container">
@@ -215,8 +248,14 @@ foreach ($manualWords as $word) {
             <label for="difficulty" style="display: block; font-size: 1.2rem; font-weight: bold; margin-bottom: 8px;">Pick a Level:</label>
             <select id="difficulty">
                 <option value="beginner">🌟 Beginner (Easy Words)</option>
-                <option value="intermediate">👍 Intermediate (Medium Words)</option>
-                <option value="advanced">🧠 Advanced (Hard Words)</option>
+
+                <option value="intermediate" <?php echo !$intermediate_unlocked ? 'disabled' : ''; ?>>
+                    👍 Intermediate <?php echo !$intermediate_unlocked ? '🔒 (Need 40 Beginner Stars)' : '🔓 Unlocked!'; ?>
+                </option>
+
+                <option value="advanced" <?php echo !$advanced_unlocked ? 'disabled' : ''; ?>>
+                    🧠 Advanced <?php echo !$advanced_unlocked ? '🔒 (Need 40 Intermediate Stars)' : '🔓 Unlocked!'; ?>
+                </option>
             </select>
             <div class="mic-container">
                 <div id="runningTimer" style="font-size: 1.2rem; font-weight: 800; color: var(--kids-blue); margin-bottom: 5px; visibility: hidden;">
@@ -281,245 +320,175 @@ foreach ($manualWords as $word) {
         const SHOW_PARENTAL_NOTE = <?php echo json_encode($show_parental_note); ?>;
         const imageLibrary = <?php echo json_encode($imageLibrary); ?>;
 
+        let begCountFromDB = <?php echo json_encode($beg_count ?? 0); ?>;
+        let intCountFromDB = <?php echo json_encode($int_count ?? 0); ?>;
+
         const wordBank = {
             beginner: [
-                { word: "cat", phonemes: ["k", "a", "t"], example: "The cat is on the mat." },
-                { word: "dog", phonemes: ["d", "o", "g"], example: "My dog can bark loud." },
-                { word: "sun", phonemes: ["s", "u", "n"], example: "The sun is very bright." },
-                { word: "pig", phonemes: ["p", "i", "g"], example: "The pig lives on the farm." },
-                { word: "ten", phonemes: ["t", "e", "n"], example: "I have ten colorful pens." },
-                { word: "bat", phonemes: ["b", "a", "t"], example: "He hits the ball with a bat." },
-                { word: "cup", phonemes: ["k", "u", "p"], example: "I drink water from a cup." },
-                { word: "net", phonemes: ["n", "e", "t"], example: "The butterfly is in the net." },
-                { word: "bin", phonemes: ["b", "i", "n"], example: "Put the paper in the bin." },
-                { word: "hop", phonemes: ["h", "o", "p"], example: "I can hop like a rabbit." },
-                { word: "map", phonemes: ["m", "a", "p"], example: "Follow the treasure map." },
-                { word: "jet", phonemes: ["j", "e", "t"], example: "The jet flies in the sky." },
-                { word: "lid", phonemes: ["l", "i", "d"], example: "Put the lid on the jar." },
-                { word: "mop", phonemes: ["m", "o", "p"], example: "Help Mom mop the floor." },
-                { word: "bug", phonemes: ["b", "u", "g"], example: "A tiny bug is on the leaf." },
-                { word: "van", phonemes: ["v", "a", "n"], example: "We go to school in a van." },
-                { word: "wet", phonemes: ["w", "e", "t"], example: "My hair is wet from the rain." },
-                { word: "dig", phonemes: ["d", "i", "g"], example: "I dig a hole for the seed." },
-                { word: "box", phonemes: ["b", "o", "ks"], example: "The toys are in the box." },
-                { word: "hut", phonemes: ["h", "u", "t"], example: "They live in a small hut." },
-                { word: "fan", phonemes: ["f", "a", "n"], example: "Turn on the electric fan." },
-                { word: "leg", phonemes: ["l", "e", "g"], example: "An insect has six legs." },
-                { word: "pin", phonemes: ["p", "i", "n"], example: "The pin is very sharp." },
-                { word: "hot", phonemes: ["h", "o", "t"], example: "The soup is too hot." },
-                { word: "run", phonemes: ["r", "u", "n"], example: "Run to the finish line!" },
-                { word: "jam", phonemes: ["j", "a", "m"], example: "I like bread with jam." },
-                { word: "bed", phonemes: ["b", "e", "d"], example: "Make your bed every morning." },
-                { word: "zip", phonemes: ["z", "i", "p"], example: "Zip up your jacket." },
-                { word: "pot", phonemes: ["p", "o", "t"], example: "Mom cooks in a big pot." },
-                { word: "tub", phonemes: ["t", "u", "b"], example: "The baby is in the tub." },
-                { word: "bag", phonemes: ["b", "a", "g"], example: "Carry your school bag." },
-                { word: "hen", phonemes: ["h", "e", "n"], example: "The hen laid an egg." },
-                { word: "sit", phonemes: ["s", "i", "t"], example: "Sit down on the chair." },
-                { word: "log", phonemes: ["l", "o", "g"], example: "The turtle sits on a log." },
-                { word: "gum", phonemes: ["g", "u", "m"], example: "Do not swallow your gum." },
-                { word: "cap", phonemes: ["k", "a", "p"], example: "The boy wore a blue cap." },
-                { word: "red", phonemes: ["r", "e", "d"], example: "Apples are usually red." },
-                { word: "six", phonemes: ["s", "i", "ks"], example: "A cube has six sides." },
-                { word: "top", phonemes: ["t", "o", "p"], example: "The bird is on top of the tree." },
-                { word: "mud", phonemes: ["m", "u", "d"], example: "The boots are covered in mud." },
-                { word: "rat", phonemes: ["r", "a", "t"], example: "The rat ran into the hole." },
-                { word: "pen", phonemes: ["p", "e", "n"], example: "Use a pen to write." },
-                { word: "wig", phonemes: ["w", "i", "g"], example: "The clown wears a wig." },
-                { word: "rod", phonemes: ["r", "o", "d"], example: "He uses a fishing rod." },
-                { word: "nut", phonemes: ["n", "u", "t"], example: "The squirrel eats a nut." },
-                { word: "sad", phonemes: ["s", "a", "d"], example: "She is sad because she lost her toy." },
-                { word: "fit", phonemes: ["f", "i", "t"], example: "These shoes fit me well." },
-                { word: "fox", phonemes: ["f", "o", "ks"], example: "The fox has a bushy tail." },
-                { word: "bus", phonemes: ["b", "u", "s"], example: "I ride the yellow bus." },
-                { word: "hat", phonemes: ["h", "a", "t"], example: "Put on your hat." },
-                { word: "ant", phonemes: ["a", "n", "t"], example: "The ant is carrying food." },
-                { word: "egg", phonemes: ["e", "gg"], example: "Birds hatch from an egg." },
-                { word: "ink", phonemes: ["i", "n", "k"], example: "The pen ran out of ink." },
-                { word: "owl", phonemes: ["ow", "l"], example: "An owl wakes up at night." },
-                { word: "up", phonemes: ["u", "p"], example: "Look up at the sky." },
-                { word: "yak", phonemes: ["y", "a", "k"], example: "The yak has long hair." },
-                { word: "dad", phonemes: ["d", "a", "d"], example: "My dad is a hero." },
-                { word: "mom", phonemes: ["m", "o", "m"], example: "I love my mom." },
-                { word: "win", phonemes: ["w", "i", "n"], example: "I want to win the game." },
-                { word: "tax", phonemes: ["t", "a", "ks"], example: "Adults pay a tax." },
-                { word: "rob", phonemes: ["r", "o", "b"], example: "The thief tried to rob the store." },
-                { word: "mad", phonemes: ["m", "a", "d"], example: "Don't be mad at me." },
-                { word: "get", phonemes: ["g", "e", "t"], example: "Go get your umbrella." },
-                { word: "hit", phonemes: ["h", "i", "t"], example: "Hit the ball hard." },
-                { word: "job", phonemes: ["j", "o", "b"], example: "He has a busy job." },
-                { word: "cut", phonemes: ["k", "u", "t"], example: "Cut the paper with scissors." },
-                { word: "fog", phonemes: ["f", "o", "g"], example: "It is hard to see in the fog." },
-                { word: "bad", phonemes: ["b", "a", "d"], example: "Eating too much candy is bad." },
-                { word: "let", phonemes: ["l", "e", "t"], example: "Let the bird fly away." },
-                { word: "mix", phonemes: ["m", "i", "ks"], example: "Mix the colors together." },
-                { word: "nod", phonemes: ["n", "o", "d"], example: "Nod your head if you agree." },
-                { word: "rug", phonemes: ["r", "u", "g"], example: "The cat is on the rug." },
-                { word: "set", phonemes: ["s", "e", "t"], example: "Set the table for dinner." },
-                { word: "tip", phonemes: ["t", "i", "p"], example: "The tip of my pencil broke." },
-                { word: "wet", phonemes: ["w", "e", "t"], example: "I got wet in the rain." },
-                { word: "yam", phonemes: ["y", "a", "m"], example: "A yam is a sweet potato." },
-                { word: "box", phonemes: ["b", "o", "ks"], example: "A big cardboard box." },
-                { word: "zip", phonemes: ["z", "i", "p"], example: "Can you zip your bag?" },
-                { word: "gas", phonemes: ["g", "a", "s"], example: "Cars need gas to run." },
-                { word: "hen", phonemes: ["h", "e", "n"], example: "The hen clucks." },
-                { word: "kid", phonemes: ["k", "i", "d"], example: "The kid is playing." },
-                { word: "lot", phonemes: ["l", "o", "t"], example: "I have a lot of toys." },
-                { word: "pan", phonemes: ["p", "a", "n"], example: "Fry the egg in the pan." },
-                { word: "rim", phonemes: ["r", "i", "m"], example: "The rim of the glass." },
-                { word: "sub", phonemes: ["s", "u", "b"], example: "A sub dives deep." },
-                { word: "tag", phonemes: ["t", "a", "g"], example: "Let's play a game of tag." },
-                { word: "wax", phonemes: ["w", "a", "ks"], example: "Candles are made of wax." },
-                { word: "yes", phonemes: ["y", "e", "s"], example: "Say yes to your friends." },
-                { word: "cob", phonemes: ["c", "o", "b"], example: "Corn on the cob." },
-                { word: "den", phonemes: ["d", "e", "n"], example: "The lion is in its den." },
-                { word: "fin", phonemes: ["f", "i", "n"], example: "A shark has a big fin." },
-                { word: "hug", phonemes: ["h", "u", "g"], example: "Give your mom a hug." },
-                { word: "lab", phonemes: ["l", "a", "b"], example: "Scientists work in a lab." },
-                { word: "men", phonemes: ["m", "e", "n"], example: "Three men are talking." },
-                { word: "nap", phonemes: ["n", "a", "p"], example: "Take a nap in the afternoon." },
-                { word: "pad", phonemes: ["p", "a", "d"], example: "Write on the paper pad." },
-                { word: "rub", phonemes: ["r", "u", "b"], example: "Rub your hands together." },
-                { word: "tan", phonemes: ["t", "a", "n"], example: "Her skin is tan." },
-                { word: "vet", phonemes: ["v", "e", "t"], example: "The vet helps sick animals." },
-                { word: "win", phonemes: ["w", "i", "n"], example: "You can win a prize." }
+                { word: "Bread", phonemes: ["b", "r", "e", "d"], example: "I eat brown bread for breakfast." },
+                { word: "Clock", phonemes: ["k", "l", "o", "k"], example: "The clock tells us the time." },
+                { word: "Dress", phonemes: ["d", "r", "e", "s"], example: "She wears a pink dress today." },
+                { word: "Glass", phonemes: ["g", "l", "a", "s"], example: "The glass is full of juice." },
+                { word: "Plant", phonemes: ["p", "l", "a", "n", "t"], example: "The green plant grows in the pot." },
+                { word: "Shirt", phonemes: ["sh", "e", "r", "t"], example: "My white shirt is very clean." },
+                { word: "Spoon", phonemes: ["s", "p", "oo", "n"], example: "Use a spoon to eat the soup." },
+                { word: "Stair", phonemes: ["s", "t", "e", "r"], example: "Walk slowly up the stair." },
+                { word: "Toast", phonemes: ["t", "o", "s", "t"], example: "I like egg on my toast." },
+                { word: "Truck", phonemes: ["t", "r", "a", "k"], example: "The big truck carries heavy logs." },
+                { word: "Brush", phonemes: ["b", "r", "a", "sh"], example: "Brush your teeth every day." },
+                { word: "Chair", phonemes: ["ch", "e", "r"], example: "Sit on the wooden chair." },
+                { word: "Cloud", phonemes: ["k", "l", "ow", "d"], example: "The white cloud looks like a sheep." },
+                { word: "Floor", phonemes: ["f", "l", "o", "r"], example: "Sweep the dust off the floor." },
+                { word: "Fruit", phonemes: ["f", "r", "oo", "t"], example: "Mango is a sweet yellow fruit." },
+                { word: "Grape", phonemes: ["g", "r", "ay", "p"], example: "The purple grape is very juicy." },
+                { word: "House", phonemes: ["h", "ow", "s"], example: "Our house has a red roof." },
+                { word: "Plate", phonemes: ["p", "l", "ay", "t"], example: "Put the rice on the plate." },
+                { word: "Sheep", phonemes: ["sh", "ee", "p"], example: "The white sheep eats grass." },
+                { word: "Snake", phonemes: ["s", "n", "ay", "k"], example: "The long snake crawls fast." },
+                { word: "Table", phonemes: ["t", "ay", "b", "e", "l"], example: "The family sits at the table." },
+                { word: "Train", phonemes: ["t", "r", "ay", "n"], example: "The train runs on the tracks." },
+                { word: "Whale", phonemes: ["w", "ay", "l"], example: "The blue whale lives in the sea." },
+                { word: "Child", phonemes: ["ch", "ay", "l", "d"], example: "The child plays with a doll." },
+                { word: "Dream", phonemes: ["d", "r", "ee", "m"], example: "I had a fun dream last night." },
+                { word: "Flame", phonemes: ["f", "l", "ay", "m"], example: "The candle flame is orange." },
+                { word: "Green", phonemes: ["g", "r", "ee", "n"], example: "The grass is green and soft." },
+                { word: "Light", phonemes: ["l", "ay", "t"], example: "Turn on the light in the room." },
+                { word: "Point", phonemes: ["p", "oy", "n", "t"], example: "Point to the correct answer." },
+                { word: "Sleep", phonemes: ["s", "l", "ee", "p"], example: "We sleep when it is dark." },
+                { word: "Small", phonemes: ["s", "m", "o", "l"], example: "The small bird is in the nest." },
+                { word: "Stone", phonemes: ["s", "t", "o", "n"], example: "Throw the small stone in the pond." },
+                { word: "Sweet", phonemes: ["s", "w", "ee", "t"], example: "The candy is very sweet." },
+                { word: "Thing", phonemes: ["th", "i", "ng"], example: "This thing is very heavy." },
+                { word: "Three", phonemes: ["th", "r", "ee"], example: "I have three red pencils." },
+                { word: "Water", phonemes: ["w", "o", "t", "e", "r"], example: "Drink plenty of water today." },
+                { word: "World", phonemes: ["w", "e", "r", "l", "d"], example: "The world is big and round." },
+                { word: "Youth", phonemes: ["y", "oo", "th"], example: "The youth are the hope of the land." },
+                { word: "Beach", phonemes: ["b", "ee", "ch"], example: "We swim at the white beach." },
+                { word: "Check", phonemes: ["ch", "e", "k"], example: "Check your work for errors." },
+                { word: "Clean", phonemes: ["k", "l", "ee", "n"], example: "Keep your hands clean always." },
+                { word: "Drink", phonemes: ["d", "r", "i", "ng", "k"], example: "Drink your milk every morning." },
+                { word: "Earth", phonemes: ["e", "r", "th"], example: "We live on the planet Earth." },
+                { word: "Field", phonemes: ["f", "ee", "l", "d"], example: "The cows are in the field." },
+                { word: "Large", phonemes: ["l", "a", "r", "j"], example: "The large boat is on the sea." },
+                { word: "Night", phonemes: ["n", "ay", "t"], example: "The stars shine at night." },
+                { word: "Round", phonemes: ["r", "ow", "n", "d"], example: "The ball is big and round." },
+                { word: "Smile", phonemes: ["s", "m", "ay", "l"], example: "A smile makes everyone happy." },
+                { word: "Think", phonemes: ["th", "i", "ng", "k"], example: "Think before you speak." },
+                { word: "Young", phonemes: ["y", "a", "ng"], example: "The young boy is very kind." }
             ],
             intermediate: [
-                { word: "frog", phonemes: ["f", "r", "o", "g"], example: "The frog is green and wet." },
-                { word: "star", phonemes: ["s", "t", "a", "r"], example: "The star shines at night." },
-                { word: "ship", phonemes: ["sh", "i", "p"], example: "A ship sails on the sea." },
-                { word: "tree", phonemes: ["t", "r", "ee"], example: "The mango tree is tall." },
-                { word: "fish", phonemes: ["f", "i", "sh"], example: "A fish can breathe underwater." },
-                { word: "clock", phonemes: ["k", "l", "o", "k"], example: "Check the clock for the time." },
-                { word: "brush", phonemes: ["b", "r", "u", "sh"], example: "Brush your teeth daily." },
-                { word: "plant", phonemes: ["p", "l", "a", "n", "t"], example: "The plant grows in the soil." },
-                { word: "chair", phonemes: ["ch", "ai", "r"], example: "Pull up a chair." },
-                { word: "bread", phonemes: ["b", "r", "ea", "d"], example: "I like toasted bread." },
-                { word: "smile", phonemes: ["s", "m", "i", "l", "e"], example: "You have a pretty smile." },
-                { word: "grass", phonemes: ["g", "r", "a", "ss"], example: "Do not walk on the grass." },
-                { word: "shell", phonemes: ["sh", "e", "ll"], example: "I found a shell on the beach." },
-                { word: "truck", phonemes: ["t", "r", "u", "k"], example: "The truck is full of sand." },
-                { word: "spoon", phonemes: ["s", "p", "oo", "n"], example: "Eat your soup with a spoon." },
-                { word: "flag", phonemes: ["f", "l", "a", "g"], example: "Our flag has three stars." },
-                { word: "cloud", phonemes: ["k", "l", "ou", "d"], example: "The cloud looks like a sheep." },
-                { word: "shoes", phonemes: ["sh", "oe", "s"], example: "Tie your shoes tightly." },
-                { word: "dress", phonemes: ["d", "r", "e", "ss"], example: "She wore a new dress." },
-                { word: "light", phonemes: ["l", "igh", "t"], example: "Turn off the light." },
-                { word: "black", phonemes: ["b", "l", "a", "k"], example: "The chalkboard is black." },
-                { word: "sweet", phonemes: ["s", "w", "ee", "t"], example: "Candy is very sweet." },
-                { word: "train", phonemes: ["t", "r", "ai", "n"], example: "The train moves on tracks." },
-                { word: "bench", phonemes: ["b", "e", "n", "ch"], example: "Sit on the park bench." },
-                { word: "grape", phonemes: ["g", "r", "a", "p", "e"], example: "I want a bunch of grapes." },
-                { word: "phone", phonemes: ["ph", "o", "n", "e"], example: "The phone is ringing." },
-                { word: "snake", phonemes: ["s", "n", "a", "k", "e"], example: "The snake is very long." },
-                { word: "green", phonemes: ["g", "r", "ee", "n"], example: "Leafy vegetables are green." },
-                { word: "plate", phonemes: ["p", "l", "a", "t", "e"], example: "Put the cake on the plate." },
-                { word: "swing", phonemes: ["s", "w", "i", "ng"], example: "Push me on the swing." },
-                { word: "brick", phonemes: ["b", "r", "i", "k"], example: "The wall is made of brick." },
-                { word: "whale", phonemes: ["wh", "a", "l", "e"], example: "A whale is a huge animal." },
-                { word: "lunch", phonemes: ["l", "u", "n", "ch"], example: "What is for lunch?" },
-                { word: "slide", phonemes: ["s", "l", "i", "d", "e"], example: "The slide is fast." },
-                { word: "flute", phonemes: ["f", "l", "u", "t", "e"], example: "He plays a silver flute." },
-                { word: "shirt", phonemes: ["sh", "ir", "t"], example: "My shirt has buttons." },
-                { word: "drink", phonemes: ["d", "r", "i", "n", "k"], example: "Drink your milk." },
-                { word: "block", phonemes: ["b", "l", "o", "k"], example: "I built a block tower." },
-                { word: "thumb", phonemes: ["th", "u", "m", "b"], example: "I have a sore thumb." },
-                { word: "sheep", phonemes: ["sh", "ee", "p"], example: "The sheep has soft wool." },
-                { word: "bring", phonemes: ["b", "r", "i", "ng"], example: "Bring your books to class." },
-                { word: "crane", phonemes: ["k", "r", "a", "n", "e"], example: "The crane is very tall." },
-                { word: "chest", phonemes: ["ch", "e", "s", "t"], example: "The treasure is in the chest." },
-                { word: "sleep", phonemes: ["s", "l", "ee", "p"], example: "Go to sleep early." },
-                { word: "clown", phonemes: ["k", "l", "ow", "n"], example: "The clown has a red nose." },
-                { word: "dream", phonemes: ["d", "r", "ea", "m"], example: "I had a dream about flying." },
-                { word: "small", phonemes: ["s", "m", "a", "ll"], example: "The ant is very small." },
-                { word: "white", phonemes: ["wh", "i", "t", "e"], example: "Snow is pure white." },
-                { word: "stair", phonemes: ["s", "t", "ai", "r"], example: "Walk up the stair carefully." },
-                { word: "thump", phonemes: ["th", "u", "m", "p"], example: "The ball fell with a thump." },
-                { word: "bread", phonemes: ["b", "r", "ea", "d"], example: "Eat bread for breakfast." },
-                { word: "brush", phonemes: ["b", "r", "u", "sh"], example: "Brush your hair." },
-                { word: "plane", phonemes: ["p", "l", "a", "n", "e"], example: "The plane is high." },
-                { word: "skate", phonemes: ["s", "k", "a", "t", "e"], example: "I like to skate." },
-                { word: "store", phonemes: ["s", "t", "o", "r", "e"], example: "Buy milk at the store." },
-                { word: "school", phonemes: ["s", "ch", "oo", "l"], example: "I go to school." },
-                { word: "spoon", phonemes: ["s", "p", "oo", "n"], example: "Use a silver spoon." },
-                { word: "slide", phonemes: ["s", "l", "i", "d", "e"], example: "Go down the slide." },
-                { word: "snake", phonemes: ["s", "n", "a", "k", "e"], example: "The snake is green." },
-                { word: "sleep", phonemes: ["s", "l", "ee", "p"], example: "Time to sleep now." },
-                { word: "smoke", phonemes: ["s", "m", "o", "k", "e"], example: "Smoke from the fire." },
-                { word: "snack", phonemes: ["s", "n", "a", "k"], example: "Eat a healthy snack." },
-                { word: "space", phonemes: ["s", "p", "a", "c", "e"], example: "Stars are in space." },
-                { word: "speak", phonemes: ["s", "p", "ea", "k"], example: "Please speak loudly." },
-                { word: "sport", phonemes: ["s", "p", "o", "r", "t"], example: "Tennis is a sport." },
-                { word: "spray", phonemes: ["s", "p", "r", "ay"], example: "Spray the water." },
-                { word: "stamp", phonemes: ["s", "t", "a", "m", "p"], example: "Put a stamp on it." },
-                { word: "stand", phonemes: ["s", "t", "a", "n", "d"], example: "Stand in a line." },
-                { word: "steam", phonemes: ["s", "t", "ea", "m"], example: "Steam is very hot." },
-                { word: "stick", phonemes: ["s", "t", "i", "k"], example: "Pick up the stick." },
-                { word: "stone", phonemes: ["s", "t", "o", "n", "e"], example: "Throw a small stone." },
-                { word: "storm", phonemes: ["s", "t", "o", "r", "m"], example: "A storm is coming." },
-                { word: "story", phonemes: ["s", "t", "o", "r", "y"], example: "Read me a story." },
-                { word: "stove", phonemes: ["s", "t", "o", "v", "e"], example: "Cook on the stove." },
-                { word: "sweet", phonemes: ["s", "w", "ee", "t"], example: "Sugar is sweet." },
-                { word: "swing", phonemes: ["s", "w", "i", "ng"], example: "I love the swing." },
-                { word: "table", phonemes: ["t", "a", "b", "l", "e"], example: "Sit at the table." },
-                { word: "thank", phonemes: ["th", "a", "n", "k"], example: "Say thank you." },
-                { word: "think", phonemes: ["th", "i", "n", "k"], example: "Think before you act." },
-                { word: "three", phonemes: ["th", "r", "ee"], example: "One, two, three." },
-                { word: "throw", phonemes: ["th", "r", "ow"], example: "Throw the ball." },
-                { word: "tiger", phonemes: ["t", "i", "g", "er"], example: "The tiger is fast." },
-                { word: "toast", phonemes: ["t", "oa", "s", "t"], example: "I want some toast." },
-                { word: "today", phonemes: ["t", "o", "d", "ay"], example: "Today is Monday." },
-                { word: "tooth", phonemes: ["t", "oo", "th"], example: "I lost a tooth." },
-                { word: "torch", phonemes: ["t", "o", "r", "ch"], example: "Use a torch light." },
-                { word: "train", phonemes: ["t", "r", "ai", "n"], example: "Ride on a train." },
-                { word: "trash", phonemes: ["t", "r", "a", "sh"], example: "Empty the trash." },
-                { word: "treat", phonemes: ["t", "r", "ea", "t"], example: "Trick or treat." },
-                { word: "truck", phonemes: ["t", "r", "u", "k"], example: "The truck is big." },
-                { word: "trust", phonemes: ["t", "r", "u", "s", "t"], example: "Trust your friend." },
-                { word: "under", phonemes: ["u", "n", "d", "er"], example: "Look under the bed." },
-                { word: "until", phonemes: ["u", "n", "t", "il"], example: "Wait until noon." },
-                { word: "voice", phonemes: ["v", "oi", "c", "e"], example: "Use a soft voice." },
-                { word: "watch", phonemes: ["w", "a", "t", "ch"], example: "Watch the movie." },
-                { word: "water", phonemes: ["w", "a", "t", "er"], example: "Drink cold water." },
-                { word: "whale", phonemes: ["wh", "a", "l", "e"], example: "A whale is big." },
-                { word: "wheel", phonemes: ["wh", "ee", "l"], example: "The wheel is round." },
-                { word: "where", phonemes: ["wh", "e", "r", "e"], example: "Where are you?" },
-                { word: "world", phonemes: ["w", "o", "r", "l", "d"], example: "The world is large." }
+                { word: "Banana", phonemes: ["b", "a", "n", "a", "n", "a"], example: "Eat a yellow banana today." },
+                { word: "Garden", phonemes: ["g", "a", "r", "d", "e", "n"], example: "Flowers bloom in the garden." },
+                { word: "Market", phonemes: ["m", "a", "r", "k", "e", "t"], example: "We buy fish at the market." },
+                { word: "Pencil", phonemes: ["p", "e", "n", "s", "i", "l"], example: "Sharpen your pencil now." },
+                { word: "School", phonemes: ["s", "k", "oo", "l"], example: "I go to school to learn." },
+                { word: "Turtle", phonemes: ["t", "e", "r", "t", "e", "l"], example: "The turtle moves very slowly." },
+                { word: "Window", phonemes: ["w", "i", "n", "d", "o"], example: "Look out the open window." },
+                { word: "Basket", phonemes: ["b", "a", "s", "k", "e", "t"], example: "Put the eggs in the basket." },
+                { word: "Dinner", phonemes: ["d", "i", "n", "e", "r"], example: "We eat dinner at six o'clock." },
+                { word: "Father", phonemes: ["f", "a", "th", "e", "r"], example: "My father works in the office." },
+                { word: "Hammer", phonemes: ["h", "a", "m", "e", "r"], example: "Use the hammer for the nail." },
+                { word: "Kettle", phonemes: ["k", "e", "t", "e", "l"], example: "The water is hot in the kettle." },
+                { word: "Mother", phonemes: ["m", "a", "th", "e", "r"], example: "My mother cooks yummy food." },
+                { word: "Orange", phonemes: ["o", "r", "a", "n", "j"], example: "The orange is sweet and sour." },
+                { word: "Rabbit", phonemes: ["r", "a", "b", "i", "t"], example: "The rabbit has long ears." },
+                { word: "Silver", phonemes: ["s", "i", "l", "v", "e", "r"], example: "The silver ring is shiny." },
+                { word: "Ticket", phonemes: ["t", "i", "k", "e", "t"], example: "Show your ticket to the man." },
+                { word: "Yellow", phonemes: ["y", "e", "l", "o"], example: "The sunflower is bright yellow." },
+                { word: "Animal", phonemes: ["a", "n", "i", "m", "a", "l"], example: "The dog is a loyal animal." },
+                { word: "Bottle", phonemes: ["b", "o", "t", "e", "l"], example: "Fill the bottle with water." },
+                { word: "Circle", phonemes: ["s", "e", "r", "k", "e", "l"], example: "Draw a big circle on paper." },
+                { word: "Doctor", phonemes: ["d", "o", "k", "t", "o", "r"], example: "The doctor helps sick people." },
+                { word: "Flower", phonemes: ["f", "l", "ow", "e", "r"], example: "The red flower smells good." },
+                { word: "Island", phonemes: ["ay", "l", "a", "n", "d"], example: "The island is in the middle of sea." },
+                { word: "Kitchen", phonemes: ["k", "i", "ch", "e", "n"], example: "We cook food in the kitchen." },
+                { word: "Number", phonemes: ["n", "a", "m", "b", "e", "r"], example: "Choose your favorite number." },
+                { word: "Person", phonemes: ["p", "e", "r", "s", "o", "n"], example: "He is a very kind person." },
+                { word: "River", phonemes: ["r", "i", "v", "e", "r"], example: "The river flows to the sea." },
+                { word: "Street", phonemes: ["s", "t", "r", "ee", "t"], example: "Cars drive on the busy street." },
+                { word: "Tomato", phonemes: ["t", "u", "m", "ay", "t", "o"], example: "The red tomato is healthy." },
+                { word: "Winter", phonemes: ["w", "i", "n", "t", "e", "r"], example: "It is very cold during winter." },
+                { word: "Always", phonemes: ["o", "l", "w", "ay", "z"], example: "Always tell the truth." },
+                { word: "Bridge", phonemes: ["b", "r", "i", "j"], example: "The car crosses the bridge." },
+                { word: "Butter", phonemes: ["b", "a", "t", "e", "r"], example: "Put some butter on the bread." },
+                { word: "Camera", phonemes: ["k", "a", "m", "e", "r", "a"], example: "Smile for the camera now." },
+                { word: "Corner", phonemes: ["k", "o", "r", "n", "e", "r"], example: "The shop is at the corner." },
+                { word: "Family", phonemes: ["f", "a", "m", "i", "l", "ee"], example: "I love my whole family." },
+                { word: "Forest", phonemes: ["f", "o", "r", "e", "s", "t"], example: "Many trees grow in the forest." },
+                { word: "Helmet", phonemes: ["h", "e", "l", "m", "e", "t"], example: "Wear a helmet on the bike." },
+                { word: "Letter", phonemes: ["l", "e", "t", "e", "r"], example: "Write a letter to your friend." },
+                { word: "Morning", phonemes: ["m", "o", "r", "n", "i", "ng"], example: "The sun rises in the morning." },
+                { word: "Parent", phonemes: ["p", "e", "r", "e", "n", "t"], example: "Listen to your parent's advice." },
+                { word: "Slipper", phonemes: ["s", "l", "i", "p", "e", "r"], example: "Wear your slipper inside." },
+                { word: "Summer", phonemes: ["s", "a", "m", "e", "r"], example: "We go swimming in summer." },
+                { word: "Travel", phonemes: ["t", "r", "a", "v", "e", "l"], example: "We travel to the big city." },
+                { word: "Village", phonemes: ["v", "i", "l", "i", "j"], example: "Our village is peaceful and quiet." },
+                { word: "Weather", phonemes: ["w", "e", "th", "e", "r"], example: "The weather is hot today." },
+                { word: "Worker", phonemes: ["w", "e", "r", "k", "e", "r"], example: "The worker builds the wall." },
+                { word: "Sister", phonemes: ["s", "i", "s", "t", "e", "r"], example: "My sister plays with her doll." },
+                { word: "Brother", phonemes: ["b", "r", "a", "th", "e", "r"], example: "My brother rides his bike." }
+            ],
+            advanced: [
+                { word: "Aeroplane", phonemes: ["e", "r", "o", "p", "l", "ay", "n"], example: "The aeroplane flies high." },
+                { word: "Beautiful", phonemes: ["b", "y", "oo", "t", "i", "f", "u", "l"], example: "The sunset is very beautiful." },
+                { word: "Chocolate", phonemes: ["ch", "o", "k", "o", "l", "e", "t"], example: "I love sweet chocolate cake." },
+                { word: "Different", phonemes: ["d", "i", "f", "r", "e", "n", "t"], example: "The two toys are different." },
+                { word: "Elephant", phonemes: ["e", "l", "e", "f", "a", "n", "t"], example: "The elephant is very large." },
+                { word: "Furniture", phonemes: ["f", "e", "r", "n", "i", "ch", "e", "r"], example: "The table is a new furniture." },
+                { word: "Happiness", phonemes: ["h", "a", "p", "ee", "n", "e", "s"], example: "Family brings me happiness." },
+                { word: "Important", phonemes: ["i", "m", "p", "o", "r", "t", "a", "n", "t"], example: "School is very important." },
+                { word: "Lightning", phonemes: ["l", "ay", "t", "n", "i", "ng"], example: "Lightning flash in the sky." },
+                { word: "Mountain", phonemes: ["m", "ow", "n", "t", "i", "n"], example: "The mountain is very tall." },
+                { word: "Neighbour", phonemes: ["n", "ay", "b", "e", "r"], example: "Our neighbour is very kind." },
+                { word: "Question", phonemes: ["k", "w", "e", "s", "ch", "u", "n"], example: "Answer the question correctly." },
+                { word: "Rectangle", phonemes: ["r", "e", "k", "t", "a", "ng", "g", "e", "l"], example: "The door is a tall rectangle." },
+                { word: "Strawberry", phonemes: ["s", "t", "r", "o", "b", "e", "r", "ee"], example: "The red strawberry is sour." },
+                { word: "Telephone", phonemes: ["t", "e", "l", "e", "f", "o", "n"], example: "Call your mom on telephone." },
+                { word: "Umbrella", phonemes: ["a", "m", "b", "r", "e", "l", "a"], example: "Use an umbrella in the rain." },
+                { word: "Vegetable", phonemes: ["v", "e", "j", "e", "t", "a", "b", "e", "l"], example: "Eat green vegetable every day." },
+                { word: "Wonderful", phonemes: ["w", "a", "n", "d", "e", "r", "f", "u", "l"], example: "Have a wonderful day ahead." },
+                { word: "Yesterday", phonemes: ["y", "e", "s", "t", "e", "r", "d", "ay"], example: "It was a sunny day yesterday." },
+                { word: "Adventure", phonemes: ["a", "d", "v", "e", "n", "ch", "e", "r"], example: "We go on a fun adventure." },
+                { word: "Breakfast", phonemes: ["b", "r", "e", "k", "f", "a", "s", "t"], example: "Eat a healthy breakfast." },
+                { word: "Celebrate", phonemes: ["s", "e", "l", "e", "b", "r", "ay", "t"], example: "We celebrate your birthday." },
+                { word: "Dangerous", phonemes: ["d", "ay", "n", "j", "e", "r", "u", "s"], example: "The wild fire is dangerous." },
+                { word: "Everything", phonemes: ["e", "v", "r", "ee", "th", "ee", "ng"], example: "He has everything he needs." },
+                { word: "Friendship", phonemes: ["f", "r", "e", "n", "d", "sh", "i", "p"], example: "I value our good friendship." },
+                { word: "Government", phonemes: ["g", "a", "v", "e", "r", "n", "m", "e", "n", "t"], example: "The government helps the poor." },
+                { word: "Instrument", phonemes: ["i", "n", "s", "t", "r", "u", "m", "e", "n", "t"], example: "The piano is a musical instrument." },
+                { word: "Knowledge", phonemes: ["n", "o", "l", "i", "j"], example: "Reading gives you knowledge." },
+                { word: "Lighthouse", phonemes: ["l", "ay", "t", "h", "ow", "s"], example: "The lighthouse is by the sea." },
+                { word: "Nightmare", phonemes: ["n", "ay", "t", "m", "e", "r"], example: "The bad nightmare is gone." },
+                { word: "Overspread", phonemes: ["o", "v", "e", "r", "s", "p", "r", "e", "d"], example: "The clouds overspread the sky." },
+                { word: "Particular", phonemes: ["p", "a", "r", "t", "i", "k", "y", "u", "l", "e", "r"], example: "I like this particular toy." },
+                { word: "Quietness", phonemes: ["k", "w", "ay", "e", "t", "n", "e", "s"], example: "I love the quietness of night." },
+                { word: "Restaurant", phonemes: ["r", "e", "s", "t", "e", "r", "a", "n", "t"], example: "We eat at a nice restaurant." },
+                { word: "Skateboard", phonemes: ["s", "k", "ay", "t", "b", "o", "r", "d"], example: "I ride my new skateboard." },
+                { word: "Trampoline", phonemes: ["t", "r", "a", "m", "p", "o", "l", "ee", "n"], example: "Jump high on the trampoline." },
+                { word: "Underground", phonemes: ["a", "n", "d", "e", "r", "g", "r", "ow", "n", "d"], example: "The worm lives underground." },
+                { word: "Vocabulary", phonemes: ["v", "o", "k", "a", "b", "y", "u", "l", "e", "r", "ee"], example: "Learn new words in vocabulary." },
+                { word: "Wheelchair", phonemes: ["w", "ee", "l", "ch", "e", "r"], example: "He uses a blue wheelchair." },
+                { word: "Xylophonist", phonemes: ["z", "ay", "l", "o", "f", "o", "n", "i", "s", "t"], example: "The xylophonist plays a tune." },
+                { word: "Yesterday", phonemes: ["y", "e", "s", "t", "e", "r", "d", "ay"], example: "Yesterday was a holiday." },
+                { word: "Zookeeper", phonemes: ["z", "oo", "k", "ee", "p", "e", "r"], example: "The zookeeper feeds the lion." },
+                { word: "Accomplish", phonemes: ["a", "k", "o", "m", "p", "l", "i", "sh"], example: "Accomplish your tasks today." },
+                { word: "Basketball", phonemes: ["b", "a", "s", "k", "e", "t", "b", "o", "l"], example: "They play basketball outside." },
+                { word: "Collection", phonemes: ["k", "o", "l", "e", "k", "sh", "u", "n"], example: "I have a big stamp collection." },
+                { word: "Dictionary", phonemes: ["d", "i", "k", "sh", "u", "n", "e", "r", "ee"], example: "Look for words in dictionary." },
+                { word: "Experience", phonemes: ["e", "k", "s", "p", "ee", "r", "ee", "e", "n", "s"], example: "The trip was a great experience." },
+                { word: "Generation", phonemes: ["j", "e", "n", "e", "r", "ay", "sh", "u", "n"], example: "Respect the older generation." },
+                { word: "Historical", phonemes: ["h", "i", "s", "t", "o", "r", "i", "k", "a", "l"], example: "This is a historical place." },
+                { word: "Imagination", phonemes: ["i", "m", "a", "j", "i", "n", "ay", "sh", "u", "n"], example: "Use your wild imagination." }
             ]
         };
 
-        const emojiPool = [
-            '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯',
-            '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆',
-            '🦅', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋',
-            '🐌', '🐞', '🐜', '🦟', '🐢', '🐍', '🐙', '🦑', '🦞', '🦀',
-            '🐡', '🐠', '🐟', '🐬', '🐳', '🐋', '🦈', '🐊', '🐅', ' leopards',
-            '🌵', '🎄', '🌲', '🌳', '🌴', '🌱', '🌿', '☘️', '🍀', '🎍',
-            '🎋', '🍃', '🍂', '🍁', '🍄', '🌾', '💐', '🌷', '🌹', '🥀',
-            '🌺', '🌸', '🌼', '🌻', '🌞', '🌝', '🌛', '🌙', '🌚', '🌟',
-            '⭐️', '✨', '☄️', '💥', '🔥', '🌪', '🌈', '☀️', '🌤', '⛅️',
-            '🍎', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈',
-            '🍒', '🍑', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🌽',
-            '🥕', '🥔', '🍠', '🥐', '🍞', '🥖', '🥨', '🧀', '🥚', '🍳',
-            '🥓', '🥩', '🍗', '🍖', '🌭', '🍔', '🍟', '🍕', '🥪', '🥙',
-            '🌮', '🌯', '🥗', '🥘', '🍝', '🍜', '🍲', '🍛', '🍣', '🍱',
-            '🥟', '🍤', '🍙', '🍚', '🍘', '🍥', '🍢', '🍡', '🍧', '🍨',
-            '🍦', '🥧', '🍰', '🎂', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩',
-            '🍪', '🌰', '🥜', '🍯', '🥛', '☕️', '🍵', '🥤', '🍶', '🍺',
-            '🚗', '🚕', '🚙', '🚌', '🚎', '🏎', '🚓', '🚑', '🚒', '🚐',
-            '🚚', '🚛', '🚜', '🛴', '🚲', '🛵', '🏍', '🚨', '🚔', '🚍',
-            '🚘', '🚖', '🚡', '🚠', '🚟', '🚃', '🚋', '🚞', '🚝', '🚄',
-            '🚅', '🚈', '🚂', '🚆', '🚇', '🚊', '🚉', '✈️', '🛫', '🛬',
-            '🚁', '🛶', '⛵️', '🚤', '🛳', '⛴', '🚢', '🚀', '🛸', '🛰'
-        ];
+        const emojiPool = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆', '🚗', '🚕', '🍎', '🍌'];
 
-        // --- State Variables ---
         let masteredWords = [];
-        let isHardModeUnlocked = false;
         let allProgress = {
-            beginner: { word_index: 0, words_attempted: 0, words_correct: 0, shuffledList: [] },
-            intermediate: { word_index: 0, words_attempted: 0, words_correct: 0, shuffledList: [] },
-            advanced: { word_index: 0, words_attempted: 0, words_correct: 0 }
+            beginner: { word_index: 0, words_attempted: 0, words_correct: 0, shuffledList: [], isResetting: false },
+            intermediate: { word_index: 0, words_attempted: 0, words_correct: 0, shuffledList: [], isResetting: false },
+            advanced: { word_index: 0, words_attempted: 0, words_correct: 0, shuffledList: [], isResetting: false }
         };
         let currentDifficulty = 'beginner';
         let currentWord = null;
@@ -531,23 +500,40 @@ foreach ($manualWords as $word) {
         let timerInterval, startTime;
         let flippedCards = [], matchedPairs = 0;
 
-        // --- WELCOME VOICE FUNCTION ---
+        // --- Binabalik ang mga Core Functions ---
+
+        function checkLevelUnlock() {
+            const interOption = document.querySelector('option[value="intermediate"]');
+            const advOption = document.querySelector('option[value="advanced"]');
+            if (begCountFromDB >= 40) {
+                if (interOption) {
+                    interOption.disabled = false;
+                    interOption.textContent = "👍 Intermediate (UNLOCKED! 🔓)";
+                }
+            }
+            if (intCountFromDB >= 40) {
+                if (advOption) {
+                    advOption.disabled = false;
+                    advOption.textContent = "🧠 Advanced (UNLOCKED! 🔓)";
+                }
+            }
+        }
+
         function introduceSystem() {
-            const introText = `Welcome back to Verbal Practice! To start, look at the word under "The Word to Read". Click the big red microphone button to start speaking. Have fun learning!`;
+            const introText = `Welcome back! To start, look at the word under "The Word to Read". Click the big red microphone button to start speaking. Have fun learning!`;
             speak(introText);
         }
 
-        // --- MEMORY MATCH GAME ---
-        function triggerEmojiCheck() {
+        function triggerMysteryGame(reason = "bonus") {
             matchedPairs = 0; flippedCards = [];
+            const title = reason === "struggle" ? "Time for a Break! 🧩" : "Sentence Master! 🧠";
+            const text = reason === "struggle" ? "Medyo mahirap ba? Mag-relax muna at laruin ito!" : "Naka 5-stars ka sa mahirap na word! Hanapin ang pares!";
             const gameEmojis = [...emojiPool].sort(() => 0.5 - Math.random()).slice(0, 3);
             const cardValues = [...gameEmojis, ...gameEmojis].sort(() => 0.5 - Math.random());
             Swal.fire({
-                title: 'Sentence Master! 🧠',
-                html: `<p style="margin-bottom: 10px; font-weight: bold;">Naka 5-stars ka sa mahirap na word! Hanapin ang pares!</p>
-<div id="memoryGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center;">
-${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" onclick="flipMemoryCard(${index}, '${emoji}')">?</div>`).join('')}</div>`,
-                showConfirmButton: false, allowOutsideClick: false, background: '#FFF9EB'
+                title: title,
+                html: `<p style="margin-bottom: 10px; font-weight: bold;">${text}</p><div id="memoryGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center;">${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" onclick="flipMemoryCard(${index}, '${emoji}')">?</div>`).join('')}</div>`,
+                showConfirmButton: false, allowOutsideClick: false, background: '#FFFFFF'
             });
         }
 
@@ -577,14 +563,12 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             } else {
                 [c1, c2].forEach(c => {
                     const card = document.getElementById(`card-${c.index}`);
-                    card.textContent = '?';
-                    card.classList.remove('flipped');
+                    card.textContent = '?'; card.classList.remove('flipped');
                 });
             }
             flippedCards = [];
         }
 
-        // --- Helper: Shuffle Function ---
         function shuffleArray(array) {
             let shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
@@ -594,7 +578,6 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             return shuffled;
         }
 
-        // --- UI Element Selectors ---
         const wordDisplay = document.getElementById("wordDisplay");
         const phonemeDisplay = document.getElementById("phonemeDisplay");
         const feedbackMessage = document.getElementById("feedbackMessage");
@@ -611,31 +594,25 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
         const canvas = document.getElementById("waveformCanvas");
         const ctx = canvas.getContext("2d");
         const progressBarFill = document.getElementById("progressBarFill");
-        const progressBarMain = document.getElementById("progressBarMain");
+        const imageBox = document.getElementById("imageBox");
 
-        // --- Parental Gate Function ---
         function showParentalGate() {
             Swal.fire({
                 title: 'Parental Guidance 👨‍👩‍👧',
                 html: `<div style="text-align: left; font-family: sans-serif; line-height: 1.6; padding: 10px;"><p style="color: #2D3436; font-weight: bold;">Dear Parent,</p><p>Ang goal po natin ay matuto ang inyong anak. <b>Hayaan silang magkamali</b> para malaman ni teacher kung saan sila dapat tulungan.</p><hr style="margin: 15px 0;"><label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer; background: #f0f9ff; padding: 10px; border-radius: 10px; border: 1px solid #bae6fd;"><input type="checkbox" id="honestyCheck" style="width: 22px; height: 22px; margin-top: 3px;"><span style="font-size: 0.9rem; color: #0369a1;">Naintindihan ko at hahayaan ang anak ko na mag-practice mag-isa.</span></label></div>`,
-                confirmButtonText: 'Start Learning! 🚀',
-                confirmButtonColor: '#48DBFB',
-                allowOutsideClick: false,
+                confirmButtonText: 'Start Learning! 🚀', confirmButtonColor: '#48DBFB', allowOutsideClick: false,
                 preConfirm: () => { if (!document.getElementById('honestyCheck').checked) { Swal.showValidationMessage('Pakicheck po ang box para magpatuloy.'); } }
             }).then(() => { loadProgressFromDB(); });
         }
 
-        // --- VOICE LOGIC ---
         function getUsEnglishVoice() {
             if (usEnglishVoice) return usEnglishVoice;
             const voices = speechSynthesis.getVoices();
             let selected = voices.find(v => v.name === 'Google US English') || voices.find(v => v.lang === 'en-US');
-            usEnglishVoice = selected;
-            return usEnglishVoice;
+            usEnglishVoice = selected; return usEnglishVoice;
         }
 
         function speak(text) {
-            if (currentDifficulty === 'advanced' && !isHardModeUnlocked) return;
             speechSynthesis.cancel();
             const utter = new SpeechSynthesisUtterance(text);
             const v = getUsEnglishVoice();
@@ -643,28 +620,64 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             speechSynthesis.speak(utter);
         }
 
-        // --- MULTIPLE FEEDBACK LOGIC ---
         function speakRating(score) {
-            if (currentDifficulty === 'advanced' && !isHardModeUnlocked) return;
+            const perfect = [
+                "Excellent! You got five stars!", "Amazing! You are a superstar!",
+                "Wow! You are a reading pro!", "Perfect! Your voice is so clear!",
+                "Incredible! I am so proud of you!", "Fantastic! You nailed it!",
+                "Outstanding! Keep it up!", "You're a natural! Five stars for you!",
+                "Brilliant! That was a perfect score!", "Superb! Your pronunciation is spot on!",
+                "Marvelous! You are reading like a champ!", "Unbelievable! You are so smart!",
+                "Way to go! You are the best!", "You are a reading wizard!",
+                "Five stars! You are doing amazing!", "That was music to my ears!",
+                "You make reading look so easy!", "Gold star for you! Perfect!",
+                "I love how you said that!", "You are a total rockstar!"
+            ];
 
-            const perfect = ["Excellent! You got five stars!", "Amazing! Perfect pronunciation!", "Wow! You sound like a pro!", "Perfect! Keep it up!", "Incredible job! Five stars for you!"];
-            const great = ["Great job!", "Good effort!", "You're doing well!", "Nice work!", "Almost perfect, keep going!"];
-            const tryAgain = ["Try again!", "Keep practicing!", "You can do it, try once more!", "Don't give up, try again!", "Let's give it another shot!"];
+            const great = [
+                "Great job! Almost perfect!", "Good effort! You're doing well!",
+                "Nice work! Keep going!", "Very good! You're getting better!",
+                "Well done! Just a little more practice!", "Awesome! You're nearly there!",
+                "That was good! Try to say it even clearer next time!", "Great! You are a fast learner!",
+                "So close! You almost got five stars!", "You're doing a wonderful job!",
+                "I like how you're trying!", "Keep it up, you're doing great!",
+                "Your reading is getting stronger!", "Nice and clear! Good job!",
+                "You are working so hard, well done!"
+            ];
+
+            const good = [
+                "Nice try! You can do it!", "Good start! Let's try one more time.",
+                "Not bad! Keep practicing the sounds.", "I like your effort! Try again!",
+                "You're learning! Let's repeat that word.", "Keep practicing, you'll get it!",
+                "You're on the right track!", "Good job! Try to say every letter.",
+                "Practice makes perfect! Try again!", "Don't stop now, you're doing okay!"
+            ];
+
+            const tryAgain = [
+                "Don't give up! Try again!", "Keep practicing! You can do it!",
+                "You're getting closer! Give it another go!", "Let's try that one more time, slowly.",
+                "It's okay to make mistakes! Try again!", "I know you can do it! One more try!",
+                "Listen to the sound and try once more.", "Let's try to say it together next time!",
+                "You can do this! Just keep trying!", "Take a deep breath and try again!",
+                "Believe in yourself! Give it another shot!", "Don't worry, just try again!",
+                "Every try makes you better! Go again!", "One more time for me, please!"
+            ];
 
             let message = "";
             if (score === 5) {
                 message = perfect[Math.floor(Math.random() * perfect.length)];
-            } else if (score >= 4) {
+            } else if (score === 4) {
                 message = great[Math.floor(Math.random() * great.length)];
+            } else if (score === 3) {
+                message = good[Math.floor(Math.random() * good.length)];
             } else {
                 message = tryAgain[Math.floor(Math.random() * tryAgain.length)];
             }
+
             speak(message);
         }
 
-        // --- Visualizer ---
         async function startWaveform() {
-            if (currentDifficulty === 'advanced' && !isHardModeUnlocked) return;
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -689,7 +702,6 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             }
         }
 
-        // --- Scoring Logic ---
         function ratePronunciation(spoken, target) {
             spoken = spoken.toLowerCase().trim().replace(/[.,!]/g, "");
             target = target.toLowerCase().trim().replace(/[.,!]/g, "");
@@ -702,8 +714,10 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             return 0;
         }
 
-        // --- Game Logic ---
         function loadNextWord() {
+            imageBox.style.visibility = "hidden";
+            imageBox.classList.add("hidden");
+            feedbackMessage.style.visibility = "hidden";
             feedbackMessage.textContent = "Practice the word to see the sentence!";
             feedbackMessage.className = "feedback-message bg-initial-feedback";
             playFeedbackBtn.style.display = "none";
@@ -712,93 +726,138 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             document.getElementById("runningTimer").style.visibility = "hidden";
             document.getElementById("seconds").textContent = "0.0";
 
-            if (currentDifficulty === 'advanced') {
-                if (!isHardModeUnlocked) {
-                    wordDisplay.textContent = "LOCKED";
-                    micBtn.style.opacity = "0.5"; micBtn.style.pointerEvents = "none";
-                    playWordBtn.disabled = true; return;
-                }
-                let p = allProgress[currentDifficulty];
-                if (p.word_index >= masteredWords.length) p.word_index = 0;
-                const targetKey = masteredWords[p.word_index];
-                const allPossible = [...wordBank.beginner, ...wordBank.intermediate];
-                let raw = allPossible.find(item => item.word.toLowerCase() === targetKey);
-                currentWord = raw ? { word: raw.example, phonemes: ["Sentence Mastery"], example: raw.example, originalWord: raw.word } : allPossible[0];
-            } else {
-                micBtn.style.opacity = "1"; micBtn.style.pointerEvents = "auto";
-                playWordBtn.disabled = false;
-                let p = allProgress[currentDifficulty];
-                if (!p.shuffledList || p.shuffledList.length === 0 || p.word_index >= p.shuffledList.length) {
-                    p.shuffledList = shuffleArray(wordBank[currentDifficulty]); p.word_index = 0;
-                }
-                currentWord = p.shuffledList[p.word_index];
+            let p = allProgress[currentDifficulty];
+            if (!p.shuffledList || p.shuffledList.length === 0 || p.word_index >= p.shuffledList.length) {
+                p.shuffledList = shuffleArray(wordBank[currentDifficulty]); p.word_index = 0;
             }
+            currentWord = p.shuffledList[p.word_index];
+
             wordDisplay.textContent = currentWord.word;
             phonemeDisplay.textContent = currentWord.phonemes.join(" · ");
             const imgKey = (currentWord.originalWord || currentWord.word).toLowerCase();
-            document.getElementById("wordImage").src = imageLibrary[imgKey] || "https://via.placeholder.com/120";
+
+            if (imageLibrary[imgKey]) {
+                const imgPath = imageLibrary[imgKey];
+                document.getElementById("wordImage").src = imgPath;
+                imageBox.style.backgroundImage = `url('${imgPath}')`;
+                imageBox.classList.remove("hidden");
+            } else {
+                imageBox.classList.add("hidden");
+            }
+
             wordAttemptsHistory = []; renderWordHistory(); updateUIProgress();
         }
 
+        // --- Binagong checkPronunciation para ma-fix ang Duplicate ---
+
         function checkPronunciation(spoken) {
+            // Guard: Stop kung naka-5 stars na para hindi mag-doble sa history
+            if (wordAttemptsHistory.includes(5)) return;
+
             const score = ratePronunciation(spoken, currentWord.word);
             speakRating(score);
 
-            if (currentDifficulty === 'advanced') {
-                if (score === 5) {
-                    if (!wordAttemptsHistory.includes(5)) {
-                        allProgress[currentDifficulty].words_correct++;
-                        triggerConfetti();
-                    }
-                    nextBtn.disabled = false;
-                    feedbackMessage.textContent = "⭐ Excellent! " + currentWord.example;
-                    feedbackMessage.className = "feedback-message bg-success-feedback";
-                    playFeedbackBtn.style.display = "inline-block";
-                    setTimeout(() => { triggerEmojiCheck(); }, 2000);
-                } else {
-                    nextBtn.disabled = true;
-                    feedbackMessage.textContent = "Practice more! You need 5 stars to see the sentence.";
-                    feedbackMessage.className = "feedback-message bg-initial-feedback";
-                    playFeedbackBtn.style.display = "none";
+            if (score === 5) {
+                const imgKey = (currentWord.originalWord || currentWord.word).toLowerCase();
+                if (imageLibrary[imgKey]) {
+                    imageBox.style.visibility = "visible";
+                    imageBox.classList.remove("hidden");
                 }
-            }
-            else {
-                if (score === 5) {
-                    const key = (currentWord.originalWord || currentWord.word).toLowerCase();
-                    if (!masteredWords.includes(key)) masteredWords.push(key);
-                    if (!wordAttemptsHistory.includes(5)) {
-                        allProgress[currentDifficulty].words_correct++;
+                feedbackMessage.style.visibility = "visible";
+
+                // Only count as correct if this is the FIRST 5-star for this word
+                allProgress[currentDifficulty].words_correct++;
+
+                // Milestone counters
+                if (currentDifficulty === 'beginner') {
+                    begCountFromDB++;
+                    if(begCountFromDB === 40) {
                         triggerConfetti();
+                        setTimeout(() => location.reload(), 2000);
+                        return;
                     }
                 }
-                if (score >= 4) {
-                    nextBtn.disabled = false;
-                    feedbackMessage.textContent = "⭐ " + currentWord.example;
-                    feedbackMessage.className = "feedback-message bg-success-feedback";
-                    playFeedbackBtn.style.display = "inline-block";
-                } else {
-                    nextBtn.disabled = true;
-                    feedbackMessage.textContent = "Practice the word to see the sentence!";
-                    feedbackMessage.className = "feedback-message bg-initial-feedback";
-                    playFeedbackBtn.style.display = "none";
+                if (currentDifficulty === 'intermediate') {
+                    intCountFromDB++;
+                    if(intCountFromDB === 40) {
+                        triggerConfetti();
+                        setTimeout(() => location.reload(), 2000);
+                        return;
+                    }
                 }
+                triggerConfetti();
+
+                nextBtn.disabled = false;
+                feedbackMessage.textContent = "⭐ " + currentWord.example;
+                feedbackMessage.className = "feedback-message bg-success-feedback";
+                playFeedbackBtn.style.display = "inline-block";
+            } else {
+                nextBtn.disabled = true;
+                feedbackMessage.textContent = "Practice the word to see the sentence!";
+                imageBox.style.visibility = "hidden";
+                feedbackMessage.style.visibility = "hidden";
             }
 
             allProgress[currentDifficulty].words_attempted++;
             ratingEl.textContent = score; renderStars(score);
-            wordAttemptsHistory.push(score); renderWordHistory();
-            updateUIProgress(); saveProgressToDB();
+
+            // Push and Render History
+            wordAttemptsHistory.push(score);
+            renderWordHistory();
+
+            if (wordAttemptsHistory.length >= 5 && !wordAttemptsHistory.includes(5)) {
+                setTimeout(() => triggerMysteryGame("struggle"), 1000);
+            }
+
+            updateUIProgress();
+            saveProgressToDB();
             saveRatingToDB(currentWord.word, score);
+            checkLevelUnlock();
         }
 
         function updateUIProgress() {
             let p = allProgress[currentDifficulty];
-            let score = p.words_correct; if (score > 10) score = 10;
-            document.getElementById("progressText").textContent = score + " / 10";
-            document.getElementById("progressBarFill").style.width = (score * 10) + "%";
+            let score = p.words_correct;
+            let displayScore = score > 40 ? 40 : score;
+            document.getElementById("progressText").textContent = displayScore + " / 40";
+            document.getElementById("progressBarFill").style.width = (displayScore / 40 * 100) + "%";
+            if (score >= 40 && !p.isResetting) setTimeout(() => triggerLevelCompleteCelebration(), 600);
             document.getElementById("attemptedCount").textContent = p.words_attempted;
             const accuracy = p.words_attempted > 0 ? Math.round((p.words_correct / p.words_attempted) * 100) : 0;
             document.getElementById("accuracyRate").textContent = accuracy + "%";
+        }
+
+        function triggerLevelCompleteCelebration() {
+            let p = allProgress[currentDifficulty]; p.isResetting = true;
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const playNote = (freq, start, duration) => {
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, start);
+                gain.gain.setValueAtTime(0.1, start); gain.gain.exponentialRampToValueAtTime(0.01, start + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(start); osc.stop(start + duration);
+            };
+            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => playNote(f, audioCtx.currentTime + (i * 0.12), 0.6));
+            speak("Level Complete! Amazing job!");
+            Swal.fire({
+                title: '<div style="color: #FFC312; font-size: 2.5rem; font-weight: 900; text-shadow: 0 0 20px gold; animation: glowPulse 1s infinite alternate;">LEVEL COMPLETE</div>',
+                html: `<div style="text-align: center; padding: 20px; position: relative;"><div id="starContainer" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 40px;"><i class="fa-star fa-solid pro-star" style="font-size: 3rem; color: #CED6E0;"></i><i class="fa-star fa-solid pro-star" style="font-size: 3.5rem; color: #CED6E0;"></i><i class="fa-star fa-solid pro-star" style="font-size: 4.5rem; color: #CED6E0;"></i><i class="fa-star fa-solid pro-star" style="font-size: 3.5rem; color: #CED6E0;"></i><i class="fa-star fa-solid pro-star" style="font-size: 3rem; color: #CED6E0;"></i></div><div style="animation: fadeInUp 1s ease-out forwards;"><h2 style="color: #FFFFFF;">PERFECT!</h2><p style="color: #FFFFFF;">Naka-40 correct words ka na!</p></div></div>`,
+                confirmButtonText: 'GO! 🚀', background: 'transparent', backdrop: `rgba(0,0,0,0.85)`, allowOutsideClick: false,
+                didOpen: () => {
+                    const stars = document.querySelectorAll('.pro-star');
+                    stars.forEach((star, i) => {
+                        setTimeout(() => {
+                            star.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                            star.style.color = '#FFC312'; star.style.transform = 'scale(1.2)';
+                            for(let j=0; j<10; j++) triggerConfetti();
+                        }, (i + 1) * 400);
+                    });
+                }
+            }).then(() => {
+                p.word_index = 0; p.words_correct = 0; p.words_attempted = 0;
+                p.shuffledList = shuffleArray(wordBank[currentDifficulty]);
+                p.isResetting = false; saveProgressToDB(); updateUIProgress(); loadNextWord();
+            });
         }
 
         function renderStars(score) {
@@ -810,23 +869,23 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             }
         }
 
+        // --- Reverse History Render ---
         function renderWordHistory() {
             wordHistoryEl.innerHTML = wordAttemptsHistory.length === 0 ? "No attempts yet." : "";
             [...wordAttemptsHistory].reverse().forEach((s, i) => {
                 const div = document.createElement("div"); div.className = "history-item";
+                div.style.padding = "5px"; div.style.borderBottom = "1px solid #ddd";
                 div.innerHTML = `<span>Attempt ${wordAttemptsHistory.length - i}:</span> `;
-                for (let j = 1; j <= 5; j++) {
-                    div.innerHTML += `<i class="fa-star fa-solid ${j <= s ? 'filled-star' : 'empty-star'}"></i>`;
-                }
+                for (let j = 1; j <= 5; j++) { div.innerHTML += `<i class="fa-star fa-solid ${j <= s ? 'filled-star' : 'empty-star'}" style="font-size: 0.9rem;"></i>`; }
                 wordHistoryEl.appendChild(div);
             });
         }
 
         function triggerConfetti() {
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 15; i++) {
                 const c = document.createElement('div'); c.className = 'confetti';
                 c.style.left = Math.random() * 100 + 'vw';
-                c.style.backgroundColor = ['#FF6B6B','#48DBFB','#FECA57','#1DD1A1'][Math.floor(Math.random()*4)];
+                c.style.backgroundColor = ['#FF6B6B','#48DBFB','#FECA57','#1DD1A1','#A29BFE'][Math.floor(Math.random()*5)];
                 c.style.width = '8px'; c.style.height = '8px'; c.style.position = 'fixed'; c.style.top = '-10px';
                 c.style.animation = `fall ${Math.random()*3+2}s linear forwards`;
                 document.body.appendChild(c); setTimeout(() => c.remove(), 5000);
@@ -839,8 +898,6 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
                 const response = await fetch(`load_progress.php?student_id=${STUDENT_ID}&difficulty=${currentDifficulty}&t=${Date.now()}`);
                 const data = await response.json();
                 if (data.success) {
-                    isHardModeUnlocked = (data.mastery_unlocked == 1);
-                    if (data.mastered_list) masteredWords = data.mastered_list;
                     if (data.progress) {
                         allProgress[currentDifficulty].word_index = parseInt(data.progress.word_index) || 0;
                         allProgress[currentDifficulty].words_attempted = parseInt(data.progress.words_attempted) || 0;
@@ -849,7 +906,8 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
                 }
                 allProgress.beginner.shuffledList = shuffleArray(wordBank.beginner);
                 allProgress.intermediate.shuffledList = shuffleArray(wordBank.intermediate);
-                updateUIProgress(); loadNextWord();
+                allProgress.advanced.shuffledList = shuffleArray(wordBank.advanced);
+                updateUIProgress(); loadNextWord(); checkLevelUnlock();
             } catch (e) { loadNextWord(); }
         }
 
@@ -861,27 +919,18 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             formData.append('word_index', p.word_index); formData.append('words_attempted', p.words_attempted); formData.append('words_correct', p.words_correct);
             fetch('save_progress.php', { method: 'POST', body: formData });
         }
+
         function saveRatingToDB(word, score) {
-            if (!STUDENT_ID || !USERNAME) return;
-
-            // Kunin ang value ng timer (halimbawa: "2.5") mula sa screen
-            const durationValue = document.getElementById("seconds").textContent;
-
+            if (!STUDENT_ID) return;
             const formData = new FormData();
-            formData.append('student_id', STUDENT_ID);
-            formData.append('username', USERNAME);
-            formData.append('word', word);
-            formData.append('score', score);
-
-            // Ito ang idadagdag mo para ma-save ang oras
-            formData.append('duration', durationValue);
-
+            formData.append('student_id', STUDENT_ID); formData.append('username', USERNAME);
+            formData.append('word', word); formData.append('score', score);
+            formData.append('difficulty', currentDifficulty);
+            formData.append('duration', document.getElementById("seconds").textContent);
             fetch('save_rating.php', { method: 'POST', body: formData });
         }
 
-
         function toggleMic() {
-            if (currentDifficulty === 'advanced' && !isHardModeUnlocked) return;
             if (!recognition) return;
             if (!listening) {
                 listening = true; micBtn.classList.add("listening"); statusEl.textContent = "Listening...";
@@ -902,11 +951,9 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
             difficultySelect.addEventListener("change", () => { currentDifficulty = difficultySelect.value; loadProgressFromDB(); });
             nextBtn.addEventListener("click", () => {
                 let p = allProgress[currentDifficulty];
-                if (p.words_correct > 0 && p.words_correct % 5 === 0 && currentDifficulty !== 'advanced') {
-                    triggerEmojiCheck();
-                } else {
-                    p.word_index++; saveProgressToDB(); loadNextWord();
-                }
+                if (p.words_correct > 0 && p.words_correct % 5 === 0 && !wordAttemptsHistory.includes(5)) {
+                    triggerMysteryGame("bonus");
+                } else { p.word_index++; saveProgressToDB(); loadNextWord(); }
             });
             playWordBtn.addEventListener("click", () => speak(currentWord.word));
             playFeedbackBtn.addEventListener("click", () => speak(currentWord.example));
@@ -914,21 +961,37 @@ ${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" 
 
             if ("webkitSpeechRecognition" in window) {
                 recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = true;
+
                 recognition.onresult = (e) => {
-                    const txt = e.results[e.results.length - 1][0].transcript;
-                    transcriptEl.textContent = txt; checkPronunciation(txt); stopMicLogic();
+                    let isFinal = false;
+                    let finalTxt = '';
+                    for (let i = e.resultIndex; i < e.results.length; ++i) {
+                        const transcript = e.results[i][0].transcript;
+                        transcriptEl.textContent = transcript;
+                        if (e.results[i].isFinal) {
+                            isFinal = true;
+                            finalTxt = transcript;
+                        } else {
+                            if (transcript.toLowerCase().trim() === currentWord.word.toLowerCase().trim()) {
+                                checkPronunciation(transcript);
+                                stopMicLogic();
+                                return;
+                            }
+                        }
+                    }
+                    if (isFinal) {
+                        checkPronunciation(finalTxt);
+                        stopMicLogic();
+                    }
                 };
+                recognition.onspeechend = () => { stopMicLogic(); };
+                recognition.onerror = () => { stopMicLogic(); };
             }
-
-            if (speechSynthesis.onvoiceschanged !== undefined) {
-                speechSynthesis.onvoiceschanged = getUsEnglishVoice;
-            }
-
+            if (speechSynthesis.onvoiceschanged !== undefined) { speechSynthesis.onvoiceschanged = getUsEnglishVoice; }
             if (SHOW_PARENTAL_NOTE) showParentalGate(); else loadProgressFromDB();
-
-            setTimeout(() => {
-                if (PLAY_WELCOME_VOICE) introduceSystem();
-            }, 1500);
+            setTimeout(() => { if (PLAY_WELCOME_VOICE) introduceSystem(); }, 1500);
         }
         window.onload = init;
     </script>

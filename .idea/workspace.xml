@@ -5,22 +5,234 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6043ded-f50c-4822-af0e-0fee6e7a8d08" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/principal/all_reports.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/principal/manage_teachers.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/principal/principal_dashboard.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/principal/section_view.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teacher/edit_student.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teacher/student-report.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logout.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/Grade-3.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/Grade-4.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/Grade-5.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/Grade-6.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student/alphabet_sounds.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Afternoon.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Airplane.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Alphabet.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Baby.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Backpack.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bad.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bag.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Ball.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Banana.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Basket.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bat.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bed.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bedtime.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Big.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bike.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bin.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bird.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Birthday.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Blue.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Boat.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bowl.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Box.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bread.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Breakfast.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Brush.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Building.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bun.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Bus.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Butterfly.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Cake.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Calendar.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Can.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Cap.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Cat.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Chair.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Child.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Chocolate.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Clock.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Cloud.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Coat.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Cold.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Computer.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Cup.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Cupcake.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dad.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dark.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Desk.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Detective.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dinner.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dinosaur.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dip.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dog.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Doll.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Door.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dot.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dream.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Dress.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Drum.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Duck.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Egg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Elephant.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Everything.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Face.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fall.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fan.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fast.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fat.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Father.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fin.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fire.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Firefly.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fireworks.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fish.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fish.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Flag.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Floor.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Food.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Football.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fork.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Frog.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Fruit.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Game.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Garden.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Gate.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Gift.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Glass.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Goldfish.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Grape.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Gum.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hadshake.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hair.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hand.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hat.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hen.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hill.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hip.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Home.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hop.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hospital.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hot.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/House.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Hut.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Ice cream.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Jam.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Jet.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Kangaroo.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Keyboard.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Kid.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Kite.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Ladybug.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Lamp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Lap.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Leaf.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Leg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Library.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Log.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Lollipop.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Mad.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Mailbox.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Map.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Market.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Milk.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Mom.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Moon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Mop.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Mountain.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Nap.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Net.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Nose.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Not.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Notebook.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Nut.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pan.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pancake.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pen.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pencil.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pet.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pig.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pin.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pineapple.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Plant.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Plate.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Popcorn.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Pot.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Rain.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Raincoat.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Rat.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Rectangle.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Red.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Ring.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Rock.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Rope.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Rug.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Run.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Sad.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Sandwich.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/School.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Seashell.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Sheep.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Ship.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Shirt.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Shoe.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Sit.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Six.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Snake.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Snowball.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Snowman.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Soap.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Soup.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Spoon.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Stair.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Starfish.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Sun.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Sunflower.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Table.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Tag.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Tap.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Teapot.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Telephone.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Ten.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Tent.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Tin.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Tip.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Toast.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Toothbrush.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Top.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Train.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Triangle.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Truck.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Tub.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Turtle.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Umbrella.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Van.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Vegetable.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Wall.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Watermelon.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Wet.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Whale.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Win.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Wind.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Window.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Zip.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/login.php" beforeDir="false" afterPath="$PROJECT_DIR$/login.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/principal/principal_dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/principal/principal_dashboard.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/signup.php" beforeDir="false" afterPath="$PROJECT_DIR$/signup.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-1.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-1.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-2.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/get_mastered_sentences.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/get_mastered_sentences.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/load_progress.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/load_progress.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/save_progress.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/save_progress.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/save_rating.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/save_rating.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/teacher/class-reports.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/class-reports.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/teacher/student-page.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/student-page.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher/student-report.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/student-report.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/teacher/teacher_dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/teacher_dashboard.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/moon.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/rain.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/star.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/Star.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/sun.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/tree.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/tree.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/1771800344_Jamis.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +266,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;Main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/mrms-aclc&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/VERBAL/upload&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -65,8 +277,9 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\xampp\htdocs\VERBAL\principal" />
+      <recent name="C:\xampp\htdocs\VERBAL\upload" />
       <recent name="C:\xampp\htdocs\VERBAL\student" />
+      <recent name="C:\xampp\htdocs\VERBAL\principal" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -120,6 +333,24 @@
       <workItem from="1772705678034" duration="3572000" />
       <workItem from="1772711363023" duration="3696000" />
       <workItem from="1772763017197" duration="535000" />
+      <workItem from="1772795253694" duration="6663000" />
+      <workItem from="1772891101391" duration="1368000" />
+      <workItem from="1772923686767" duration="473000" />
+      <workItem from="1772930648178" duration="5195000" />
+      <workItem from="1772938223206" duration="681000" />
+      <workItem from="1772944136525" duration="602000" />
+      <workItem from="1772946599843" duration="588000" />
+      <workItem from="1772950488528" duration="1926000" />
+      <workItem from="1772965561302" duration="2448000" />
+      <workItem from="1773049436529" duration="20413000" />
+      <workItem from="1773116036004" duration="495000" />
+      <workItem from="1773118229980" duration="106000" />
+      <workItem from="1773119116006" duration="7636000" />
+      <workItem from="1773132758589" duration="12502000" />
+      <workItem from="1773153963648" duration="698000" />
+      <workItem from="1773192322297" duration="3534000" />
+      <workItem from="1773197622805" duration="3970000" />
+      <workItem from="1773224881424" duration="1228000" />
     </task>
     <servers />
   </component>

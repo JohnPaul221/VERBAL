@@ -16,16 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $section  = $_POST['section'];
 
     $profile_path = 'uploads/default.png';
-    if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] === 0) {
-        $upload_dir = 'uploads/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-
-        $file_ext = pathinfo($_FILES['profile_img']['name'], PATHINFO_EXTENSION);
-        $file_name = time() . '_' . $username . '.' . $file_ext;
-        $profile_path = $upload_dir . $file_name;
-
-        move_uploaded_file($_FILES['profile_img']['tmp_name'], $profile_path);
-    }
 
     try {
         $check_stmt = $pdo->prepare("SELECT id FROM teachers WHERE username = :username");
@@ -154,7 +144,6 @@ $random_quote = $quotes[array_rand($quotes)];
             position: relative;
         }
 
-        /* Binalik ang Particles */
         .particle {
             position: absolute;
             background: var(--gradient);
@@ -232,18 +221,6 @@ $random_quote = $quotes[array_rand($quotes)];
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
         }
 
-        .profile-upload { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
-        .profile-circle {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            border: 3px solid #f1f5f9;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: #f8fafc; position: relative; overflow: hidden;
-        }
-        .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
-
         .form-group { margin-bottom: 12px; position: relative; }
         label { display: block; margin-bottom: 5px; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
         input, select { width: 100%; padding: 12px 18px; border: 2px solid #f1f5f9; border-radius: 14px; background: #f8fafc; transition: 0.3s all ease; font-size: 0.9rem; color: #1e293b; }
@@ -295,16 +272,7 @@ $random_quote = $quotes[array_rand($quotes)];
             <div class="alert animate__animated animate__shakeX"><?php echo $message; ?></div>
         <?php endif; ?>
 
-        <form id="regForm" action="" method="POST" enctype="multipart/form-data" autocomplete="off">
-            <div class="profile-upload animate__animated animate__fadeIn">
-                <div class="profile-circle" onclick="document.getElementById('profile_input').click()">
-                    <i class="fa-solid fa-camera-retro" id="upload-icon" style="color: var(--secondary); font-size: 1.5rem;"></i>
-                    <img id="image-preview" style="display: none;">
-                </div>
-                <input type="file" name="profile_img" id="profile_input" accept="image/*" hidden onchange="previewImage(event)">
-                <label style="margin-top: 8px; font-size: 0.6rem; color: #94a3b8; text-transform: none;">Tap to set profile picture</label>
-            </div>
-
+        <form id="regForm" action="" method="POST" autocomplete="off">
             <div class="form-group animate__animated animate__fadeInLeft">
                 <label>Full Name</label>
                 <input type="text" name="fullname" required value="<?php echo isset($_POST['fullname']) ? htmlspecialchars($_POST['fullname']) : ''; ?>">
@@ -350,18 +318,6 @@ $random_quote = $quotes[array_rand($quotes)];
 </div>
 
 <script>
-    function previewImage(event) {
-        const output = document.getElementById('image-preview');
-        const icon = document.getElementById('upload-icon');
-        const reader = new FileReader();
-        reader.onload = function() {
-            output.src = reader.result;
-            output.style.display = "block";
-            icon.style.display = "none";
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
     function togglePass() {
         const passField = document.getElementById('passwordField');
         const icon = document.querySelector('.toggle-password');

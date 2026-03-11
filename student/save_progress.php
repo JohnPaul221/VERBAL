@@ -12,18 +12,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $words_attempted = isset($_POST['words_attempted']) ? (int)$_POST['words_attempted'] : 0;
     $words_correct = isset($_POST['words_correct']) ? (int)$_POST['words_correct'] : 0;
 
+    // Kunin ang Grade mula sa session para accurate ang record
+    $grade = isset($_SESSION['grade']) ? (int)$_SESSION['grade'] : 0;
+
     if ($student_id === 0) {
         echo json_encode(['success' => false, 'message' => 'Invalid Student ID']);
         exit;
     }
 
     try {
-        // Ang query na ito ay mag-uupdate sa record kung nage-exist na ang student_id + difficulty
         $sql = "INSERT INTO student_progress_main 
-                (student_id, difficulty, word_index, words_attempted, words_correct, last_updated) 
+                (student_id, grade, difficulty, word_index, words_attempted, words_correct, last_updated) 
                 VALUES 
-                (:sid, :diff, :widx, :watt, :wcor, CURRENT_TIMESTAMP) 
+                (:sid, :grade, :diff, :widx, :watt, :wcor, CURRENT_TIMESTAMP) 
                 ON DUPLICATE KEY UPDATE 
+                grade = VALUES(grade),
                 word_index = VALUES(word_index), 
                 words_attempted = VALUES(words_attempted), 
                 words_correct = VALUES(words_correct),
@@ -31,11 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            'sid'  => $student_id,
-            'diff' => $difficulty,
-            'widx' => $word_index,
-            'watt' => $words_attempted,
-            'wcor' => $words_correct
+            'sid'   => $student_id,
+            'grade' => $grade,
+            'diff'  => $difficulty,
+            'widx'  => $word_index,
+            'watt'  => $words_attempted,
+            'wcor'  => $words_correct
         ]);
 
         echo json_encode(['success' => true]);

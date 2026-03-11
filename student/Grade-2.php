@@ -385,7 +385,7 @@ if (is_dir($uploadDir)) {
                 { word: "Turtle", phonemes: ["t", "e", "r", "t", "e", "l"], example: "The turtle moves very slowly." },
                 { word: "Window", phonemes: ["w", "i", "n", "d", "o"], example: "Look out the open window." },
                 { word: "Basket", phonemes: ["b", "a", "s", "k", "e", "t"], example: "Put the eggs in the basket." },
-                { word: "Dinner", phonemes: ["d", "i", "n", "e", "r"], example: "We eat dinner at six o'clock." },
+                { word: "Dinner", phonemes: ["d", "i", "n", "e", "r"], example: "We eat dinner" },
                 { word: "Father", phonemes: ["f", "a", "th", "e", "r"], example: "My father works in the office." },
                 { word: "Hammer", phonemes: ["h", "a", "m", "e", "r"], example: "Use the hammer for the nail." },
                 { word: "Kettle", phonemes: ["k", "e", "t", "e", "l"], example: "The water is hot in the kettle." },

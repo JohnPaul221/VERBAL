@@ -429,7 +429,6 @@ if (is_dir($uploadDir)) {
                 { word: "Brother", phonemes: ["b", "r", "a", "th", "e", "r"], example: "My brother rides his bike." }
             ],
             advanced: [
-                { word: "Aeroplane", phonemes: ["e", "r", "o", "p", "l", "ay", "n"], example: "The aeroplane flies high." },
                 { word: "Beautiful", phonemes: ["b", "y", "oo", "t", "i", "f", "u", "l"], example: "The sunset is very beautiful." },
                 { word: "Chocolate", phonemes: ["ch", "o", "k", "o", "l", "e", "t"], example: "I love sweet chocolate cake." },
                 { word: "Different", phonemes: ["d", "i", "f", "r", "e", "n", "t"], example: "The two toys are different." },
@@ -440,7 +439,6 @@ if (is_dir($uploadDir)) {
                 { word: "Lightning", phonemes: ["l", "ay", "t", "n", "i", "ng"], example: "Lightning flash in the sky." },
                 { word: "Mountain", phonemes: ["m", "ow", "n", "t", "i", "n"], example: "The mountain is very tall." },
                 { word: "Neighbour", phonemes: ["n", "ay", "b", "e", "r"], example: "Our neighbour is very kind." },
-                { word: "Question", phonemes: ["k", "w", "e", "s", "ch", "u", "n"], example: "Answer the question correctly." },
                 { word: "Rectangle", phonemes: ["r", "e", "k", "t", "a", "ng", "g", "e", "l"], example: "The door is a tall rectangle." },
                 { word: "Strawberry", phonemes: ["s", "t", "r", "o", "b", "e", "r", "ee"], example: "The red strawberry is sour." },
                 { word: "Telephone", phonemes: ["t", "e", "l", "e", "f", "o", "n"], example: "Call your mom on telephone." },

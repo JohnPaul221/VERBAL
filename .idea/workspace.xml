@@ -5,48 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6043ded-f50c-4822-af0e-0fee6e7a8d08" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/upload/Always.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Animal.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Bottle.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Bridge.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Brother.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Butter.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Camera.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Circle.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Corner.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Doctor.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Family.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Flower.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Forest.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Hammer.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Helmet.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Island.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Kettle.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Kitchen.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Letter.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Morning.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Mother.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Number.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Orange.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Parent.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Person.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Rabbit.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/River.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Silver.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Sister.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Slipper.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Street.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Summer.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Ticket.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Tomato.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Travel.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Village.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Weather.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Winter.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Worker.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Yellow.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-2.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/Grade-3.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-3.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/Grade-4.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-4.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/Grade-5.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-5.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,7 +127,8 @@
       <workItem from="1773153963648" duration="698000" />
       <workItem from="1773192322297" duration="3534000" />
       <workItem from="1773197622805" duration="3970000" />
-      <workItem from="1773224881424" duration="3864000" />
+      <workItem from="1773224881424" duration="4506000" />
+      <workItem from="1773321314725" duration="3505000" />
     </task>
     <servers />
   </component>

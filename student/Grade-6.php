@@ -70,12 +70,12 @@ if (is_dir($uploadDir)) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
-            /* Grade 2 Colors */
-            --primary: #FF4757;
-            --success: #1E90FF;
-            --kids-blue: #1E90FF;
-            --kids-yellow: #FFC312;
-            --bg-gradient: linear-gradient(135deg, #A29BFE 0%, #FFFFFF 100%);
+            /* New Creative Nature Colors */
+            --primary: #FF7F50;        /* Coral Orange */
+            --success: #2ECC71;        /* Emerald Green */
+            --kids-blue: #00B894;      /* Minty Teal */
+            --kids-yellow: #FDCB6E;    /* Soft Sunshine Yellow */
+            --bg-gradient: linear-gradient(135deg, #74B9FF 0%, #FFFFFF 100%);
         }
 
         /* --- Full Screen Fit --- */
@@ -84,7 +84,7 @@ if (is_dir($uploadDir)) {
             background: var(--bg-gradient);
             font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
             padding: 0 15px;
-            color: #2F3542;
+            color: #2D3436;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -94,8 +94,8 @@ if (is_dir($uploadDir)) {
         /* --- Header --- */
         .page-header { height: 60px; position: relative; flex-shrink: 0; }
         #themeToggle { position: absolute; top: 15px; right: 130px; padding: 5px 10px; border-radius: 10px; cursor: pointer; background: var(--kids-yellow); border: 2px solid #E1B12C; z-index: 100; }
-        #usernameDisplay { position: absolute; top: 15px; left: 10px; font-size: 0.9rem; font-weight: 700; color: white; background: var(--kids-blue); padding: 5px 12px; border-radius: 10px; border: 2px solid #0984E3; z-index: 10; }
-        #logoutBtn { position: absolute; top: 15px; right: 10px; padding: 5px 12px; font-size: 0.8rem; background: var(--primary); color: white; border: 2px solid #B33939; border-radius: 10px; z-index: 10; cursor: pointer; }
+        #usernameDisplay { position: absolute; top: 15px; left: 10px; font-size: 0.9rem; font-weight: 700; color: white; background: var(--kids-blue); padding: 5px 12px; border-radius: 10px; border: 2px solid #009473; z-index: 10; }
+        #logoutBtn { position: absolute; top: 15px; right: 10px; padding: 5px 12px; font-size: 0.8rem; background: var(--primary); color: white; border: 2px solid #D35400; border-radius: 10px; z-index: 10; cursor: pointer; }
 
         /* --- Main Layout --- */
         .main-container {
@@ -103,15 +103,15 @@ if (is_dir($uploadDir)) {
             max-width: 98vw; margin: 0 auto 10px auto;
             display: flex; flex-wrap: nowrap; gap: 15px;
             background: #FFFFFF; border-radius: 25px; padding: 15px;
-            box-shadow: 0 8px 0px #CED6E0; border: 4px solid var(--kids-blue);
+            box-shadow: 0 8px 0px #B2BEC3; border: 4px solid var(--kids-blue);
             box-sizing: border-box;
         }
 
         /* --- Sections --- */
         .section {
             flex: 1.2;
-            padding: 10px; border-radius: 15px; background-color: #F1F2F6;
-            display: flex; flex-direction: column; border: 2px solid #DFE4EA;
+            padding: 10px; border-radius: 15px; background-color: #F9F9F9;
+            display: flex; flex-direction: column; border: 2px solid #DFE6E9;
             align-items: center; text-align: center;
             overflow: visible;
             justify-content: space-between;
@@ -119,8 +119,8 @@ if (is_dir($uploadDir)) {
 
         .history-section {
             flex: 0.6;
-            padding: 10px; border-radius: 15px; background-color: #F1F2F6;
-            display: flex; flex-direction: column; border: 2px solid #DFE4EA;
+            padding: 10px; border-radius: 15px; background-color: #F9F9F9;
+            display: flex; flex-direction: column; border: 2px solid #DFE6E9;
             overflow-y: auto; align-items: center; text-align: center;
             min-width: 200px;
         }
@@ -139,10 +139,9 @@ if (is_dir($uploadDir)) {
             background-position: center;
             cursor: zoom-in;
             flex-shrink: 0;
-            visibility: hidden; /* NAG-ADD NG VISIBILITY HIDDEN */
+            visibility: hidden;
         }
 
-        /* PAG WALA NAMAN IMAGE, DISPLAY NONE PARA HINDI PANGIT SA LAYOUT */
         .word-image-box.hidden {
             display: none !important;
         }
@@ -174,56 +173,56 @@ if (is_dir($uploadDir)) {
         }
 
         /* --- UI ELEMENTS --- */
-        h2, h3 { font-size: 1.1rem; margin: 5px 0; color: #2F3542; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+        h2, h3 { font-size: 1.1rem; margin: 5px 0; color: #2D3436; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
         #difficulty { width: 90%; padding: 8px; border-radius: 12px; border: 3px solid var(--kids-blue); font-family: inherit; font-weight: bold; margin-bottom: 5px; }
-        .mic-icon { width: 65px; height: 65px; background: var(--primary); border: 5px solid #FF7F50; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 26px; cursor: pointer; margin: 5px auto; box-shadow: 0 4px 0px #B33939; }
-        .reading-material { background: #EBF7FF; border-radius: 20px; border: 3px dashed var(--kids-blue); padding: 10px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; width: 95%; margin: 5px auto; }
-        #wordDisplay { font-size: 2.2rem; font-weight: 900; color: #2F3542; text-transform: uppercase; line-height: 1.1; }
-        .transcript { font-size: 1.1rem; font-weight: bold; color: #218C74; background: #E3FCEF; border: 2px solid #2ED573; border-radius: 15px; padding: 10px; width: 90%; min-height: 30px; }
+        .mic-icon { width: 65px; height: 65px; background: var(--primary); border: 5px solid #FF9F43; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 26px; cursor: pointer; margin: 5px auto; box-shadow: 0 4px 0px #D35400; }
+        .reading-material { background: #F0FFF4; border-radius: 20px; border: 3px dashed var(--kids-blue); padding: 10px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; width: 95%; margin: 5px auto; }
+        #wordDisplay { font-size: 2.2rem; font-weight: 900; color: #2D3436; text-transform: uppercase; line-height: 1.1; }
+        .transcript { font-size: 1.1rem; font-weight: bold; color: #009432; background: #E8F5E9; border: 2px solid #2ECC71; border-radius: 15px; padding: 10px; width: 90%; min-height: 30px; }
 
         /* --- PRO SCOREBOARD --- */
-        .stats-container { display: flex; justify-content: space-around; align-items: center; background: white; padding: 15px 10px; border-radius: 20px; border: 5px solid var(--kids-blue); margin: 5px auto; width: 100%; box-sizing: border-box; box-shadow: 0 6px 0px #0984E3; }
-        .stat-item span { display: block; font-size: 0.8rem; color: #57606F; font-weight: 800; text-transform: uppercase; }
-        .stat-item .value { font-size: 3rem; font-weight: 900; color: var(--kids-blue); line-height: 1; text-shadow: 1px 1px 0px #f1f2f6; }
+        .stats-container { display: flex; justify-content: space-around; align-items: center; background: white; padding: 15px 10px; border-radius: 20px; border: 5px solid var(--kids-blue); margin: 5px auto; width: 100%; box-sizing: border-box; box-shadow: 0 6px 0px #009473; }
+        .stat-item span { display: block; font-size: 0.8rem; color: #636E72; font-weight: 800; text-transform: uppercase; }
+        .stat-item .value { font-size: 3rem; font-weight: 900; color: var(--kids-blue); line-height: 1; text-shadow: 1px 1px 0px #F5F6FA; }
 
         /* --- PROGRESS BAR --- */
-        .progress-bar { width: 100%; height: 25px; background: #FFFFFF !important; border-radius: 15px; border: 4px solid #DFE4EA; overflow: hidden; position: relative; box-sizing: border-box; }
-        .progress-bar-inner { height: 100%; width: 0%; background: #1E90FF !important; transition: width 0.6s ease-in-out; }
+        .progress-bar { width: 100%; height: 25px; background: #FFFFFF !important; border-radius: 15px; border: 4px solid #DFE6E9; overflow: hidden; position: relative; box-sizing: border-box; }
+        .progress-bar-inner { height: 100%; width: 0%; background: var(--success) !important; transition: width 0.6s ease-in-out; }
 
         /* --- PRO SENTENCE --- */
-        #feedbackMessage { font-size: 1.8rem; font-weight: 800; padding: 15px; border-radius: 20px; line-height: 1.3; text-align: center; width: 95%; margin: 8px auto; background: #FFFFFF; border: 3px solid #DFE4EA; color: #2F3542; min-height: 60px; display: flex; align-items: center; justify-content: center; visibility: hidden; }
-        .bg-success-feedback { background: #E3F2FD !important; color: #1976D2 !important; border: 3px solid #2196F3 !important; }
+        #feedbackMessage { font-size: 1.8rem; font-weight: 800; padding: 15px; border-radius: 20px; line-height: 1.3; text-align: center; width: 95%; margin: 8px auto; background: #FFFFFF; border: 3px solid #DFE6E9; color: #2D3436; min-height: 60px; display: flex; align-items: center; justify-content: center; visibility: hidden; }
+        .bg-success-feedback { background: #E8F5E9 !important; color: #2E7D32 !important; border: 3px solid #4CAF50 !important; }
 
         /* --- PRO STARS --- */
         #stars { font-size: 2.5rem; display: flex; gap: 5px; }
-        .fa-star { color: #CED6E0; transition: color 0.3s ease; }
-        .filled-star { color: #FFC312 !important; text-shadow: 0 0 15px rgba(255, 195, 0, 0.6); animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, starShine 2s infinite linear; transform-origin: center; }
+        .fa-star { color: #DCDDE1; transition: color 0.3s ease; }
+        .filled-star { color: #FDCB6E !important; text-shadow: 0 0 15px rgba(253, 203, 110, 0.6); animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, starShine 2s infinite linear; transform-origin: center; }
         @keyframes starPop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.4); } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes starShine { 0% { text-shadow: 0 0 10px rgba(255, 195, 0, 0.5); } 50% { text-shadow: 0 0 20px rgba(255, 195, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.5); } 100% { text-shadow: 0 0 10px rgba(255, 195, 0, 0.5); } }
+        @keyframes starShine { 0% { text-shadow: 0 0 10px rgba(253, 203, 110, 0.5); } 50% { text-shadow: 0 0 20px rgba(253, 203, 110, 0.8), 0 0 30px rgba(255, 255, 255, 0.5); } 100% { text-shadow: 0 0 10px rgba(253, 203, 110, 0.5); } }
 
         /* --- PRO UI MYSTERY MATCHING --- */
-        #memoryGrid { background: rgba(255, 255, 255, 0.5); padding: 20px; border-radius: 20px; border: 2px solid #EBF7FF; }
+        #memoryGrid { background: rgba(255, 255, 255, 0.5); padding: 20px; border-radius: 20px; border: 2px solid #F0FFF4; }
         .memory-card {
             width: 80px; height: 80px;
-            background: linear-gradient(145deg, var(--kids-blue), #0984E3);
+            background: linear-gradient(145deg, var(--kids-blue), #009473);
             color: white; display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
-            border-radius: 18px; cursor: pointer; box-shadow: 0 6px 0 #0652DD, 0 10px 20px rgba(0,0,0,0.1);
+            border-radius: 18px; cursor: pointer; box-shadow: 0 6px 0 #006266, 0 10px 20px rgba(0,0,0,0.1);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 4px solid rgba(255, 255, 255, 0.3); position: relative;
         }
         .memory-card:hover { transform: translateY(-5px) scale(1.05); filter: brightness(1.1); }
         .memory-card::before { content: "?"; font-weight: 900; opacity: 0.5; }
-        .memory-card.flipped { background: white; color: #2F3542; border: 4px solid var(--kids-yellow); box-shadow: 0 6px 0 #E1B12C; animation: cardAppear 0.4s ease-out forwards; }
+        .memory-card.flipped { background: white; color: #2D3436; border: 4px solid var(--kids-yellow); box-shadow: 0 6px 0 #E1B12C; animation: cardAppear 0.4s ease-out forwards; }
         .memory-card.flipped::before { content: ""; }
-        .memory-card.matched { background: #1DD1A1; border-color: #10ac84; animation: matchedSuccess 0.5s ease-out forwards; pointer-events: none; }
+        .memory-card.matched { background: #00D2D3; border-color: #01A3A4; animation: matchedSuccess 0.5s ease-out forwards; pointer-events: none; }
         @keyframes cardAppear { 0% { transform: scale(0.5) rotateY(0deg); opacity: 0; } 100% { transform: scale(1) rotateY(180deg); opacity: 1; } }
         @keyframes matchedSuccess { 0% { transform: scale(1); } 50% { transform: scale(1.2); filter: brightness(1.5); } 100% { transform: scale(0); opacity: 0; visibility: hidden; } }
 
-        .waveform { width: 95%; height: 40px; border-radius: 12px; border: 2px solid var(--kids-blue); background: #EBF7FF; margin: 5px auto; }
+        .waveform { width: 95%; height: 40px; border-radius: 12px; border: 2px solid var(--kids-blue); background: #F0FFF4; margin: 5px auto; }
         #waveformCanvas { width: 100%; height: 100%; border-radius: 10px; }
         button { padding: 10px 20px; border-radius: 20px; border: none; font-weight: 800; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
         .btn-primary { background: var(--kids-yellow); color: #574B15; box-shadow: 0 4px 0 #E1B12C; }
-        .btn-secondary { background: var(--kids-blue); color: white; box-shadow: 0 4px 0 #0984E3; width: 90%; }
+        .btn-secondary { background: var(--kids-blue); color: white; box-shadow: 0 4px 0 #009473; width: 90%; }
         button:active { transform: translateY(2px); box-shadow: none; }
     </style>
 </head>
@@ -311,7 +310,6 @@ if (is_dir($uploadDir)) {
             <div id="historyMessage" class="history-message"></div>
         </div>
     </div>
-
     <script>
         // --- Constant Data from PHP ---
         const STUDENT_ID = <?php echo json_encode($student_id); ?>;
@@ -429,7 +427,6 @@ if (is_dir($uploadDir)) {
                 { sentence: "Clean water is life for everyone", phonemes: ["w", "o", "t", "e", "r"], example: "Clean water is life for all living things on earth." }
             ],
             advanced: [
-
                 { sentence: "The circulatory system moves blood", phonemes: ["s", "e", "r", "k", "y", "u", "l", "a", "t", "o", "r", "ee"], example: "The circulatory system moves blood and nutrients to all your cells." },
                 { sentence: "The nervous system controls the body", phonemes: ["n", "e", "r", "v", "u", "s"], example: "The nervous system controls the body by sending fast electrical signals." },
                 { sentence: "Biodiversity is essential for nature", phonemes: ["b", "ay", "o", "d", "ay", "v", "e", "r", "s", "i", "t", "ee"], example: "Biodiversity is essential for nature to maintain a healthy environment." },
@@ -525,49 +522,54 @@ if (is_dir($uploadDir)) {
             speak(introText);
         }
 
+        // --- NEW WORD SCRAMBLE GAME FOR GRADE 6 (DIFFICULTY BASED) ---
         function triggerMysteryGame(reason = "bonus") {
-            matchedPairs = 0; flippedCards = [];
-            const title = reason === "struggle" ? "Time for a Break! 🧩" : "Sentence Master! 🧠";
-            const text = reason === "struggle" ? "Medyo mahirap ba? Mag-relax muna at laruin ito!" : "Naka 5-stars ka sa mahirap na word! Hanapin ang pares!";
-            const gameEmojis = [...emojiPool].sort(() => 0.5 - Math.random()).slice(0, 3);
-            const cardValues = [...gameEmojis, ...gameEmojis].sort(() => 0.5 - Math.random());
+            const title = reason === "struggle" ? "Quick Brain Exercise! 🧠" : "Word Master Challenge! 🏆";
+            const sentenceWords = (currentWord.sentence || "").replace(/[.,!]/g, "").split(' ');
+            let targetWord = "";
+
+            if (currentDifficulty === 'beginner') {
+                let shortWords = sentenceWords.filter(w => w.length >= 3 && w.length <= 5);
+                targetWord = shortWords.length > 0 ? shortWords[Math.floor(Math.random() * shortWords.length)] : sentenceWords[0];
+            } else if (currentDifficulty === 'intermediate') {
+                let medWords = sentenceWords.filter(w => w.length >= 5 && w.length <= 7);
+                targetWord = medWords.length > 0 ? medWords[Math.floor(Math.random() * medWords.length)] : sentenceWords[sentenceWords.length - 1];
+            } else {
+                targetWord = sentenceWords.reduce((a, b) => a.length > b.length ? a : b);
+            }
+
+            targetWord = targetWord.toUpperCase();
+            const scrambled = targetWord.split('').sort(() => 0.5 - Math.random()).join(' ');
+
             Swal.fire({
                 title: title,
-                html: `<p style="margin-bottom: 10px; font-weight: bold;">${text}</p><div id="memoryGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center;">${cardValues.map((emoji, index) => `<div class="memory-card" id="card-${index}" onclick="flipMemoryCard(${index}, '${emoji}')">?</div>`).join('')}</div>`,
-                showConfirmButton: false, allowOutsideClick: false, background: '#FFFFFF'
-            });
-        }
-
-        window.flipMemoryCard = function(index, emoji) {
-            const card = document.getElementById(`card-${index}`);
-            if (flippedCards.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
-                card.textContent = emoji; card.classList.add('flipped');
-                flippedCards.push({ index, emoji });
-                if (flippedCards.length === 2) setTimeout(checkMemoryMatch, 700);
-            }
-        };
-
-        function checkMemoryMatch() {
-            const [c1, c2] = flippedCards;
-            if (c1.emoji === c2.emoji) {
-                document.getElementById(`card-${c1.index}`).classList.add('matched');
-                document.getElementById(`card-${c2.index}`).classList.add('matched');
-                matchedPairs++;
-                if (matchedPairs === 3) {
-                    Swal.fire({ icon: 'success', title: 'Magaling! ⭐', showConfirmButton: false, timer: 1500 }).then(() => {
+                html: `
+            <div style="background: #F1F2F6; padding: 20px; border-radius: 15px; border: 2px solid #0984E3;">
+                <p style="color: #2F3542; font-weight: bold; margin-bottom: 15px;">Level: ${currentDifficulty.toUpperCase()}<br>Unscramble this word:</p>
+                <h1 style="letter-spacing: 8px; font-size: 2.5rem; color: #D63031; margin: 20px 0;">${scrambled}</h1>
+                <input type="text" id="scrambleInput" class="swal2-input" placeholder="Type answer here..." style="text-align:center; text-transform: uppercase;">
+            </div>
+        `,
+                confirmButtonText: 'Check Answer ✅',
+                confirmButtonColor: '#00B894',
+                allowOutsideClick: false,
+                preConfirm: () => {
+                    const input = document.getElementById('scrambleInput').value.toUpperCase().trim();
+                    if (input !== targetWord) {
+                        Swal.showValidationMessage(`Mali! Hint: Nagsisimula ito sa letter "${targetWord[0]}"`);
+                    }
+                    return input === targetWord;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ icon: 'success', title: 'Excellent Logic! ⭐', showConfirmButton: false, timer: 1500 }).then(() => {
                         let p = allProgress[currentDifficulty];
                         p.word_index++;
                         saveProgressToDB();
                         loadNextWord();
                     });
                 }
-            } else {
-                [c1, c2].forEach(c => {
-                    const card = document.getElementById(`card-${c.index}`);
-                    card.textContent = '?'; card.classList.remove('flipped');
-                });
-            }
-            flippedCards = [];
+            });
         }
 
         function shuffleArray(array) {
@@ -694,7 +696,6 @@ if (is_dir($uploadDir)) {
             }
             currentWord = p.shuffledList[p.word_index];
 
-            // GUMAMIT NG .sentence dahil iyon ang structure ng wordBank mo
             const targetText = currentWord.sentence || currentWord.word;
             wordDisplay.textContent = targetText;
             phonemeDisplay.textContent = currentWord.phonemes.join(" · ");
@@ -729,7 +730,6 @@ if (is_dir($uploadDir)) {
                 if (!wordAttemptsHistory.includes(5)) {
                     allProgress[currentDifficulty].words_correct++;
 
-                    // Milestone confetti check
                     if ((currentDifficulty === 'beginner' && begCountFromDB + 1 === 40) ||
                         (currentDifficulty === 'intermediate' && intCountFromDB + 1 === 40)) {
                         triggerConfetti();
@@ -796,7 +796,7 @@ if (is_dir($uploadDir)) {
                         setTimeout(() => {
                             star.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
                             star.style.color = '#FFC312'; star.style.transform = 'scale(1.2)';
-                            for(let j=0; j<10; j++) triggerConfetti();
+                            for (let j = 0; j < 10; j++) triggerConfetti();
                         }, (i + 1) * 400);
                     });
                 }
@@ -830,14 +830,12 @@ if (is_dir($uploadDir)) {
             for (let i = 0; i < 15; i++) {
                 const c = document.createElement('div'); c.className = 'confetti';
                 c.style.left = Math.random() * 100 + 'vw';
-                c.style.backgroundColor = ['#FF6B6B','#48DBFB','#FECA57','#1DD1A1','#A29BFE'][Math.floor(Math.random()*5)];
+                c.style.backgroundColor = ['#FF6B6B', '#48DBFB', '#FECA57', '#1DD1A1', '#A29BFE'][Math.floor(Math.random() * 5)];
                 c.style.width = '8px'; c.style.height = '8px'; c.style.position = 'fixed'; c.style.top = '-10px';
-                c.style.animation = `fall ${Math.random()*3+2}s linear forwards`;
+                c.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
                 document.body.appendChild(c); setTimeout(() => c.remove(), 5000);
             }
         }
-
-        // --- DATABASE SYNC ---
 
         async function loadProgressFromDB() {
             if (!STUDENT_ID) { loadNextWord(); return; }
@@ -877,8 +875,6 @@ if (is_dir($uploadDir)) {
             fetch('save_rating.php', { method: 'POST', body: formData });
         }
 
-        // --- MIC CONTROLS ---
-
         function toggleMic() {
             if (!recognition) return;
             if (!listening) {
@@ -896,8 +892,6 @@ if (is_dir($uploadDir)) {
             if (animationId) cancelAnimationFrame(animationId);
         }
 
-        // --- INITIALIZATION ---
-
         function init() {
             difficultySelect.addEventListener("change", () => { currentDifficulty = difficultySelect.value; loadProgressFromDB(); });
 
@@ -907,7 +901,6 @@ if (is_dir($uploadDir)) {
                 else { p.word_index++; saveProgressToDB(); loadNextWord(); }
             });
 
-            // FIX PARA SA LISTEN BUTTONS: Gumamit ng .sentence
             playWordBtn.addEventListener("click", () => {
                 const textToSpeak = currentWord.sentence || currentWord.word;
                 speak(textToSpeak);
@@ -935,7 +928,6 @@ if (is_dir($uploadDir)) {
                             transcriptEl.textContent = interimTranscript;
 
                             let spoken = interimTranscript.toLowerCase().trim();
-                            // Property Sync
                             let target = (currentWord.sentence || currentWord.word).toLowerCase().trim();
 
                             if (spoken.includes(target)) {

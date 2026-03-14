@@ -70,12 +70,12 @@ if (is_dir($uploadDir)) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
-            /* Grade 2 Colors */
-            --primary: #FF4757;
-            --success: #1E90FF;
-            --kids-blue: #1E90FF;
-            --kids-yellow: #FFC312;
-            --bg-gradient: linear-gradient(135deg, #A29BFE 0%, #FFFFFF 100%);
+            /* Vibrant Grade 4 Palette */
+            --primary: #FF4757;        /* Coral Red */
+            --success: #2ED573;        /* Bright Mint */
+            --kids-blue: #54A0FF;      /* Sky Blue */
+            --kids-yellow: #FECA57;    /* Sunflower */
+            --bg-gradient: linear-gradient(135deg, #FF9FF3 0%, #54A0FF 100%); /* Pink to Blue */
         }
 
         /* --- Full Screen Fit --- */
@@ -93,9 +93,9 @@ if (is_dir($uploadDir)) {
 
         /* --- Header --- */
         .page-header { height: 60px; position: relative; flex-shrink: 0; }
-        #themeToggle { position: absolute; top: 15px; right: 130px; padding: 5px 10px; border-radius: 10px; cursor: pointer; background: var(--kids-yellow); border: 2px solid #E1B12C; z-index: 100; }
-        #usernameDisplay { position: absolute; top: 15px; left: 10px; font-size: 0.9rem; font-weight: 700; color: white; background: var(--kids-blue); padding: 5px 12px; border-radius: 10px; border: 2px solid #0984E3; z-index: 10; }
-        #logoutBtn { position: absolute; top: 15px; right: 10px; padding: 5px 12px; font-size: 0.8rem; background: var(--primary); color: white; border: 2px solid #B33939; border-radius: 10px; z-index: 10; cursor: pointer; }
+        #themeToggle { position: absolute; top: 15px; right: 130px; padding: 5px 10px; border-radius: 10px; cursor: pointer; background: var(--kids-yellow); border: 2px solid #F19066; z-index: 100; }
+        #usernameDisplay { position: absolute; top: 15px; left: 10px; font-size: 0.9rem; font-weight: 700; color: white; background: #5F27CD; padding: 5px 12px; border-radius: 10px; border: 2px solid #341F97; z-index: 10; }
+        #logoutBtn { position: absolute; top: 15px; right: 10px; padding: 5px 12px; font-size: 0.8rem; background: var(--primary); color: white; border: 2px solid #EE5253; border-radius: 10px; z-index: 10; cursor: pointer; }
 
         /* --- Main Layout --- */
         .main-container {
@@ -110,8 +110,8 @@ if (is_dir($uploadDir)) {
         /* --- Sections --- */
         .section {
             flex: 1.2;
-            padding: 10px; border-radius: 15px; background-color: #F1F2F6;
-            display: flex; flex-direction: column; border: 2px solid #DFE4EA;
+            padding: 10px; border-radius: 15px; background-color: #F7F1E3;
+            display: flex; flex-direction: column; border: 2px solid #D1CCC0;
             align-items: center; text-align: center;
             overflow: visible;
             justify-content: space-between;
@@ -125,13 +125,13 @@ if (is_dir($uploadDir)) {
             min-width: 200px;
         }
 
-        .divider { width: 3px; background: var(--kids-blue); opacity: 0.2; border-radius: 10px; }
+        .divider { width: 3px; background: #FF9F43; opacity: 0.3; border-radius: 10px; }
 
         /* --- IMAGE BOX + FULL SCREEN POPUP --- */
         .word-image-box {
             width: 120px;
             height: 120px;
-            border: 4px solid var(--kids-yellow);
+            border: 4px solid #FF9F43;
             border-radius: 15px;
             background: white;
             position: relative;
@@ -139,13 +139,10 @@ if (is_dir($uploadDir)) {
             background-position: center;
             cursor: zoom-in;
             flex-shrink: 0;
-            visibility: hidden; /* NAG-ADD NG VISIBILITY HIDDEN */
+            visibility: hidden;
         }
 
-        /* PAG WALA NAMAN IMAGE, DISPLAY NONE PARA HINDI PANGIT SA LAYOUT */
-        .word-image-box.hidden {
-            display: none !important;
-        }
+        .word-image-box.hidden { display: none !important; }
 
         #wordImage { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 
@@ -175,56 +172,60 @@ if (is_dir($uploadDir)) {
 
         /* --- UI ELEMENTS --- */
         h2, h3 { font-size: 1.1rem; margin: 5px 0; color: #2F3542; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
-        #difficulty { width: 90%; padding: 8px; border-radius: 12px; border: 3px solid var(--kids-blue); font-family: inherit; font-weight: bold; margin-bottom: 5px; }
-        .mic-icon { width: 65px; height: 65px; background: var(--primary); border: 5px solid #FF7F50; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 26px; cursor: pointer; margin: 5px auto; box-shadow: 0 4px 0px #B33939; }
-        .reading-material { background: #EBF7FF; border-radius: 20px; border: 3px dashed var(--kids-blue); padding: 10px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; width: 95%; margin: 5px auto; }
-        #wordDisplay { font-size: 2.2rem; font-weight: 900; color: #2F3542; text-transform: uppercase; line-height: 1.1; }
-        .transcript { font-size: 1.1rem; font-weight: bold; color: #218C74; background: #E3FCEF; border: 2px solid #2ED573; border-radius: 15px; padding: 10px; width: 90%; min-height: 30px; }
+        #difficulty { width: 90%; padding: 8px; border-radius: 12px; border: 3px solid #1DD1A1; font-family: inherit; font-weight: bold; margin-bottom: 5px; background: white; }
+
+        .mic-icon {
+            width: 65px; height: 65px;
+            background: #5F27CD;
+            border: 5px solid #A29BFE;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 26px;
+            cursor: pointer; margin: 5px auto;
+            box-shadow: 0 4px 0px #341F97;
+        }
+
+        .reading-material { background: #FFF9E6; border-radius: 20px; border: 3px dashed #FF9F43; padding: 10px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; width: 95%; margin: 5px auto; }
+        #wordDisplay { font-size: 2.2rem; font-weight: 900; color: #5758BB; text-transform: uppercase; line-height: 1.1; }
+        .transcript { font-size: 1.1rem; font-weight: bold; color: #10AC84; background: #E3FCEF; border: 2px solid #1DD1A1; border-radius: 15px; padding: 10px; width: 90%; min-height: 30px; }
 
         /* --- PRO SCOREBOARD --- */
-        .stats-container { display: flex; justify-content: space-around; align-items: center; background: white; padding: 15px 10px; border-radius: 20px; border: 5px solid var(--kids-blue); margin: 5px auto; width: 100%; box-sizing: border-box; box-shadow: 0 6px 0px #0984E3; }
+        .stats-container { display: flex; justify-content: space-around; align-items: center; background: white; padding: 15px 10px; border-radius: 20px; border: 5px solid #48DBFB; margin: 5px auto; width: 100%; box-sizing: border-box; box-shadow: 0 6px 0px #0ABDE3; }
         .stat-item span { display: block; font-size: 0.8rem; color: #57606F; font-weight: 800; text-transform: uppercase; }
-        .stat-item .value { font-size: 3rem; font-weight: 900; color: var(--kids-blue); line-height: 1; text-shadow: 1px 1px 0px #f1f2f6; }
+        .stat-item .value { font-size: 3rem; font-weight: 900; color: #2E86DE; line-height: 1; text-shadow: 1px 1px 0px #f1f2f6; }
 
         /* --- PROGRESS BAR --- */
         .progress-bar { width: 100%; height: 25px; background: #FFFFFF !important; border-radius: 15px; border: 4px solid #DFE4EA; overflow: hidden; position: relative; box-sizing: border-box; }
-        .progress-bar-inner { height: 100%; width: 0%; background: #1E90FF !important; transition: width 0.6s ease-in-out; }
+        .progress-bar-inner { height: 100%; width: 0%; background: #1DD1A1 !important; transition: width 0.6s ease-in-out; }
 
         /* --- PRO SENTENCE --- */
         #feedbackMessage { font-size: 1.8rem; font-weight: 800; padding: 15px; border-radius: 20px; line-height: 1.3; text-align: center; width: 95%; margin: 8px auto; background: #FFFFFF; border: 3px solid #DFE4EA; color: #2F3542; min-height: 60px; display: flex; align-items: center; justify-content: center; visibility: hidden; }
-        .bg-success-feedback { background: #E3F2FD !important; color: #1976D2 !important; border: 3px solid #2196F3 !important; }
+        .bg-success-feedback { background: #F0FFF4 !important; color: #2ED573 !important; border: 3px solid #2ED573 !important; }
 
         /* --- PRO STARS --- */
         #stars { font-size: 2.5rem; display: flex; gap: 5px; }
         .fa-star { color: #CED6E0; transition: color 0.3s ease; }
-        .filled-star { color: #FFC312 !important; text-shadow: 0 0 15px rgba(255, 195, 0, 0.6); animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, starShine 2s infinite linear; transform-origin: center; }
-        @keyframes starPop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.4); } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes starShine { 0% { text-shadow: 0 0 10px rgba(255, 195, 0, 0.5); } 50% { text-shadow: 0 0 20px rgba(255, 195, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.5); } 100% { text-shadow: 0 0 10px rgba(255, 195, 0, 0.5); } }
+        .filled-star { color: #FF9F43 !important; text-shadow: 0 0 15px rgba(255, 159, 67, 0.6); animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, starShine 2s infinite linear; transform-origin: center; }
 
         /* --- PRO UI MYSTERY MATCHING --- */
         #memoryGrid { background: rgba(255, 255, 255, 0.5); padding: 20px; border-radius: 20px; border: 2px solid #EBF7FF; }
         .memory-card {
             width: 80px; height: 80px;
-            background: linear-gradient(145deg, var(--kids-blue), #0984E3);
+            background: linear-gradient(145deg, #FF6B6B, #EE5253);
             color: white; display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
-            border-radius: 18px; cursor: pointer; box-shadow: 0 6px 0 #0652DD, 0 10px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 18px; cursor: pointer; box-shadow: 0 6px 0 #B33939;
+            transition: all 0.3s;
             border: 4px solid rgba(255, 255, 255, 0.3); position: relative;
         }
-        .memory-card:hover { transform: translateY(-5px) scale(1.05); filter: brightness(1.1); }
-        .memory-card::before { content: "?"; font-weight: 900; opacity: 0.5; }
-        .memory-card.flipped { background: white; color: #2F3542; border: 4px solid var(--kids-yellow); box-shadow: 0 6px 0 #E1B12C; animation: cardAppear 0.4s ease-out forwards; }
-        .memory-card.flipped::before { content: ""; }
-        .memory-card.matched { background: #1DD1A1; border-color: #10ac84; animation: matchedSuccess 0.5s ease-out forwards; pointer-events: none; }
-        @keyframes cardAppear { 0% { transform: scale(0.5) rotateY(0deg); opacity: 0; } 100% { transform: scale(1) rotateY(180deg); opacity: 1; } }
-        @keyframes matchedSuccess { 0% { transform: scale(1); } 50% { transform: scale(1.2); filter: brightness(1.5); } 100% { transform: scale(0); opacity: 0; visibility: hidden; } }
+        .memory-card.flipped { background: white; color: #2F3542; border: 4px solid #FF9F43; box-shadow: 0 6px 0 #EE9500; }
+        .memory-card.matched { background: #1DD1A1; border-color: #10AC84; }
 
-        .waveform { width: 95%; height: 40px; border-radius: 12px; border: 2px solid var(--kids-blue); background: #EBF7FF; margin: 5px auto; }
+        .waveform { width: 95%; height: 40px; border-radius: 12px; border: 2px solid #54A0FF; background: #EBF7FF; margin: 5px auto; }
         #waveformCanvas { width: 100%; height: 100%; border-radius: 10px; }
+
         button { padding: 10px 20px; border-radius: 20px; border: none; font-weight: 800; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
-        .btn-primary { background: var(--kids-yellow); color: #574B15; box-shadow: 0 4px 0 #E1B12C; }
-        .btn-secondary { background: var(--kids-blue); color: white; box-shadow: 0 4px 0 #0984E3; width: 90%; }
-        button:active { transform: translateY(2px); box-shadow: none; }
+        .btn-primary { background: #FF9F43; color: white; box-shadow: 0 4px 0 #EE9500; }
+        .btn-secondary { background: #54A0FF; color: white; box-shadow: 0 4px 0 #2E86DE; width: 90%; }
     </style>
 </head>
 <body>
@@ -323,7 +324,7 @@ if (is_dir($uploadDir)) {
         let begCountFromDB = <?php echo json_encode($beg_count ?? 0); ?>;
         let intCountFromDB = <?php echo json_encode($int_count ?? 0); ?>;
 
-        const wordBankGrade4 = {
+        const wordBank   = {
             beginner: [
                 { word: "The heavy rain flooded the street", phonemes: ["th", "e", "h", "e", "v", "ee", "r", "ay", "n", "f", "l", "a", "d", "e", "d", "th", "e", "s", "t", "r", "ee", "t"] },
                 { word: "She wears a necklace made of shells", phonemes: ["sh", "ee", "w", "e", "r", "z", "a", "n", "e", "k", "l", "a", "s", "m", "ay", "d", "o", "v", "sh", "e", "l", "z"] },

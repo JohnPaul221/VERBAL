@@ -1,7 +1,7 @@
 <?php
 global $pdo;
 header('Content-Type: application/json');
-require_once('../config/database.php'); // Siguraduhing nandito ang $pdo connection
+require_once('../config/database.php');
 
 $student_id = $_GET['student_id'] ?? null;
 

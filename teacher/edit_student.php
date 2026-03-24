@@ -3,7 +3,7 @@ session_start();
 require_once '../config/database.php';
 global $pdo;
 
-// 1. SECURITY CHECK - Teacher only
+
 if (!isset($_SESSION['teacher_id']) || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit();
@@ -12,7 +12,6 @@ if (!isset($_SESSION['teacher_id']) || $_SESSION['role'] !== 'teacher') {
 $teacher_id = $_SESSION['teacher_id'];
 $status = "";
 
-// 2. FETCH STUDENT DATA
 if (!isset($_GET['id'])) {
     header("Location: student-page.php");
     exit();
@@ -21,7 +20,6 @@ if (!isset($_GET['id'])) {
 $student_id = $_GET['id'];
 
 try {
-    // Ensure the teacher only edits students from their own grade/section
     $stmt_t = $pdo->prepare("SELECT grade_handle, section, fullname FROM teachers WHERE id = ?");
     $stmt_t->execute([$teacher_id]);
     $teacher = $stmt_t->fetch(PDO::FETCH_ASSOC);
@@ -38,7 +36,6 @@ try {
     die("Database Error: " . $e->getMessage());
 }
 
-// 3. UPDATE LOGIC
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
     $fullname = trim($_POST['fullname']);
     $username = trim($_POST['username']);
@@ -50,8 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_student'])) {
         $update = $pdo->prepare("UPDATE students SET fullname = ?, username = ?, password = ?, birthday = ?, sex = ? WHERE id = ?");
         $update->execute([$fullname, $username, $password, $birthday, $sex, $student_id]);
         $status = "success";
-
-        // Refresh student data for the form
         $stmt_s->execute([$student_id, $teacher['grade_handle'], $teacher['section']]);
         $student = $stmt_s->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {

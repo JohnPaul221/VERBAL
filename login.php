@@ -12,7 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($selected_role === 'teacher') {
-            // 1. CHECK SA TEACHERS TABLE (Primary Role)
             $stmt = $pdo->prepare("SELECT * FROM teachers WHERE username = ? AND password = ?");
             $stmt->execute([$username, $password]);
             $teacher = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -20,14 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($teacher) {
                 $_SESSION['teacher_logged_in'] = true;
                 $_SESSION['teacher_id'] = $teacher['id'];
-                $_SESSION['teacher_role'] = 'teacher';
                 $_SESSION['role'] = 'teacher';
                 $_SESSION['fullname'] = $teacher['fullname'];
                 header("Location: teacher/teacher_dashboard.php");
                 exit();
             }
 
-            // 2. CHECK SA PRINCIPALS TABLE
             $stmt = $pdo->prepare("SELECT * FROM principals WHERE username = ? AND password = ?");
             $stmt->execute([$username, $password]);
             $principal = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -35,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($principal) {
                 $_SESSION['principal_logged_in'] = true;
                 $_SESSION['principal_id'] = $principal['id'];
-                $_SESSION['principal_role'] = 'principal';
                 $_SESSION['role'] = 'principal';
                 $_SESSION['fullname'] = $principal['fullname'];
                 header("Location: principal/principal_dashboard.php");
@@ -45,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
         } else if ($selected_role === 'student') {
-            // 3. CHECK SA STUDENTS TABLE
             $stmt = $pdo->prepare("SELECT * FROM students WHERE username = ? AND password = ?");
             $stmt->execute([$username, $password]);
             $student = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -53,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($student) {
                 $_SESSION['student_logged_in'] = true;
                 $_SESSION['student_id'] = $student['id'];
-                $_SESSION['student_role'] = 'student';
                 $_SESSION['role'] = 'student';
                 $_SESSION['fullname'] = $student['fullname'];
                 $_SESSION['grade'] = $student['grade'];
@@ -178,9 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .cosmic-bg { opacity: var(--cosmic-opacity); transition: 0.8s; z-index: 1; }
         .meteor { position: absolute; width: 2px; height: 100px; background: linear-gradient(to bottom, transparent, #fff); animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-150px) rotate(-45deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh) translateX(500px) rotate(-45deg); opacity: 0; } }
-        .meteor:nth-child(1) { left: 10%; animation-duration: 4s; }
-        .meteor:nth-child(2) { left: 40%; animation-duration: 6s; animation-delay: 2s; }
-        .meteor:nth-child(3) { left: 70%; animation-duration: 3.5s; animation-delay: 1s; }
 
         .planet { position: absolute; border-radius: 50%; }
         .p1 { width: 180px; height: 180px; top: -40px; left: 5%; background: radial-gradient(circle at 30% 30%, #5e35b1, #1a0633); box-shadow: inset -20px -20px 50px rgba(0,0,0,0.7); }
@@ -198,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             position: relative; animation: containerEntrance 1s ease-out backwards;
         }
 
-        h2 { color: var(--text-main); font-weight: 900; text-transform: uppercase; margin: 0; font-size: 2rem; }
+        h2 { color: var(--text-main); font-weight: 900; text-transform: uppercase; margin: 0 0 20px 0; font-size: 2rem; }
         input { width: 100%; padding: 0.9rem 1.2rem; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; color: #333; margin-bottom: 12px; outline: none; box-sizing: border-box; }
         .dark-mode input { color: #ffffff; }
 
@@ -210,6 +201,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .pass-wrapper { position: relative; width: 100%; }
         .pass-wrapper i { position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--text-main); opacity: 0.6; z-index: 100; }
+
+        /* --- THE SIGNUP LINK FIX --- */
+        #signupLink {
+            display: none;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            text-decoration: underline;
+            font-weight: bold;
+            position: relative;
+            z-index: 9999; /* Siguradong nasa ibabaw */
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -241,11 +245,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2>LOGIN</h2>
     <?php if ($message): ?><div style="color: #ff4081; font-size: 0.8rem; margin-bottom: 15px; font-weight: bold;"><?= $message ?></div><?php endif; ?>
 
-    <form method="POST">
+    <form method="POST" action="login.php">
         <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <button type="button" id="sBtn" onclick="setRole('student')" style="flex:1; padding: 6px; border-radius: 15px; border: 1px solid var(--input-border); background: transparent; color: var(--text-main); cursor: pointer; font-size: 0.8rem;">Student</button>
-            <button type="button" id="tBtn" onclick="setRole('teacher')" style="flex:1; padding: 6px; border-radius: 15px; border: 1px solid var(--input-border); background: transparent; color: var(--text-main); cursor: pointer; font-size: 0.8rem;">Teacher</button>
+            <button type="button" id="sBtn" onclick="setRole('student')" style="flex:1; padding: 10px; border-radius: 15px; border: 1px solid var(--input-border); cursor: pointer; transition: 0.3s;">Student</button>
+            <button type="button" id="tBtn" onclick="setRole('teacher')" style="flex:1; padding: 10px; border-radius: 15px; border: 1px solid var(--input-border); cursor: pointer; transition: 0.3s;">Teacher</button>
         </div>
+
         <input type="hidden" name="role" id="role" value="student">
         <input type="text" name="username" id="usernameInput" placeholder="Username" required>
 
@@ -255,17 +260,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button type="submit" class="login-btn">LOGIN <i class="fas fa-arrow-right"></i></button>
-        <a href="signup.php" id="signupLink" style="display: none; margin-top: 25px; font-size: 0.8rem; color: var(--text-main); text-decoration: none; opacity: 0.7;">Create Account</a>
+
+        <div style="margin-top: 15px;">
+            <a href="/verbal/signup.php" id="signupLink">Create Teacher Account</a>
+        </div>
     </form>
 </div>
 
-
-
 <script>
     function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+
     const togglePass = document.getElementById('togglePass');
     const passwordInput = document.getElementById('passwordInput');
-    const usernameInput = document.getElementById('usernameInput');
 
     togglePass.addEventListener('click', () => {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -276,11 +282,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     function setRole(r) {
         document.getElementById('role').value = r;
-        usernameInput.value = '';
-        passwordInput.value = '';
         const sBtn = document.getElementById('sBtn');
         const tBtn = document.getElementById('tBtn');
         const signupLink = document.getElementById('signupLink');
+
+        // Added to clear inputs when switching roles
+        document.getElementById('usernameInput').value = '';
+        document.getElementById('passwordInput').value = '';
 
         if (r === 'student') {
             sBtn.style.background = 'var(--input-border)'; sBtn.style.color = 'white';
@@ -289,7 +297,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             tBtn.style.background = 'var(--input-border)'; tBtn.style.color = 'white';
             sBtn.style.background = 'transparent'; sBtn.style.color = 'var(--text-main)';
-            signupLink.style.display = 'block';
+            signupLink.style.display = 'inline-block';
+            signupLink.href = "/verbal/signup.php";
         }
     }
 
@@ -309,7 +318,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             landscape.appendChild(leaf);
         }
     }
-    window.onload = () => { setRole('student'); initDynamicAssets(); };
+
+    window.onload = () => {
+        setRole('student');
+        initDynamicAssets();
+    };
 </script>
 </body>
 </html>

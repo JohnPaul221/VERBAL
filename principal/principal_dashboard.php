@@ -53,14 +53,18 @@ try {
     $total_teachers = $pdo->query("SELECT COUNT(*) FROM teachers")->fetchColumn();
 
     $sql_sections = "SELECT 
-                        t.fullname as teacher_name, 
+                        MAX(t.fullname) as teacher_name, 
                         t.grade_handle, 
                         t.section,
-                        (SELECT COUNT(*) FROM students s WHERE s.grade = t.grade_handle AND s.section = t.section) as student_count,
-                        (SELECT COALESCE(SUM(score), 0) FROM student_ratings sr 
+                        (SELECT COUNT(*) FROM students s 
+                         WHERE s.grade = CAST(t.grade_handle AS CHAR) 
+                         AND s.section = t.section) as student_count,
+                        (SELECT COALESCE(SUM(sr.score), 0) FROM student_ratings sr 
                          JOIN students s2 ON sr.student_id = s2.id 
-                         WHERE s2.grade = t.grade_handle AND s2.section = t.section) as total_section_xp
+                         WHERE s2.grade = CAST(t.grade_handle AS CHAR) 
+                         AND s2.section = t.section) as total_section_xp
                     FROM teachers t 
+                    GROUP BY t.grade_handle, t.section
                     ORDER BY t.grade_handle ASC, t.section ASC";
 
     $stmt_sections = $pdo->prepare($sql_sections);
@@ -169,7 +173,7 @@ try {
                 <div class="folder-stats">
                     <div class="stat-box"><small>Students</small><span><?= $row['student_count'] ?></span></div>
                     <div style="width: 1px; background: #E0E5F2; margin: 0 10px;"></div>
-                    <div class="stat-box"><small>Total XP</small><span style="color: var(--accent);"><?= number_format($row['total_section_xp'] ?? 0) ?></span></div>
+                    <div class="stat-box"><small>Total STARS</small><span style="color: var(--accent);"><?= number_format($row['total_section_xp'] ?? 0) ?></span></div>
                 </div>
             </div>
         <?php endforeach; ?>

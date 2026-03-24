@@ -230,9 +230,6 @@
     <body>
     <header class="page-header">
         <span id="usernameDisplay">Hello, <?php echo htmlspecialchars($username); ?>!</span>
-        <button id="alphabetBtn" onclick="window.location.href='alphabet_sounds.php';" style="position: absolute; top: 15px; right: 130px; padding: 5px 15px; font-size: 0.8rem; background: var(--kids-yellow); color: #574B15; border: 2px solid #E1B12C; border-radius: 10px; z-index: 10; cursor: pointer; font-weight: 800;">
-            <i class="fa-solid fa-volume-high"></i> Alphabet Sounds
-        </button>
         <button id="logoutBtn" onclick="window.location.href='../logout.php';">
             <i class="fa-solid fa-right-from-bracket">Logout</i>
             <button id="reportBtn" onclick="window.location.href='student_report.php';" style="position: absolute; top: 15px; right: 300px; padding: 5px 15px; font-size: 0.8rem; background: #4318FF; color: white; border: 2px solid #2F11B0; border-radius: 10px; z-index: 10; cursor: pointer; font-weight: 800;">

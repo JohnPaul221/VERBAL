@@ -3,7 +3,7 @@ session_start();
 require_once '../config/database.php';
 global $pdo;
 
-// --- FIXED LOGIC: Multi-Role Session Security ---
+
 if (!isset($_SESSION['teacher_logged_in']) || $_SESSION['teacher_logged_in'] !== true || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit();
@@ -238,7 +238,6 @@ try {
             const status = row.getAttribute('data-status');
             const accuracy = parseInt(row.cells[3].innerText);
 
-            // MULTI-FILTER LOGIC
             const matchesSearch = name.includes(searchQuery);
             const matchesStatus = (statusQuery === 'all' || status === statusQuery);
 

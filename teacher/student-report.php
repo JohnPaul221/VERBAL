@@ -179,7 +179,7 @@ try {
         <a href="?student_id=<?= $s_id ?>&name=<?= urlencode($s_name) ?>&level=beginner&range=<?= $range ?>" class="card-link <?= $level_filter == 'beginner' ? 'active' : '' ?>">
             <div class="card">
                 <div class="card-header"><span>Beginner</span><i class="fas fa-seedling" style="color: var(--brand);"></i></div>
-                <p class="val"><?= (int)$m_counts['beg'] ?> <small style="font-size: 12px; color: var(--text-muted);">/ 40</small></p>
+                <p class="val"><?= (int)$m_counts['beg'] ?></p>
                 <div class="m-bar"><div class="m-fill" style="width: <?= min(($m_counts['beg']/40)*100, 100) ?>%; background: var(--brand);"></div></div>
             </div>
         </a>
@@ -187,7 +187,7 @@ try {
         <a href="?student_id=<?= $s_id ?>&name=<?= urlencode($s_name) ?>&level=intermediate&range=<?= $range ?>" class="card-link <?= $level_filter == 'intermediate' ? 'active' : '' ?>">
             <div class="card">
                 <div class="card-header"><span>Intermediate</span><i class="fas fa-fire" style="color: var(--green);"></i></div>
-                <p class="val"><?= (int)$m_counts['int'] ?> <small style="font-size: 12px; color: var(--text-muted);">/ 40</small></p>
+                <p class="val"><?= (int)$m_counts['int'] ?></p>
                 <div class="m-bar"><div class="m-fill" style="width: <?= min(($m_counts['int']/40)*100, 100) ?>%; background: var(--green);"></div></div>
             </div>
         </a>
@@ -195,7 +195,7 @@ try {
         <a href="?student_id=<?= $s_id ?>&name=<?= urlencode($s_name) ?>&level=advanced&range=<?= $range ?>" class="card-link <?= $level_filter == 'advanced' ? 'active' : '' ?>">
             <div class="card">
                 <div class="card-header"><span>Advanced</span><i class="fas fa-crown" style="color: var(--orange);"></i></div>
-                <p class="val"><?= (int)$m_counts['adv'] ?> <small style="font-size: 12px; color: var(--text-muted);">/ 40</small></p>
+                <p class="val"><?= (int)$m_counts['adv'] ?></p>
                 <div class="m-bar"><div class="m-fill" style="width: <?= min(($m_counts['adv']/40)*100, 100) ?>%; background: var(--orange);"></div></div>
             </div>
         </a>

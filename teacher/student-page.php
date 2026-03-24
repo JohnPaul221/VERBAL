@@ -3,7 +3,7 @@ session_start();
 require_once '../config/database.php';
 global $pdo;
 
-// --- FIXED LOGIC: Multi-Role Session Security ---
+
 if (!isset($_SESSION['teacher_logged_in']) || $_SESSION['teacher_logged_in'] !== true || $_SESSION['role'] !== 'teacher') {
     header("Location: ../login.php");
     exit();
@@ -12,7 +12,7 @@ if (!isset($_SESSION['teacher_logged_in']) || $_SESSION['teacher_logged_in'] !==
 $teacher_id = $_SESSION['teacher_id'];
 $status = "";
 
-// --- AJAX HANDLER FOR RESET STUDENT PROGRESS ---
+
 if (isset($_POST['reset_progress'])) {
     $s_id = $_POST['student_id'];
     try {
@@ -27,10 +27,9 @@ if (isset($_POST['reset_progress'])) {
     exit();
 }
 
-// --- ADD STUDENT LOGIC ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_student'])) {
     $fullname = trim($_POST['fullname']);
-    $username = trim($_POST['username']);
+    $username = trim($_POST['username']); // LRN
     $password = trim($_POST['password']);
     $birthday = $_POST['birthday'];
     $sex      = $_POST['sex'];
@@ -55,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_student'])) {
     }
 }
 
-// --- DELETE STUDENT LOGIC ---
+
 if (isset($_GET['delete_id'])) {
     try {
         $del = $pdo->prepare("DELETE FROM students WHERE id = ?");
@@ -67,7 +66,6 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-// --- FETCH DATA ---
 try {
     $stmt = $pdo->prepare("SELECT * FROM teachers WHERE id = ?");
     $stmt->execute([$teacher_id]);
@@ -152,7 +150,6 @@ try {
         }
 
         .list-container-parent { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        /* Fixed Grid Layout: Reduced to 7 columns */
         .student-row-header {
             display: grid; grid-template-columns: 60px 2fr 1.2fr 120px 80px 100px 100px;
             padding: 10px 25px; color: var(--text-gray); font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
@@ -229,7 +226,7 @@ try {
     </div>
 
     <div class="list-container-parent">
-        <div class="student-row-header"><div>Icon</div><div>Full Name</div><div>Username</div><div>Birthday</div><div>Gender</div><div>Status</div><div>Action</div></div>
+        <div class="student-row-header"><div>Icon</div><div>Full Name</div><div>LRN</div><div>Birthday</div><div>Gender</div><div>Status</div><div>Action</div></div>
         <div class="student-list-scroll" id="studentList">
             <?php foreach ($students as $row): ?>
                 <div class="student-card-row animate__animated animate__fadeInUp"
@@ -279,8 +276,8 @@ try {
                 <div>
                     <label style="font-weight:700; font-size:0.75rem; color:var(--text-gray);">FULL NAME</label>
                     <input type="text" name="fullname" class="form-input" required>
-                    <label style="font-weight:700; font-size:0.75rem; color:var(--text-gray);">LRN / USERNAME</label>
-                    <input type="text" id="lrnInput" name="username" class="form-input" onkeyup="syncPassword()" required>
+                    <label style="font-weight:700; font-size:0.75rem; color:var(--text-gray);">LRN (12 NUMBERS ONLY)</label>
+                    <input type="text" id="lrnInput" name="username" class="form-input" maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, ''); syncPassword();" required>
                     <label style="font-weight:700; font-size:0.75rem; color:var(--text-gray);">GENDER</label>
                     <select name="sex" class="form-input"><option value="Male">Male</option><option value="Female">Female</option></select>
                 </div>
@@ -349,30 +346,16 @@ try {
         window.location.href = `student-report.php?student_id=${studentId}&name=${encodeURIComponent(fullName)}&range=all`;
     }
 
-    // Handle Success/Error Status from PHP
     <?php if($status == "success"): ?>
-    ProToast.fire({
-        icon: 'success',
-        title: 'Registration Successful',
-        text: 'New student added to the section.'
-    });
+    ProToast.fire({ icon: 'success', title: 'Registration Successful', text: 'New student added to the section.' });
     <?php endif; ?>
 
     <?php if($status == "exists"): ?>
-    ProToast.fire({
-        icon: 'error',
-        title: 'Registration Failed',
-        text: 'LRN/Username already exists.',
-        showClass: { popup: 'animate__animated animate__shakeX' }
-    });
+    ProToast.fire({ icon: 'error', title: 'Registration Failed', text: 'LRN/Username na ito ay nagamit na.', showClass: { popup: 'animate__animated animate__shakeX' } });
     <?php endif; ?>
 
     <?php if(isset($_GET['status']) && $_GET['status'] == 'deleted'): ?>
-    ProToast.fire({
-        icon: 'success',
-        title: 'Student Removed',
-        text: 'Account has been successfully deleted.'
-    });
+    ProToast.fire({ icon: 'success', title: 'Student Removed', text: 'Account has been successfully deleted.' });
     <?php endif; ?>
 
     function confirmDelete(id) {
@@ -385,9 +368,7 @@ try {
             cancelButtonColor: '#A3AED0',
             confirmButtonText: 'Yes, Delete',
             background: '#ffffff',
-            customClass: {
-                popup: 'animate__animated animate__zoomIn'
-            }
+            customClass: { popup: 'animate__animated animate__zoomIn' }
         }).then(res => {
             if(res.isConfirmed) window.location.href = 'student-page.php?delete_id=' + id;
         });
@@ -400,9 +381,7 @@ try {
             showCancelButton: true,
             confirmButtonColor: '#4318FF',
             confirmButtonText: 'Logout',
-            customClass: {
-                popup: 'animate__animated animate__zoomIn'
-            }
+            customClass: { popup: 'animate__animated animate__zoomIn' }
         }).then(res => {
             if(res.isConfirmed) window.location.href = '../login.php';
         });

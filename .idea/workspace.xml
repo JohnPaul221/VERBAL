@@ -5,45 +5,132 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6043ded-f50c-4822-af0e-0fee6e7a8d08" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/student/student_report.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Beach.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Check.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Clean.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Drink.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Earth.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Field.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Flame.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Green.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Large.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Light.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Night.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Point.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Round.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Sleep.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Small.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Smile.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Stone.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Sweet.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Thing.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Think.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Three.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Water.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/World.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Young.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upload/Youth.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/A balanced ecosystem allows animals and plants to survive..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/A peaceful garden is a great place to relax and read books..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/A solid object has a very definite shape like a hard rock..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/After finishing my homework, I play games on my computer for an hour..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/After months of waiting, the farmer harvested the ripe corn..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Ancient Filipinos lived in many small tribal groups called barangays.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/At night, the moon reflects light from sun to brighten the earth..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/At the zoo, the elephant is a very big animal with a long trunk..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Be careful when the car crosses the bridge during the rain..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Before sleeping, I read a story book every night in bed with a lamp..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Biodiversity is essential for nature to maintain a healthy environment..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Clean energy comes from the sun using solar panels..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Climate change causes global warming which melts the polar ice..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Communication is faster because computers allow us to send emails to people far away..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Conductors allow heat and electricity to pass through them efficiently..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Drivers must follow the traffic signals to avoid accidents..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/During her beach trip, she wears a necklace made of shells..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/During the flood, the local government helps the people in community..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Eating vegetables and proper nutrition makes our bones and muscles strong..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Estuaries are where the river meets the sea and fish live..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Every morning, the blue bird sings a song on the tree branch..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Everyone was surprised that the small boy can run very fast in race..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/For the upcoming party, he bought a new pair of shoes..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Freedom of speech is a fundamental right in any democracy.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/From tasting food to seeing colors, we use our five senses to explore the world around..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/From the street, the city building is very tall and reaches the clouds..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Go and eat your lunch in the room..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Gravity is a force that pulls objects down to the ground..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/I like to read a new story book..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/I love my whole family and we eat dinner together every day..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/I need to fix it because my shirt has a button missing..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/I understood everything because the teacher explained the lesson very clearly today..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/I use a red crayon to color the big heart on my paper..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/I will have many bags, so please open the door for me when I come home..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/In chemistry, we learn that solid liquid and gas are states of matter..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/In school, we are taught that honesty and respect are important values for every young child..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/In the dark garden, the firefly shines in the night like a tiny star..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/In the movie, the dinosaur is large and scary with big teeth..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/In the story, the dragon breathes hot fire to protect its cave..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Insulators like rubber and plastic block the flow of heat easily..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/It was a beautiful sight as the eagle flies above the clouds..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Look at the sky because the stars are very bright tonight..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Mangrove trees protect the coast from big waves during storms..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Many birds fly in the blue sky today..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Many tall trees grow in the forest where the animals hide..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/My pet goldfish is in the water tank swimming around the plants..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/My teacher says drink cold milk for breakfast to grow very strong bones..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/On Sundays, we play in the green park with our friends from school..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Our history book says Magellan arrived in the Philippines in fifteen twenty-one..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Our lungs help us breathe fresh clean air every single day..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Planting more trees helps to reduce air pollution in cities..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Plants make food using the bright yellow sun in the garden..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Plate tectonics move the continents over millions of years..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Proper waste management helps keep the environment clean for all..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Renewable energy reduces pollution and helps the ozone layer..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Scientific research drives innovation in medicine and technology..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Shh, be quiet because the cat naps on the mat in the room right now..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Spain ruled the Philippines for three hundred years in the past..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Stand still and smile for the camera now for the family photo..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Sustainability ensures a better future for the next generations..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The Philippine flag is high above the school grounds..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The atmosphere has many layers that protect our planet..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The brain controls everything we do and think every day..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The circulatory system moves blood and nutrients to all your cells..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The doctor is checking him because the sick boy is in the hospital..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The garden looks beautiful when the sun shines on the trees in the morning..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The giant telescope sees far away planets in the galaxy..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The heart pumps blood through our veins to keep us alive..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The human brain is very complex and controls the body..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The human reproductive system is essential for continuing life on Earth..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The lesson started when our teacher wrote on the blackboard..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The nervous system controls the body by sending fast electrical signals..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The plant grows tall in the garden..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The red car moves very fast now..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The stars are bright in the sky..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The sun's heat causes water to evaporate during the cycle..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/The water in the cup is very cold..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/To carry its baby, the kangaroo has a deep pocket on its belly..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/To get a high score, always listen carefully when the teacher is explaining the lesson..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/To keep germs away, wash your hands with soap before you eat food..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/To keep our classroom clean, we should throw our trash in the bin..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/To keep us alive, the heart pumps blood to our whole body..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/To see when the holiday is, check the date on the calendar..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/To stay healthy, I like to eat fresh fruit in the morning for breakfast..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/To understand why it rains, we learned how the water cycle includes evaporation and condensation and precipitation..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Tourists visit often because the Philippines is rich in natural beauty and many resources..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Travelers love that the Philippines is an archipelago with many islands..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Wash your face daily to stay fresh..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We are thankful because our community helpers include the doctors and nurses and teachers..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We can see the sun because the sky is blue and clear during the day..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We couldn't go outside because the heavy rain flooded the street..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We go early because the market is crowded every Sunday..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We go to the clinic where the doctor helps the sick people..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We must plant trees because a forest provides oxygen for us..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We must plant trees because we live on planet Earth..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We must respect all human rights for a fair society..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We observed in class how the butterfly went through four stages of very slow metamorphosis..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We practice safe health habits to prevent the spread of germs..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We should keep our surroundings clean and green..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We should stop cutting forests since trees are important because they give us fresh clean air..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We study how our local government helps the community..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/We watched as the caterpillar turned into a beautiful butterfly..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Wear your clean shoes to the party..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/When I have a fever, we use a thermometer to measure body heat..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/When the rain comes, the farmer plants the rice in the field..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/When the weather is hot, I love to eat cold ice cream..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/When we exercise, the heart and lungs work together to give us oxygen..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/When we go hiking in the woods, we use a compass for directions..jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/upload/Young children learn the ABC alphabet at school to start reading..jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/load_progress.php" beforeDir="false" afterPath="$PROJECT_DIR$/load_progress.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/login.php" beforeDir="false" afterPath="$PROJECT_DIR$/login.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/principal/principal_dashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/principal/principal_dashboard.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/signup.php" beforeDir="false" afterPath="$PROJECT_DIR$/signup.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-1.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-1.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-2.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-2.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-3.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-3.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-4.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-4.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-5.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-5.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student/Grade-6.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/Grade-6.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student/student_report.php" beforeDir="false" afterPath="$PROJECT_DIR$/student/student_report.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher/class-reports.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/class-reports.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher/edit_student.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/edit_student.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/teacher/student-page.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/student-page.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/upload/Breakfast.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/Breakfast.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/upload/Chocolate.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/Chocolate.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/upload/Everything.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/Everything.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/upload/Rectangle.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/Rectangle.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/upload/Telephone.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/upload/Telephone.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher/student-report.php" beforeDir="false" afterPath="$PROJECT_DIR$/teacher/student-report.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,6 +252,13 @@
       <workItem from="1773321314725" duration="3757000" />
       <workItem from="1773405632878" duration="651000" />
       <workItem from="1773489517177" duration="5996000" />
+      <workItem from="1773502453182" duration="34000" />
+      <workItem from="1773502607851" duration="1629000" />
+      <workItem from="1773820763653" duration="4543000" />
+      <workItem from="1773826748766" duration="11834000" />
+      <workItem from="1773884215764" duration="9087000" />
+      <workItem from="1774269411573" duration="4278000" />
+      <workItem from="1774346809658" duration="10989000" />
     </task>
     <servers />
   </component>

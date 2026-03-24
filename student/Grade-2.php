@@ -229,8 +229,12 @@ if (is_dir($uploadDir)) {
 <body>
 <header class="page-header">
     <span id="usernameDisplay">Hello, <?php echo htmlspecialchars($username); ?>!</span>
+
     <button id="logoutBtn" onclick="window.location.href='../logout.php';">
         <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
+    <button id="reportBtn" onclick="window.location.href='student_report.php';" style="position: absolute; top: 15px; right: 300px; padding: 5px 15px; font-size: 0.8rem; background: #4318FF; color: white; border: 2px solid #2F11B0; border-radius: 10px; z-index: 10; cursor: pointer; font-weight: 800;">
+        <i class="fa-solid fa-chart-line"></i> View My Report
     </button>
 </header>
 <main>

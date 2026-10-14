@@ -394,7 +394,7 @@
                     { word: "Tip", phonemes: ["t", "i", "p"], example: "The tip of the pen is black." },
                     { word: "Dot", phonemes: ["d", "o", "t"], example: "The ladybug has a black dot." },
                     { word: "Not", phonemes: ["n", "o", "t"], example: "The soup is not hot." },
-                    { word: "Bun", phonemes: ["b", "u", "n"], example: "The bread bun is on the plate." },
+                    { word: "Bun", phonemes: ["b", "u", "n"], example: "The bread bun is on the plate." }
                 ],
                 intermediate: [
                     { word: "Frog", phonemes: ["f", "r", "o", "g"], example: "The green frog jumps high." },
@@ -447,7 +447,7 @@
                     { word: "Food", phonemes: ["f", "oo", "d"], example: "Eat the good food now." },
                     { word: "Game", phonemes: ["g", "ay", "m"], example: "We play a fun game." },
                     { word: "Hair", phonemes: ["h", "e", "r"], example: "Brush your long hair now." },
-                    { word: "Home", phonemes: ["h", "o", "m"], example: "I will go to my home." },
+                    { word: "Home", phonemes: ["h", "o", "m"], example: "I will go to my home." }
                 ],
                 advanced: [
                     { "word": "Butterfly", "phonemes": ["b", "a", "t", "e", "r", "f", "l", "ay"], "example": "The colorful butterfly flies." },
@@ -500,7 +500,7 @@
                     { "word": "Afternoon", "phonemes": ["a", "f", "t", "e", "r", "n", "oo", "n"], "example": "Play at the park in afternoon." },
                     { "word": "Breakfast", "phonemes": ["b", "r", "e", "k", "f", "a", "s", "t"], "example": "Eat your good breakfast now." },
                     { "word": "Detective", "phonemes": ["d", "e", "t", "e", "k", "t", "i", "v"], "example": "The detective finds the key." },
-                    { "word": "Fireworks", "phonemes": ["f", "ay", "r", "w", "e", "r", "k", "s"], "example": "The fireworks are in the sky." },
+                    { "word": "Fireworks", "phonemes": ["f", "ay", "r", "w", "e", "r", "k", "s"], "example": "The fireworks are in the sky." }
                 ],
             };
 

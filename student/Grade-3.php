@@ -177,7 +177,13 @@ if (is_dir($uploadDir)) {
         #difficulty { width: 90%; padding: 8px; border-radius: 12px; border: 3px solid var(--kids-blue); font-family: inherit; font-weight: bold; margin-bottom: 5px; background: white; }
         .mic-icon { width: 65px; height: 65px; background: var(--primary); border: 5px solid #FF7675; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 26px; cursor: pointer; margin: 5px auto; box-shadow: 0 4px 0px #C0392B; }
         .reading-material { background: #E1F5FE; border-radius: 20px; border: 3px dashed var(--kids-blue); padding: 10px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; width: 95%; margin: 5px auto; }
-        #wordDisplay { font-size: 2.2rem; font-weight: 900; color: #2D3436; text-transform: uppercase; line-height: 1.1; }
+        #wordDisplay {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2D3436;
+            text-transform: none; /* Ito ang binago */
+            line-height: 1.1;
+        }
         .transcript { font-size: 1.1rem; font-weight: bold; color: #006266; background: #E0F7FA; border: 2px solid var(--kids-blue); border-radius: 15px; padding: 10px; width: 90%; min-height: 30px; }
 
         /* --- PRO SCOREBOARD --- */
@@ -337,7 +343,10 @@ if (is_dir($uploadDir)) {
                 { word: "We live on planet Earth", phonemes: ["w", "ee", "l", "i", "v", "o", "n", "p", "l", "a", "n", "e", "t", "e", "r", "th"], example: "We must plant trees because we live on planet Earth." },
                 { word: "I love my whole family", phonemes: ["ay", "l", "a", "v", "m", "ay", "h", "o", "l", "f", "a", "m", "i", "l", "ee"], example: "I love my whole family and we eat dinner together every day." },
                 { word: "The farmer plants the rice", phonemes: ["th", "e", "f", "a", "r", "m", "e", "r", "p", "l", "a", "n", "t", "s", "th", "e", "r", "ay", "s"], example: "When the rain comes, the farmer plants the rice in the field." },
-                { word: "Trees grow in the forest", phonemes: ["t", "r", "ee", "z", "g", "r", "o", "i", "n", "th", "e", "f", "o", "r", "e", "s", "t"], example: "Many tall trees grow in the forest where the animals hide." }
+                { word: "Trees grow in the forest", phonemes: ["t", "r", "ee", "z", "g", "r", "o", "i", "n", "th", "e", "f", "o", "r", "e", "s", "t"], example: "Many tall trees grow in the forest where the animals hide." },+
+                { word: "Roses grow in the garden", phonemes: ["r", "o", "z", "e", "z", "g", "r", "o", "i", "n", "th", "e", "g", "a", "r", "d", "e", "n"], example: "Beautiful red roses grow in the garden behind our house." },
+
+
             ],
             intermediate: [
                 { word: "Learn the ABC alphabet at school", phonemes: ["l", "e", "r", "n", "th", "e", "a", "l", "f", "a", "b", "e", "t", "a", "t", "s", "k", "oo", "l"], example: "Young children learn the ABC alphabet at school to start reading." },
@@ -433,19 +442,15 @@ if (is_dir($uploadDir)) {
         function triggerMysteryGame(reason = "bonus") {
             const title = reason === "struggle" ? "Quick Brain Exercise! 🧠" : "Word Master Challenge! 🏆";
 
-            // --- LOGIC FIX: Kumuha ng salita mula sa example sentence para sa scramble ---
             const cleanSentence = currentWord.example.replace(/[.,!?;:]/g, "");
             const sentenceWords = cleanSentence.split(' ');
             let targetWord = "";
 
             if (currentDifficulty === 'beginner') {
-                // Beginner: Kunin ang unang salita sa sentence
                 targetWord = sentenceWords[0];
             } else if (currentDifficulty === 'intermediate') {
-                // Intermediate: Kunin ang huling salita
                 targetWord = sentenceWords[sentenceWords.length - 1];
             } else {
-                // Advanced: Kunin ang pinakamahabang salita
                 targetWord = sentenceWords.reduce((a, b) => a.length > b.length ? a : b);
             }
 
@@ -455,12 +460,12 @@ if (is_dir($uploadDir)) {
             Swal.fire({
                 title: title,
                 html: `
-        <div style="background: #F1F2F6; padding: 20px; border-radius: 15px; border: 2px solid #0984E3;">
-            <p style="color: #2F3542; font-weight: bold; margin-bottom: 15px;">Unscramble the word from the sentence:</p>
-            <h1 style="letter-spacing: 8px; font-size: 2.5rem; color: #D63031; margin: 20px 0;">${scrambled}</h1>
-            <input type="text" id="scrambleInput" class="swal2-input" placeholder="TYPE ANSWER HERE" style="text-align:center; text-transform: uppercase;">
-        </div>
-    `,
+                <div style="background: #F1F2F6; padding: 20px; border-radius: 15px; border: 2px solid #0984E3;">
+                    <p style="color: #2F3542; font-weight: bold; margin-bottom: 15px;">Unscramble the word from the sentence:</p>
+                    <h1 style="letter-spacing: 8px; font-size: 2.5rem; color: #D63031; margin: 20px 0;">${scrambled}</h1>
+                    <input type="text" id="scrambleInput" class="swal2-input" placeholder="TYPE ANSWER HERE" style="text-align:center; text-transform: uppercase;">
+                </div>
+            `,
                 confirmButtonText: 'Check Answer ✅',
                 confirmButtonColor: '#00B894',
                 allowOutsideClick: false,
@@ -488,7 +493,6 @@ if (is_dir($uploadDir)) {
             const score = ratePronunciation(spoken, targetText);
 
             if (score === 5) {
-                // FIX: Ginamit ang clean key para sa Image Library
                 const imgKey = currentWord.example.toLowerCase().trim();
 
                 if (imageLibrary[imgKey]) {
@@ -649,11 +653,100 @@ if (is_dir($uploadDir)) {
             }
         }
 
+        // --- WAVE ANIMATION FUNCTIONS ---
+        async function startWaveform() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                source = audioContext.createMediaStreamSource(stream);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                source.connect(analyser);
+                bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                drawWave();
+            } catch (err) {
+                console.error("Microphone error:", err);
+            }
+        }
+
+        function drawWave() {
+            if (!listening) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                cancelAnimationFrame(animationId);
+                return;
+            }
+            animationId = requestAnimationFrame(drawWave);
+            analyser.getByteFrequencyData(dataArray);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const barWidth = (canvas.width / bufferLength) * 2.5;
+            let barHeight;
+            let x = 0;
+            for (let i = 0; i < bufferLength; i++) {
+                barHeight = dataArray[i] / 2;
+                ctx.fillStyle = `rgb(9, 132, ${barHeight + 100})`;
+                ctx.fillRect(x, (canvas.height - barHeight) / 2, barWidth, barHeight);
+                x += barWidth + 1;
+            }
+        }
+
+        // --- UPDATED SPEAK RATING FUNCTION ---
         function speakRating(score) {
-            const perfect = ["Excellent!", "Amazing!", "Wow! Pro!", "Perfect!", "Incredible!"];
-            const great = ["Great job!", "Good effort!", "Nice work!"];
-            const tryAgain = ["Try again!", "Keep practicing!", "You can do it!"];
-            let message = score === 5 ? perfect[Math.floor(Math.random() * perfect.length)] : (score >= 4 ? great[Math.floor(Math.random() * great.length)] : tryAgain[Math.floor(Math.random() * tryAgain.length)]);
+            const perfect = [
+                "Excellent! You got five stars!", "Amazing! You are a superstar!",
+                "Wow! You are a reading pro!", "Perfect! Your voice is so clear!",
+                "Incredible! I am so proud of you!", "Fantastic! You nailed it!",
+                "Outstanding! Keep it up!", "You're a natural! Five stars for you!",
+                "Brilliant! That was a perfect score!", "Superb! Your pronunciation is spot on!",
+                "Marvelous! You are reading like a champ!", "Unbelievable! You are so smart!",
+                "Way to go! You are the best!", "You are a reading wizard!",
+                "Five stars! You are doing amazing!", "That was music to my ears!",
+                "You make reading look so easy!", "Gold star for you! Perfect!",
+                "I love how you said that!", "You are a total rockstar!"
+            ];
+
+            const great = [
+                "Great job! Almost perfect!", "Good effort! You're doing well!",
+                "Nice work! Keep going!", "Very good! You're getting better!",
+                "Well done! Just a little more practice!", "Awesome! You're nearly there!",
+                "That was good! Try to say it even clearer next time!", "Great! You are a fast learner!",
+                "So close! You almost got five stars!", "You're doing a wonderful job!",
+                "I like how you're trying!", "Keep it up, you're doing great!",
+                "Your reading is getting stronger!", "Nice and clear! Good job!",
+                "You are working so hard, well done!"
+            ];
+
+            const good = [
+                "Nice try! You can do it!", "Good start! Let's try one more time.",
+                "Not bad! Keep practicing the sounds.", "I like your effort! Try again!",
+                "You're learning! Let's repeat that word.", "Keep practicing, you'll get it!",
+                "You're on the right track!", "Good job! Try to say every letter.",
+                "Practice makes perfect! Try again!", "Don't stop now, you're doing okay!"
+            ];
+
+            const tryAgain = [
+                "Don't give up! Try again!", "Keep practicing! You can do it!",
+                "You're getting closer! Give it another go!", "Let's try that one more time, slowly.",
+                "It's okay to make mistakes! Try again!", "I know you can do it! One more try!",
+                "Listen to the sound and try once more.", "Let's try to say it together next time!",
+                "You can do this! Just keep trying!", "Take a deep breath and try again!",
+                "Believe in yourself! Give it another shot!", "Don't worry, just try again!",
+                "Every try makes you better! Go again!", "One more time for me, please!"
+            ];
+
+            let message = "";
+            if (score === 5) {
+                message = perfect[Math.floor(Math.random() * perfect.length)];
+            } else if (score >= 4) {
+                message = great[Math.floor(Math.random() * great.length)];
+            } else if (score >= 3) {
+                message = good[Math.floor(Math.random() * good.length)];
+            } else {
+                message = tryAgain[Math.floor(Math.random() * tryAgain.length)];
+            }
             speak(message);
         }
 
@@ -706,6 +799,10 @@ if (is_dir($uploadDir)) {
                 listening = true;
                 micBtn.classList.add("listening");
                 statusEl.textContent = "Listening...";
+
+                // Start Animation
+                startWaveform();
+
                 document.getElementById("runningTimer").style.visibility = "visible";
                 startTime = Date.now();
                 timerInterval = setInterval(() => {
@@ -767,10 +864,32 @@ if (is_dir($uploadDir)) {
 
             if (SHOW_PARENTAL_NOTE) {
                 Swal.fire({
-                    title: 'Parental Guidance 👨‍👩‍👧',
-                    html: `<p>Hayaan ang bata na mag-practice mag-isa para matuto.</p>`,
-                    confirmButtonText: 'Start! 🚀'
-                }).then(loadProgressFromDB);
+                    title: 'Gabay para sa mga Magulang 👨‍👩‍👧',
+                    icon: 'info',
+                    html: `
+                    <div style="text-align: justify; font-size: 1rem; line-height: 1.5; color: #2d3436;">
+                        <p>Ang layunin ng application na ito ay linangin ang <b>disiplina at kakayahan</b>
+                        ng inyong anak sa paglutas ng mga gawain nang mag-isa.</p>
+                        <p>Hinihikayat namin ang mga magulang na <b>hayaan ang bata na mag-practice at mag-explore</b>
+                        sa sarili nilang bilis. Sa ganitong paraan, mas mabilis nilang matututunan ang konsepto
+                        at magkakaroon sila ng tiwala sa kanilang sariling abilidad.</p>
+                        <p style="font-style: italic; text-align: center; margin-top: 10px;">
+                            "Ang pagkakamali ay bahagi ng pagkatuto. Gabayan, huwag diktahan."
+                        </p>
+                    </div>
+                `,
+                    confirmButtonText: 'Handa na Kami! 🚀',
+                    confirmButtonColor: '#3085d6',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        loadProgressFromDB();
+                        // Optional: Batiin ang user pagka-click ng magulang
+                        if (PLAY_WELCOME_VOICE) {
+                            setTimeout(() => speak("Welcome! Let's start practicing your English."), 500);
+                        }
+                    }
+                });
             } else {
                 loadProgressFromDB();
             }
